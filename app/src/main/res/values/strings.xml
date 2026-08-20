@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TerraLink</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_clients">Clients</string>
+    <string name="nav_loans">Loans</string>
+    <string name="nav_reports">Reports</string>
+    <string name="nav_history">History</string>
+    <string name="nav_profile">Profile</string>
+</resources>

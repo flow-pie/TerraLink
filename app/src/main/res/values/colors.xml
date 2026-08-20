@@ -1,0 +1,31 @@
+<resources>
+    <!--  Brand Primary Terracotta  -->
+    <color name="terracotta_primary">#C05D2E</color>
+    <color name="terracotta_dark">#9C3D19</color>
+    <color name="terracotta_light">#E07850</color>
+    <color name="terracotta_container">#FBECE5</color>
+    <color name="on_terracotta">#FFFFFF</color>
+    <!--  Background & Surface Warm Off-White / Cream  -->
+    <color name="bg_cream">#FDF6E3</color>
+    <color name="surface_card">#FFFFFF</color>
+    <color name="surface_card_subtle">#F7F3EB</color>
+    <color name="surface_stroke">#EBE5D8</color>
+    <color name="stepper_track">#E8DFD0</color>
+    <!--  Olive / Secondary Accents  -->
+    <color name="olive_secondary">#77804B</color>
+    <color name="olive_container">#EFF2E1</color>
+    <!--  Dark Navy / Charcoal (Buttons & Text)  -->
+    <color name="navy_dark">#222934</color>
+    <color name="navy_text_primary">#1C1E21</color>
+    <color name="text_secondary">#6E6B65</color>
+    <color name="text_muted">#9C9890</color>
+    <!--  Status Colors  -->
+    <color name="status_green">#1F9D55</color>
+    <color name="status_green_bg">#E6F6ED</color>
+    <color name="status_amber">#D97706</color>
+    <color name="status_amber_bg">#FEF3C7</color>
+    <color name="status_red">#DC2626</color>
+    <color name="status_red_bg">#FEE2E2</color>
+    <color name="status_blue">#2563EB</color>
+    <color name="status_blue_bg">#EFF6FF</color>
+</resources>
