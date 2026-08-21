@@ -17,7 +17,7 @@
     </style>
     <!--  Primary Action Button (Terracotta)  -->
     <style name="Widget.TerraLink.Button.Primary" parent="Widget.Material3.Button">
-        <item name="backgroundTint">@color/terracotta_primary</item>
+        <item name="backgroundTint">@color/terralink_button_primary</item>
         <item name="android:textColor">@color/on_terracotta</item>
         <item name="cornerRadius">14dp</item>
         <item name="android:minHeight">54dp</item>
