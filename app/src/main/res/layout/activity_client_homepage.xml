@@ -200,7 +200,7 @@
                 app:cardBackgroundColor="@color/surface_card"
                 app:cardCornerRadius="12dp"
                 app:cardElevation="1dp"
-                app:strokeColor="#DDC1B6"
+                app:strokeColor="@color/surface_stroke"
                 app:strokeWidth="1dp">
 
                 <LinearLayout
@@ -215,10 +215,11 @@
                         android:letterSpacing="0.08"
                         android:text="Next Installment"
                         android:textColor="@color/navy_text_primary"
-                        android:textSize="12sp"
+                        android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/nextInstallment"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
@@ -241,11 +242,12 @@
                             app:tint="#605E58" />
 
                         <TextView
+                            android:id="@+id/nextInstallmentDueDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="8dp"
                             android:text="Next update in 2 days"
-                            android:textColor="#605E58"
+                            android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
 
                     </LinearLayout>
@@ -269,7 +271,7 @@
                     app:cardBackgroundColor="@color/surface_card"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
-                    app:strokeColor="#E5E0D5"
+                    app:strokeColor="@color/surface_stroke"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -294,19 +296,13 @@
                             android:orientation="horizontal">
 
                             <TextView
+                                android:id="@+id/intrestRate"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="4.5% "
-                                android:textColor="#1E1B18"
+                                android:textColor="@color/navy_text_primary"
                                 android:textSize="18sp"
                                 android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="APR"
-                                android:textColor="#605E58"
-                                android:textSize="11sp" />
 
                         </LinearLayout>
 
@@ -321,7 +317,7 @@
                     app:cardBackgroundColor="@color/surface_card"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
-                    app:strokeColor="#E5E0D5"
+                    app:strokeColor="@color/surface_stroke"
                     app:strokeWidth="1dp">
 
                     <LinearLayout
@@ -334,16 +330,17 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Next Cycle"
-                            android:textColor="#605E58"
+                            android:textColor="@color/text_secondary"
                             android:textSize="12sp"
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/nextCycle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="4dp"
                             android:text="24 Days"
-                            android:textColor="#1E1B18"
+                            android:textColor="@color/navy_text_primary"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
@@ -378,19 +375,21 @@
                         android:orientation="horizontal">
 
                         <TextView
+                            android:id="@+id/tvRepaymentProgress"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
                             android:text="Repayment Progress"
-                            android:textColor="#1E1B18"
+                            android:textColor="@color/navy_text_primary"
                             android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvInstallmentsProgress"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="6 of 12 Installments"
-                            android:textColor="#56423B"
+                            android:textColor="@color/text_secondary"
                             android:textSize="11sp" />
 
                     </LinearLayout>
@@ -418,17 +417,19 @@
                             android:orientation="vertical">
 
                             <TextView
+                                android:id="@+id/tvTotalPaidLabel"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="PRINCIPAL PAID"
-                                android:textColor="#56423B"
+                                android:text="TOTAL AMOUNT PAID"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="11sp" />
 
                             <TextView
+                                android:id="@+id/tvTotalPaid"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="$760.00"
-                                android:textColor="#56423B"
+                                android:textColor="@color/navy_text_primary"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -444,15 +445,16 @@
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="INTEREST TO DATE"
-                                android:textColor="#56423B"
+                                android:text="TOTAL LOAN AMOUNT"
+                                android:textColor="@color/text_secondary"
                                 android:textSize="11sp" />
 
                             <TextView
+                                android:id="@+id/loanAmountTotal"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="KES 120.00"
-                                android:textColor="#56423B"
+                                android:textColor="@color/navy_text_primary"
                                 android:textSize="14sp"
                                 android:textStyle="bold" />
 
@@ -477,7 +479,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Recent Transactions"
+                    android:text="Upcoming Payments"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textColor="@color/navy_text_primary"
                     android:textStyle="bold" />
