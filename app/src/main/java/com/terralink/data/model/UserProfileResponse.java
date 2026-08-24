@@ -1,26 +1,25 @@
 package com.terralink.data.model;
 
-import java.time.LocalDateTime;
-
 public class UserProfileResponse {
 
-    private String id;
-    private String username;
+    private String userId;
+    private String fullName;
     private String email;
     private String employeeNo;
     private String roleName;
+    private String clientId;
     private String status;
     private boolean mfaEnabled;
-    private LocalDateTime lastLogin;
-    private LocalDateTime createdAt;
+    private String lastLogin;
+    private String createdAt;
 
 
-    public String getId() {
-        return id;
+    public String getUserId() {
+        return userId;
     }
 
-    public String getUsername() {
-        return username;
+    public String getFullName() {
+        return fullName;
     }
 
     public String getEmail() {
@@ -35,6 +34,8 @@ public class UserProfileResponse {
         return roleName;
     }
 
+    public String getClientId(){return clientId;}
+
     public String getStatus() {
         return status;
     }
@@ -43,11 +44,11 @@ public class UserProfileResponse {
         return mfaEnabled;
     }
 
-    public LocalDateTime getLastLogin() {
+    public String getLastLogin() {
         return lastLogin;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public String getCreatedAt() {
         return createdAt;
     }
 
