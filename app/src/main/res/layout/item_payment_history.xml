@@ -47,7 +47,7 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tvPaymentTitle"
+                    android:id="@+id/tvInstallmentTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
@@ -58,7 +58,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tvPaymentDate"
+                    android:id="@+id/tvInstallmentDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Sept 24, 2023"
@@ -78,7 +78,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvPaymentAmount"
+                android:id="@+id/tvInstallmentAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="kes 120.00"
@@ -87,7 +87,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvPaymentStatus"
+                android:id="@+id/tvInstallmentStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"

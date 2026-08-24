@@ -9,6 +9,9 @@
         android:icon="@drawable/ic_users"
         android:title="@string/nav_loans" />
     <item
+        android:id="@+id/placeHolder"
+        android:title="" />
+    <item
         android:id="@+id/nav_history"
         android:icon="@drawable/ic_wallet"
         android:title="@string/nav_history" />
