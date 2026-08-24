@@ -52,7 +52,7 @@ public class AuthRepository {
                         if(response.isSuccessful() && response.body() != null){
 
                             LoginResponse loginResponse = response.body();
-                            tokenManager.saveAccessToken(tokenManager.getAccessToken());
+                            tokenManager.saveTokens(loginResponse.getAccessToken(), loginResponse.getRefreshToken());
                             result.postValue( Resource
                                     .success(loginResponse)
                             );
