@@ -1,6 +1,7 @@
 package com.terralink.ui.auth;
 import static com.terralink.ui.auth.LoginStatus.*;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -10,6 +11,7 @@ import com.terralink.data.model.LoginRequest;
 import com.terralink.data.model.LoginResponse;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityLoginBinding;
+import com.terralink.ui.client.home.ClientHomepageActivity;
 import com.terralink.ui.common.Resource;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -71,13 +73,11 @@ public class LoginActivity extends AppCompatActivity {
                     binding.progressLogin.setVisibility(View.GONE);
                     binding.btnLogin.setEnabled(true);
 
-                    LoginResponse response = result.getData(); //TODO!!
+                    LoginResponse response = result.getData();
 
-                    Toast.makeText(
-                            this,
-                            response.getAccessToken(),
-                            Toast.LENGTH_LONG
-                    ).show();
+                    startActivity(new Intent(LoginActivity.this, ClientHomepageActivity.class));
+                    finish(); //Pressing Back won't take the user back to login.
+
                     break;
 
                 case ERROR:

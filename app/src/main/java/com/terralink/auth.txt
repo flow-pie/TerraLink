@@ -1,0 +1,67 @@
+                         Hilt
+                          │
+             ┌────────────┴────────────┐
+             │                         │
+       Normal Retrofit          Refresh Retrofit
+             │                         │
+          AuthApi                  RefreshApi
+             │                         │
+             │                 TokenAuthenticator
+             │                         │
+             ▼                         │
+        OkHttpClient ◄─────────────────┘
+             │
+       ┌─────┴──────┐
+       │            │
+Interceptor    Authenticator
+       │            │
+       ▼            ▼
+   Add JWT       Handle 401
+       │            │
+       │            ▼
+       │       RefreshApi
+       │            │
+       │            ▼
+       │       New tokens
+       │            │
+       └────────────┘
+
+       Diagram 2
+
+                           ┌─────────────┐
+                           │   Launcher  │
+                           └──────┬──────┘
+                                  │
+                            has session?
+                             /          \
+                           yes           no
+                            │             │
+                            ▼             ▼
+                       Dashboard        Login
+                            │
+                            ▼
+                        ViewModel
+                            │
+                            ▼
+                       Repository
+                            │
+                            ▼
+                         Retrofit
+                            │
+                            ▼
+                         OkHttp
+                        /      \
+                       /        \
+              Interceptor    Authenticator
+                  │               │
+                  ▼               ▼
+              Access JWT      Refresh JWT
+                                  │
+                                  ▼
+                            Refresh API
+                                  │
+                                  ▼
+                            New tokens
+                                  │
+                                  ▼
+                            TokenManager
