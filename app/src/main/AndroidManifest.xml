@@ -40,6 +40,12 @@
             android:name=".ui.client.profile.ProfileActivity"
             android:exported="false"
             />
+
+        <activity
+            android:name=".ui.client.loan.ApplyLoanActivity"
+            android:windowSoftInputMode="stateVisible"
+            android:exported="false"
+            />
     </application>
 
 </manifest>
