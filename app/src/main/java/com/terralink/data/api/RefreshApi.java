@@ -1,7 +1,5 @@
 package com.terralink.data.api;
 
-import com.terralink.data.model.LoginRequest;
-import com.terralink.data.model.LoginResponse;
 import com.terralink.data.model.RefreshTokenRequest;
 import com.terralink.data.model.RefreshTokenResponse;
 
@@ -9,8 +7,10 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
 
-public interface AuthApi {
-    @POST("api/auth/login")
-    Call<LoginResponse> login(@Body LoginRequest request);
+public interface RefreshApi {
 
+    @POST("api/auth/refresh")
+    Call<RefreshTokenResponse> refreshToken(
+            @Body RefreshTokenRequest request
+    );
 }
