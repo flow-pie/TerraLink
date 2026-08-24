@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.terralink.data.api.LoanApi;
 import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.LoanDetailsResponse;
+import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.ui.common.Resource;
 
 import java.util.List;
@@ -87,6 +88,40 @@ public class LoanRepository {
                 }
         );
         return results;
+    }
+
+    public  LiveData<Resource <List<RepaymentInstallments>> >  getRepaymentSchedule(String loanId){
+        MutableLiveData< Resource<List<RepaymentInstallments>> > results = new MutableLiveData<>();
+
+        results.setValue(Resource.loading());
+
+        loanApi.getRepaymentInstallments(loanId).enqueue(
+                new Callback<List<RepaymentInstallments>>() {
+                    @Override
+                    public void onResponse(Call<List<RepaymentInstallments>> call,
+                                           Response<List<RepaymentInstallments>> response) {
+                        if(response.isSuccessful() && response.body() != null){
+                            results.postValue(
+                                    Resource.success(response.body())
+                            );
+                        }else{
+                            results.postValue(
+                                    Resource.error("Request Failed: "+response.code())
+                            );
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<RepaymentInstallments>> call, Throwable t) {
+                        results.postValue(
+                                Resource.error("Network Error: "+t.getMessage())
+                        );
+                    }
+                }
+        );
+
+        return results;
+
     }
 
 

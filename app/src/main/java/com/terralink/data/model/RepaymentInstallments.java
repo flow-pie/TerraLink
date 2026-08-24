@@ -10,7 +10,7 @@ public class RepaymentInstallments {
     private double totalDue;
     private String status;
 
-    public long getId() {
+    public long getRepaymentScheduleId() {
         return id;
     }
 

@@ -1,22 +1,25 @@
 package com.terralink.data.model;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
 public class LoanDetailsResponse {
 
-    private long id;
+    private String id;
     private String loanNo;
     private String clientFullName;
     private double approvedAmount;
     private double principalBalance;
-    private double outStandingAmount;
+    private double outstandingAmount;
     private double totalRepayment;
     private int installmentsPaid;
     private int installmentsTotal;
     private String nextDueDate;
     private double nextInstallmentAmount;
-    private double intrestRate;
+    private String interestRate;
     private String status;
 
-    public long getId() {
+    public String getLoanId() {
         return id;
     }
 
@@ -36,15 +39,15 @@ public class LoanDetailsResponse {
     }
 
     public double getOutStandingAmount() {
-        return outStandingAmount;
+        return outstandingAmount;
     }
 
     public double getNextInstallmentAmount() {
         return nextInstallmentAmount;
     }
 
-    public double getIntrestRate() {
-        return intrestRate;
+    public String getInterestRate() {
+        return interestRate+"%";
     }
 
     public double getTotalRepayment() {
@@ -65,5 +68,19 @@ public class LoanDetailsResponse {
 
     public String getStatus() {
         return status;
+    }
+
+    public long getDaysUntilNextDueDate() {
+
+        if (nextDueDate == null || nextDueDate.isBlank()) {
+            return 0;
+        }
+
+        LocalDate dueDate = LocalDate.parse(nextDueDate);
+
+        return ChronoUnit.DAYS.between(
+                LocalDate.now(),
+                dueDate
+        );
     }
 }

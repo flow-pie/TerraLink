@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.LoanDetailsResponse;
+import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.data.repository.LoanRepository;
 import com.terralink.data.repository.UserRepository;
@@ -41,5 +42,9 @@ public class HomeViewModel extends ViewModel {
 
     public LiveData<Resource< LoanDetailsResponse>> getClientDetails(String clientId){
         return loanRepository.getClientLoanDetails(clientId);
+    }
+
+    public LiveData< Resource<List<RepaymentInstallments>>> getRepaymentInstallments(String loanId){
+        return loanRepository.getRepaymentSchedule(loanId);
     }
 }

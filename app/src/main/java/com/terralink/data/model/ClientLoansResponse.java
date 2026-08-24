@@ -2,13 +2,13 @@ package com.terralink.data.model;
 
 public class ClientLoansResponse {
 
-    private long id;
+    private String id;
     private String loanNo;
     private double approvedAmount;
     private double balance;
     private String status;
 
-    public long getId() {
+    public String getLoanId() {
         return id;
     }
 
