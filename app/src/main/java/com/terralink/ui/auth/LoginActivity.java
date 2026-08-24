@@ -84,9 +84,10 @@ public class LoginActivity extends AppCompatActivity {
                     binding.progressLogin.setVisibility(View.GONE);
                     binding.btnLogin.setEnabled(true);
 
+                    String message = result.getMessage() != null ? result.getMessage() : "Unknown error occurred";
                     Toast.makeText(
                             this,
-                            result.getMessage(),
+                            message,
                             Toast.LENGTH_LONG
                     ).show();
 

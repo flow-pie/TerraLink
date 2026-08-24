@@ -79,13 +79,14 @@ public class ProfileActivity extends AppCompatActivity {
                             case ERROR:
                                 profileBinding.loadingView.getRoot().setVisibility(View.GONE);
                                 // Show an error message.
+                                String message = result.getMessage() != null ? result.getMessage() : "Unknown error occurred";
                                 Toast.makeText(
                                         this,
-                                        result.getMessage(),
+                                        message,
                                         Toast.LENGTH_LONG
                                 ).show();
 
-                                Log.e("ProfileActivity", "onCreate: "+ result.getMessage());
+                                Log.e("ProfileActivity", "onCreate: "+ message);
 
                                 break;
                         }
