@@ -10,17 +10,14 @@
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_scrollFlags="scroll|enterAlways">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="110dp"
             android:background="@color/terracotta_primary"
             android:paddingStart="16dp"
-            android:paddingTop="8dp"
+            android:paddingTop="32dp"
             android:paddingEnd="16dp">
 
             <LinearLayout
@@ -216,8 +213,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:letterSpacing="0.08"
-                        android:text="TOTAL OUTSTANDING"
-                        android:textColor="#56423B"
+                        android:text="Next Installment"
+                        android:textColor="@color/navy_text_primary"
                         android:textSize="12sp"
                         android:textStyle="bold" />
 
@@ -226,7 +223,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
                         android:text="KES 1,240.00"
-                        android:textColor="#9C3F11"
+                        android:textColor="@color/terracotta_dark"
                         android:textSize="28sp"
                         android:textStyle="bold" />
 
@@ -525,7 +522,7 @@
         app:fabCradleVerticalOffset="7dp">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/homeNvBottom"
+            android:id="@+id/bottomNavigationView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
