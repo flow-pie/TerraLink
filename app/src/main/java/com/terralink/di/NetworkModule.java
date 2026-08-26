@@ -131,4 +131,20 @@ public class NetworkModule {
     ){
         return retrofit.create(LoanApi.class);
     }
+
+    @Provides
+    @Singleton
+    public com.terralink.data.api.PaymentApi providePaymentApi(
+            Retrofit retrofit
+    ){
+        return retrofit.create(com.terralink.data.api.PaymentApi.class);
+    }
+
+    @Provides
+    @Singleton
+    public com.terralink.data.api.NotificationApi provideNotificationApi(
+            Retrofit retrofit
+    ){
+        return retrofit.create(com.terralink.data.api.NotificationApi.class);
+    }
 }

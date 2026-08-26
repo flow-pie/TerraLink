@@ -14,6 +14,11 @@ import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityProfileBinding;
 import com.terralink.ui.auth.LoginActivity;
 import com.terralink.ui.auth.TokenManager;
+import com.terralink.ui.client.home.ClientHomepageActivity;
+import com.terralink.ui.client.loan.ApplyLoanActivity;
+import com.terralink.ui.client.loan.ClientLoansActivity;
+import com.terralink.ui.client.notification.NotificationStatusActivity;
+import com.terralink.ui.client.transaction.TransactionHistoryActivity;
 
 import javax.inject.Inject;
 
@@ -35,6 +40,12 @@ public class ProfileActivity extends AppCompatActivity {
         setContentView(profileBinding.getRoot());
 
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
+
+        profileBinding.bottomNavigationView.setSelectedItemId(R.id.nav_profile);
+
+        profileBinding.fabNewAction.setOnClickListener(v -> {
+            startActivity(new Intent(this, ApplyLoanActivity.class));
+        });
 
         viewModel.getActiveUser().observe(this,
                 result -> {
@@ -60,16 +71,21 @@ public class ProfileActivity extends AppCompatActivity {
                                                     ? "MFA enabled"
                                                     : "MFA not enabled"
                                     );
+
                                     profileBinding.securityCard.setOnClickListener(v -> {
-                                        // Open security screen
+                                        Toast.makeText(this, "Security settings coming soon", Toast.LENGTH_SHORT).show();
                                     });
 
                                     profileBinding.dataSyncCard.setOnClickListener(v -> {
-                                        // Open sync screen
+                                        Toast.makeText(this, "Syncing data...", Toast.LENGTH_SHORT).show();
                                     });
 
                                     profileBinding.logoutCard.setOnClickListener(v -> {
                                         logout();
+                                    });
+
+                                    profileBinding.appBarContent.btnNotifications.setOnClickListener(v -> {
+                                        startActivity(new Intent(this, NotificationStatusActivity.class));
                                     });
 
                                 }
@@ -93,17 +109,49 @@ public class ProfileActivity extends AppCompatActivity {
                 }
         );
 
+        profileBinding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+
+            if(itemId == R.id.nav_home) {
+                startActivity(new Intent(this, ClientHomepageActivity.class));
+                return true;
+            } else if(itemId == R.id.nav_loans) {
+                startActivity(new Intent(this, ClientLoansActivity.class));
+                return true;
+            } else if(itemId == R.id.nav_history) {
+                startActivity(new Intent(this, TransactionHistoryActivity.class));
+                return true;
+            } else if(itemId == R.id.nav_profile) {
+                return true;
+            }
+
+            return false;
+        });
+
     }
 
     private void logout() {
-        tokenManager.clearTokens();
-
-        Intent intent = new Intent(this, LoginActivity.class);
-
-        //clear activity stack
-        intent.setFlags(
-                Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK
-        );
-        startActivity(intent);
+        viewModel.logout().observe(this, result -> {
+            switch (result.getStatus()){
+                case LOADING:
+                    break;
+                case SUCCESS:
+                    tokenManager.clearTokens();
+                    Intent intent = new Intent(this, LoginActivity.class);
+                    intent.setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    );
+                    startActivity(intent);
+                    break;
+                case ERROR:
+                    tokenManager.clearTokens();
+                    Intent intentErr = new Intent(this, LoginActivity.class);
+                    intentErr.setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    );
+                    startActivity(intentErr);
+                    break;
+            }
+        });
     }
 }

@@ -15,11 +15,17 @@ import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityClientHomepageBinding;
 import com.terralink.ui.client.loan.ApplyLoanActivity;
+import com.terralink.ui.client.loan.ClientLoansActivity;
+import com.terralink.ui.client.notification.NotificationStatusActivity;
+import com.terralink.ui.client.payment.PaymentDialogActivity;
 import com.terralink.ui.client.profile.ProfileActivity;
+import com.terralink.ui.client.transaction.TransactionHistoryActivity;
 
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.List;
+import java.util.Objects;
+
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -36,6 +42,10 @@ public class ClientHomepageActivity extends AppCompatActivity {
                 .inflate(getLayoutInflater());
 
         setContentView(homepageBinding.getRoot());
+
+        homepageBinding.appBarContent.btnNotifications.setOnClickListener(v -> {
+            startActivity(new Intent(this, NotificationStatusActivity.class));
+        });
 
         repaymentScheduleAdapter =
                 new RepaymentScheduleAdapter(new ArrayList<>());
@@ -120,9 +130,19 @@ public class ClientHomepageActivity extends AppCompatActivity {
                                                                                 );
                                                                                 homepageBinding.nextInstallmentDueDate.setText("Due by "+loanDetails.getNextDueDate());
 
-                                                                                homepageBinding.cardNewLoanApp.setOnClickListener(v -> {
-                                                                                    startActivity(new Intent(this, ApplyLoanActivity.class));
-                                                                                });
+                                                                                 homepageBinding.cardNewLoanApp.setOnClickListener(v -> {
+                                                                                     startActivity(new Intent(this, ApplyLoanActivity.class));
+                                                                                 });
+
+                                                                                 homepageBinding.btnMakePayment.setOnClickListener(v -> {
+                                                                                     Intent paymentIntent = new Intent(this, PaymentDialogActivity.class);
+                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_LOAN_ID, Long.parseLong(loanDetails.getLoanId()));
+                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_SCHEDULE_ID, Objects.requireNonNull(RepaymentScheduleAdapter.getNextPendingInstallment()).getRepaymentScheduleId());
+                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_AMOUNT, loanDetails.getOutStandingAmount());
+                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_INSTALLMENT, loanDetails.getNextInstallmentAmount());
+                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_INSTALLMENT_DUE_DATE, loanDetails.getNextDueDate());
+                                                                                     startActivity(paymentIntent);
+                                                                                 });
                                                                                 homepageBinding.intrestRate.setText(loanDetails.getInterestRate());
 
                                                                                 long days = loanDetails.getDaysUntilNextDueDate();
@@ -196,7 +216,8 @@ public class ClientHomepageActivity extends AppCompatActivity {
                                                                                             if (schedules != null) {
 
                                                                                                 repaymentScheduleAdapter.setSchedules(
-                                                                                                        schedules
+                                                                                                        schedules,
+                                                                                                        loanDetails
                                                                                                 );
                                                                                             }
 
@@ -251,11 +272,16 @@ public class ClientHomepageActivity extends AppCompatActivity {
                                     if(itemId == R.id.nav_home)
                                         return true;
 
-                                    else if (itemId == R.id.nav_loans)
+                                    else if (itemId == R.id.nav_loans) {
+                                        startActivity(new Intent(this, ClientLoansActivity.class));
                                         return true;
+                                    }
 
-                                    else if(itemId == R.id.nav_history)
+                                    else if (itemId == R.id.nav_history) {
+                                        Intent historyIntent = new Intent(this, TransactionHistoryActivity.class);
+                                        startActivity(historyIntent);
                                         return true;
+                                    }
 
                                     else if(itemId == R.id.nav_profile) {
                                         Intent intent = new Intent(
@@ -264,6 +290,7 @@ public class ClientHomepageActivity extends AppCompatActivity {
                                         );
 
                                         startActivity(intent);
+                                        return true;
                                     }
 
                                     return true;
@@ -286,9 +313,15 @@ public class ClientHomepageActivity extends AppCompatActivity {
                             Log.e("HomeActivity", "onCreate: "+ message);
 
                             break;
-                    }
-                }
-        );
+                     }
+                 }
+         );
+
+        homepageBinding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
+
+        homepageBinding.fabNewAction.setOnClickListener(v -> {
+            startActivity(new Intent(this, ApplyLoanActivity.class));
+        });
 
     }
 }
