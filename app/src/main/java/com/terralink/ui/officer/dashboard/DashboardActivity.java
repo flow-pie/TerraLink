@@ -59,8 +59,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         binding.btnRegisterClient.setOnClickListener(v -> {
-            // TODO: Navigate to client registration
-            Toast.makeText(this, "Register Client Clicked", Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(this, com.terralink.ui.officer.registration.RegisterClientActivity.class));
         });
 
         binding.btnNewLoanProduct.setOnClickListener(v -> {

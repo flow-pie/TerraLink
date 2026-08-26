@@ -64,6 +64,11 @@
             />
 
         <activity
+            android:name=".ui.officer.registration.RegisterClientActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".ui.client.transaction.TransactionHistoryActivity"
             android:exported="false"
             />

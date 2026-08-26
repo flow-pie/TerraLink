@@ -134,6 +134,14 @@ public class NetworkModule {
 
     @Provides
     @Singleton
+    public com.terralink.data.api.ClientApi provideClientApi(
+            Retrofit retrofit
+    ){
+        return retrofit.create(com.terralink.data.api.ClientApi.class);
+    }
+
+    @Provides
+    @Singleton
     public com.terralink.data.api.PaymentApi providePaymentApi(
             Retrofit retrofit
     ){
