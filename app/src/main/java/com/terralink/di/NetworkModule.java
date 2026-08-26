@@ -147,4 +147,12 @@ public class NetworkModule {
     ){
         return retrofit.create(com.terralink.data.api.NotificationApi.class);
     }
+
+    @Provides
+    @Singleton
+    public com.terralink.data.api.ReportApi provideReportApi(
+            Retrofit retrofit
+    ){
+        return retrofit.create(com.terralink.data.api.ReportApi.class);
+    }
 }
