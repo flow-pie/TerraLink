@@ -49,15 +49,26 @@ public class LoginActivity extends AppCompatActivity {
                 binding.etPassword.setError("Password required");
                 return;
             }
-                Toast.makeText(
-                        this,
-                        "Login button clicked",
-                        Toast.LENGTH_SHORT
-                ).show();
 
             LoginRequest request = new LoginRequest(loginIdentifier, password);
 
             viewModel.login(request);
+        });
+
+        binding.tvForgotPassword.setOnClickListener(v -> {
+            Toast.makeText(this, "Forgot password flow", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.tvSupport.setOnClickListener(v -> {
+            Toast.makeText(this, "Contact support@terralink.com", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.tvRegionStatus.setOnClickListener(v -> {
+            Toast.makeText(this, "All systems operational", Toast.LENGTH_SHORT).show();
+        });
+
+        binding.tvNoAccount.setOnClickListener(v -> {
+            Toast.makeText(this, "Registration is officer-assisted. Please visit a branch.", Toast.LENGTH_LONG).show();
         });
 
     }

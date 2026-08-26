@@ -13,4 +13,6 @@ public interface AuthApi {
     @POST("api/auth/login")
     Call<LoginResponse> login(@Body LoginRequest request);
 
+    @POST("api/auth/logout")
+    Call<Void> logout(@Body RefreshTokenRequest request);
 }

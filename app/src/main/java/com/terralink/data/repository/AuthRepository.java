@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import com.terralink.data.api.AuthApi;
 import com.terralink.data.model.LoginRequest;
 import com.terralink.data.model.LoginResponse;
+import com.terralink.data.model.RefreshTokenRequest;
 import com.terralink.ui.auth.LoginResult;
 import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.auth.TokenManager;
@@ -75,5 +76,39 @@ public class AuthRepository {
         );
 
         return  result;
+    }
+
+    public LiveData<Resource<Void>> logout(){
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        String refreshToken = tokenManager.getRefreshToken();
+        if(refreshToken == null || refreshToken.isEmpty()){
+            tokenManager.clearTokens();
+            result.postValue(Resource.success(null));
+            return result;
+        }
+
+        authApi.logout(new RefreshTokenRequest(refreshToken)).enqueue(
+                new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        tokenManager.clearTokens();
+                        if(response.isSuccessful()){
+                            result.postValue(Resource.success(null));
+                        }else{
+                            result.postValue(Resource.success(null));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        tokenManager.clearTokens();
+                        result.postValue(Resource.error("Network Error: "+t.getMessage()));
+                    }
+                }
+        );
+
+        return result;
     }
 }
