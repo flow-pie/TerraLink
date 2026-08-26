@@ -6,9 +6,11 @@ import androidx.lifecycle.MutableLiveData;
 import com.terralink.data.api.LoanApi;
 import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.CreditScoreResponse;
+import com.terralink.data.model.LoanApplicationResponse;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.LoanListItemResponse;
 import com.terralink.data.model.LoanProductResponse;
+import com.terralink.data.model.PaginatedResponse;
 import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.ui.common.Resource;
 
@@ -217,6 +219,31 @@ public class LoanRepository {
 
                     @Override
                     public void onFailure(Call<List<LoanListItemResponse>> call, Throwable t) {
+                        result.postValue(Resource.error("Network Error: "+t.getMessage()));
+                    }
+                }
+        );
+
+        return result;
+    }
+
+    public LiveData<Resource<PaginatedResponse<LoanApplicationResponse>>> getLoanApplications(String status, int page, int pageSize){
+        MutableLiveData<Resource<PaginatedResponse<LoanApplicationResponse>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getLoanApplications(status, page, pageSize).enqueue(
+                new Callback<PaginatedResponse<LoanApplicationResponse>>() {
+                    @Override
+                    public void onResponse(Call<PaginatedResponse<LoanApplicationResponse>> call, Response<PaginatedResponse<LoanApplicationResponse>> response) {
+                        if(response.isSuccessful() && response.body() != null){
+                            result.postValue(Resource.success(response.body()));
+                        }else{
+                            result.postValue(Resource.error("Request Failed: "+response.code()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PaginatedResponse<LoanApplicationResponse>> call, Throwable t) {
                         result.postValue(Resource.error("Network Error: "+t.getMessage()));
                     }
                 }

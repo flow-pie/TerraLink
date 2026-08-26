@@ -3,9 +3,11 @@ package com.terralink.data.api;
 import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.CreditScoreResponse;
 import com.terralink.data.model.LoanApplicationRequest;
+import com.terralink.data.model.LoanApplicationResponse;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.LoanListItemResponse;
 import com.terralink.data.model.LoanProductResponse;
+import com.terralink.data.model.PaginatedResponse;
 import com.terralink.data.model.RepaymentInstallments;
 
 import java.util.List;
@@ -41,6 +43,13 @@ public interface LoanApi {
     @POST("api/loan-applications")
     Call<Void> createLoanApplication(
             @Body LoanApplicationRequest request
+    );
+
+    @GET("api/loan-applications")
+    Call<PaginatedResponse<LoanApplicationResponse>> getLoanApplications(
+            @Query("status") String status,
+            @Query("page") int page,
+            @Query("pageSize") int pageSize
     );
 
     @GET("api/loan-products")
