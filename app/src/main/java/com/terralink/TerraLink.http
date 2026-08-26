@@ -1,0 +1,565 @@
+@baseUrl = http://localhost:5031
+@boundary = TerraLinkBoundary
+
+#pull dynamically from the login response!
+@accessToken = {{loginRequest.response.body.$.accessToken}}
+@refreshToken = {{loginRequest.response.body.$.refreshToken}}
+@mfaTokenFromLogin = {{loginRequest.response.body.$.mfaToken}}
+
+###############################################################################
+# HEALTH                                                                      #
+###############################################################################
+
+### Root / health check
+GET {{baseUrl}}
+
+
+###############################################################################
+# AUTH                                                                                 
+###############################################################################
+
+### Login
+# @name loginRequest
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+    "identifier": "TL-8842",
+    "password": "Admin@terralink26"
+}
+
+# {
+#     "identifier": "TC-F15F",
+#     "password": "Terralink@2026"
+# }
+
+### Refresh token
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+
+### Logout
+POST {{baseUrl}}/api/auth/logout
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "refreshToken": "{{refreshToken}}"
+}
+
+### Forgot password
+POST {{baseUrl}}/api/auth/forgot-password
+Content-Type: application/json
+
+{
+    "identifier": "loan.officer@terralink.com"
+}
+
+### Reset password
+POST {{baseUrl}}/api/auth/reset-password
+Content-Type: application/json
+
+{
+    "token": "TOKEN_FROM_TERMINAL",
+    "newPassword": "NewSecurePassword123!"
+}
+
+### Verify MFA
+POST {{baseUrl}}/api/auth/mfa/verify
+Content-Type: application/json
+
+{
+    "mfaToken": "{{mfaTokenFromLogin}}",
+    "code": "515588"
+}
+
+
+###############################################################################
+# USERS  (staff: admins, loan officers, etc.)
+###############################################################################
+
+### GET logged in user/client profile
+GET {{baseUrl}}/api/users/me
+Authorization: Bearer {{accessToken}}
+
+# ### List all users
+# GET {{baseUrl}}/api/users
+
+### Get user by id
+GET {{baseUrl}}/api/users/2
+Authorization: Bearer {{accessToken}}
+
+### patch logged in user/client
+PATCH  {{baseUrl}}/api/users/me
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "email": "loan.officer@terralink.org",
+    "username": "0798765431",
+    "mfaEnabled": true
+}
+
+### Create user
+POST {{baseUrl}}/users
+Content-Type: application/json
+
+{
+    "FullName": "Darwin",
+    "Email": "Darwin@example.com",
+    "Phone": "123-456-7890",
+    "Password": "password123",
+    "Role": "Client",
+    "Status": "Active"
+}
+
+### Update user
+PUT {{baseUrl}}/users/2
+Content-Type: application/json
+
+{
+    "EmployeeId": "TL-002",
+    "FullName": "Alice Smith",
+    "Email": "alice.smith@example.com",
+    "Phone": "987-654-3210",
+    "Password": "newpassword456",
+    "Role": "Admin",
+    "Status": "Active"
+}
+
+### Delete user
+DELETE {{baseUrl}}/users/2
+
+
+###############################################################################
+# CLIENTS
+###############################################################################
+
+###
+//GET all clients pagination
+GET {{baseUrl}}/api/clients?page=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+### Get client by id
+GET {{baseUrl}}/api/clients/8
+Authorization: Bearer {{accessToken}}
+
+###
+//PATCH client
+PATCH {{baseUrl}}/api/clients/8
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{ 
+  "phone": "0712408290", 
+  "nationalId":"42572240",
+  "fullName": "John Maina",
+  "address": "Plot 45B, Industrial Area, East Cluster" 
+} 
+### Verify clients
+//
+POST {{baseUrl}}/api/clients/9/verify
+Authorization: Bearer {{accessToken}}
+
+### Verify reject
+//
+POST {{baseUrl}}/api/clients/8/reject
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "reason": "ID photo illegible — please re-upload."
+}
+
+### Officer registers and auto-verifies a client
+POST {{baseUrl}}/api/clients/register
+Authorization: Bearer {{accessToken}}
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="fullName"
+
+John Mwangi
+--{{boundary}}
+Content-Disposition: form-data; name="nationalId"
+
+87654321
+--{{boundary}}
+Content-Disposition: form-data; name="phone"
+
+0798765432
+--{{boundary}}
+Content-Disposition: form-data; name="dateOfBirth"
+
+1990-02-15
+--{{boundary}}
+Content-Disposition: form-data; name="gender"
+
+MALE
+--{{boundary}}
+Content-Disposition: form-data; name="address"
+
+Karen, Nairobi
+--{{boundary}}
+Content-Disposition: form-data; name="nationalIdFront"; filename="id-front.jpg"
+Content-Type: image/jpeg
+
+< ./test-files/id-front.jpg
+--{{boundary}}
+Content-Disposition: form-data; name="nationalIdBack"; filename="id-back.jpg"
+Content-Type: image/jpeg
+
+< ./test-files/id-back.jpg
+--{{boundary}}
+Content-Disposition: form-data; name="passportPhoto"; filename="passport-photo.jpg"
+Content-Type: image/jpeg
+
+< ./test-files/passport-photo.jpg
+--{{boundary}}--
+
+
+
+### Client (SELF REGISTRATION)
+POST {{baseUrl}}/api/clients/register
+Content-Type: multipart/form-data; boundary={{boundary}}
+
+--{{boundary}}
+Content-Disposition: form-data; name="fullName"
+
+Amina Wanjiku
+--{{boundary}}
+Content-Disposition: form-data; name="nationalId"
+
+12345678
+--{{boundary}}
+Content-Disposition: form-data; name="phone"
+
+0712345678
+--{{boundary}}
+Content-Disposition: form-data; name="dateOfBirth"
+
+1998-05-12
+--{{boundary}}
+Content-Disposition: form-data; name="gender"
+
+FEMALE
+--{{boundary}}
+Content-Disposition: form-data; name="address"
+
+Nairobi, Kenya
+--{{boundary}}
+Content-Disposition: form-data; name="email"
+
+amina@example.com
+--{{boundary}}
+Content-Disposition: form-data; name="password"
+
+StrongPassword123!
+--{{boundary}}
+Content-Disposition: form-data; name="nationalIdFront"; filename="id-front.jpg"
+Content-Type: image/jpeg
+
+< ./test-files/id-front.jpg
+--{{boundary}}
+Content-Disposition: form-data; name="nationalIdBack"; filename="id-back.jpg"
+Content-Type: image/jpeg
+
+< ./test-files/id-back.jpg
+--{{boundary}}
+Content-Disposition: form-data; name="passportPhoto"; filename="passport-photo.jpg"
+Content-Type: image/jpeg
+
+< ./test-files/passport-photo.jpg
+--{{boundary}}--
+
+### Get client's KYC documents
+GET {{baseUrl}}/api/clients/9/kyc-documents
+Authorization: Bearer {{accessToken}}
+
+
+### Verify KYC document
+POST {{baseUrl}}/api/kyc-documents/19/verify
+Authorization: Bearer {{accessToken}}
+
+
+
+###############################################################################
+# LOAN PRODUCTS
+###############################################################################
+
+### Get all loan products
+//query parameter is optional here
+GET {{baseUrl}}/api/loan-products?includeInactive=true
+Authorization: Bearer {{accessToken}}
+
+### Post a loan product.
+POST {{baseUrl}}/api/loan-products
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "name": "Emergency Loan",
+    "minimumAmount": 1000,
+    "maximumAmount": 20000,
+    "interestRate": 12,
+    "processingFee": 100,
+    "lateFee": 50,
+    "minimumDuration": 1,
+    "maximumDuration": 6,
+    "repaymentFrequency": "WEEKLY"
+}
+### Patch a loan product.
+PATCH {{baseUrl}}/api/loan-products/1
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+    "interestRate": 8.5,
+    "status": "ACTIVE"
+}
+
+###############################################################################
+# Loan Applications
+###############################################################################
+###
+POST {{baseUrl}}/api/loan-applications
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{ 
+  "loanProductId": 1, 
+  "requestedAmount": 10000, 
+  "durationMonths": 6, 
+  "purpose": "Poultry Farm Expansion" 
+} 
+
+### List loan applications (Loan Officer)
+GET {{baseUrl}}/api/loan-applications?status=APPROVED&page=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+### Get loan application detail (client/ admnin)
+GET {{baseUrl}}/api/loan-applications/2
+Authorization: Bearer {{accessToken}}
+
+### Appraise loan application
+POST {{baseUrl}}/api/loan-applications/2/appraise
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "decision": "APPROVED",
+  "decisionNotes": "Strong repayment history; assets sufficient.",
+  "creditScoreSnapshot": 820
+}
+
+### Get loan application status (Client)
+GET {{baseUrl}}/api/loan-applications/2/status
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Loans
+###############################################################################
+
+### List loans (Loan Officer)
+GET {{baseUrl}}/api/loans?status=ACTIVE&search=Amina&page=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+### Get loan detail
+GET {{baseUrl}}/api/loans/1
+Authorization: Bearer {{accessToken}}
+
+### Get client loans
+GET {{baseUrl}}/api/loans/clients/9/loans
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Repayment Schedule
+###############################################################################
+
+### Get repayment schedule
+GET {{baseUrl}}/api/loans/1/repayment-schedule
+Authorization: Bearer {{accessToken}}
+
+### Export repayment schedule PDF
+GET {{baseUrl}}/api/loans/1/repayment-schedule/export
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Payments
+###############################################################################
+
+### Initiate M-Pesa payment
+POST {{baseUrl}}/api/payments/initiate
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "loanId": 1,
+  "scheduleId": 1,
+  "amount": 4250,
+  "phone": "0712345678"
+}
+
+### M-Pesa callback (public)
+POST {{baseUrl}}/api/payments/mpesa/callback
+Content-Type: application/json
+
+{
+  "CheckoutRequestID": "f165d396b4b04c639c7f74ad083e3736",
+  "ResultCode": 0,
+  "ResultDesc": "Success",
+  "CallbackMetadata": [
+    {"Name": "MpesaReceiptNumber", "Value": "SFC4X9K2P1"}
+  ]
+}
+
+### Get payment
+GET {{baseUrl}}/api/payments/1
+Authorization: Bearer {{accessToken}}
+
+### Get client payments
+GET {{baseUrl}}/api/payments/clients/9/payments?page=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Disbursements
+###############################################################################
+
+### Initiate disbursement
+POST {{baseUrl}}/api/loans/1/disburse
+Authorization: Bearer {{accessToken}}
+
+### M-Pesa B2C callback (public)
+POST {{baseUrl}}/api/disbursements/mpesa/callback
+Content-Type: application/json
+
+{
+  "CheckoutRequestID": "f165d396b4b04c639c7f74ad083e3736",
+  "ResultCode": 0,
+  "ResultDesc": "Success",
+  "ResultParameters": [
+    {"Name": "TransactionID", "Value": "SFD8827K"}
+  ]
+}
+
+### Get disbursement
+GET {{baseUrl}}/api/disbursements/11
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Loan Closures
+###############################################################################
+
+### Close loan
+POST {{baseUrl}}/api/loans/1/close
+Authorization: Bearer {{accessToken}}
+
+### Get closure certificate PDF
+GET {{baseUrl}}/api/loans/loan-closures/1/certificate
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Credit Scoring
+###############################################################################
+
+### Get credit history
+GET {{baseUrl}}/api/clients/9/credit-history
+Authorization: Bearer {{accessToken}}
+
+### Get client assets
+GET {{baseUrl}}/api/clients/9/assets
+Authorization: Bearer {{accessToken}}
+
+### Create asset
+POST {{baseUrl}}/api/clients/9/assets
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "assetType": "WATER_PUMP",
+  "description": "Petrol-powered irrigation pump",
+  "quantity": 1
+}
+
+### Get income assessments
+GET {{baseUrl}}/api/clients/9/income-assessments
+Authorization: Bearer {{accessToken}}
+
+### Create income assessment
+POST {{baseUrl}}/api/clients/loan-applications/2/income-assessment
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "businessRevenue": 55000,
+  "otherIncome": 12000,
+  "householdExpenses": 28500
+}
+
+### Get credit score
+GET {{baseUrl}}/api/clients/1/credit-score
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Notifications
+###############################################################################
+
+### List notifications
+GET {{baseUrl}}/api/notifications?isRead=false&page=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+### Mark notification as read
+PATCH {{baseUrl}}/api/notifications/1/read
+Authorization: Bearer {{accessToken}}
+
+### Mark all notifications as read
+PATCH {{baseUrl}}/api/notifications/read-all
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Reports
+###############################################################################
+
+### Portfolio summary
+GET {{baseUrl}}/api/reports/portfolio-summary
+Authorization: Bearer {{accessToken}}
+
+### CBK prudential return
+GET {{baseUrl}}/api/reports/cbk-prudential-return
+Authorization: Bearer {{accessToken}}
+
+### Arrears analysis
+GET {{baseUrl}}/api/reports/arrears-analysis
+Authorization: Bearer {{accessToken}}
+
+### Officer performance
+GET {{baseUrl}}/api/reports/officer-performance
+Authorization: Bearer {{accessToken}}
+
+### Export report
+GET {{baseUrl}}/api/reports/portfolio-summary/export?format=pdf
+Authorization: Bearer {{accessToken}}
+
+### Report schedules
+GET {{baseUrl}}/api/reports/report-schedules
+Authorization: Bearer {{accessToken}}
+
+
+###############################################################################
+# Audit Log
+###############################################################################
+
+### List audit logs
+GET {{baseUrl}}/api/audit-log?entityType=client&page=1&pageSize=20
+Authorization: Bearer {{accessToken}}
