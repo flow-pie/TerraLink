@@ -7,17 +7,17 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/card_padding">
 
         <FrameLayout
             android:id="@+id/iconContainer"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
             android:background="@drawable/bg_circle_terracotta"
             android:padding="12dp">
 
@@ -30,46 +30,45 @@
 
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/tvTxTitle"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/iconContainer"
             android:layout_marginStart="12dp"
-            android:text="Loan Repayment"
-            android:textColor="@color/navy_text_primary"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/tvTxRef"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tvTxTitle"
-            android:layout_toEndOf="@id/iconContainer"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="2dp"
-            android:text="Ref: QK7891230"
-            android:textColor="@color/text_secondary"
-            android:textAppearance="?attr/textAppearanceBodyMedium" />
+            <TextView
+                android:id="@+id/tvTxTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loan Repayment"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvTxDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tvTxRef"
-            android:layout_toEndOf="@id/iconContainer"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="2dp"
-            android:text="12 Oct 2023 • 14:32"
-            android:textColor="@color/text_muted"
-            android:textAppearance="?attr/textAppearanceBodySmall" />
+            <TextView
+                android:id="@+id/tvTxRef"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Ref: QK7891230"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/tvTxDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="12 Oct 2023 • 14:32"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="@color/text_muted" />
+
+        </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
             android:gravity="end"
             android:orientation="vertical">
 
@@ -78,8 +77,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="KES 4,250.00"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="@color/navy_text_primary"
-                android:textSize="18sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -91,10 +90,11 @@
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
                 android:text="Paid"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="@color/status_green"
-                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
+
 </com.google.android.material.card.MaterialCardView>

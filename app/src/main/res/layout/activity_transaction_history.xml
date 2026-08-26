@@ -13,63 +13,9 @@
         android:layout_height="wrap_content"
         app:layout_scrollFlags="scroll|enterAlways">
 
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:background="@color/terracotta_primary"
-            android:paddingStart="16dp"
-            android:paddingTop="32dp"
-            android:paddingEnd="16dp">
-
-            <LinearLayout
-                android:id="@+id/brandContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#DDC1B6"
-                    app:strokeWidth="1dp">
-
-                    <ImageView
-                        android:id="@+id/imgAvatar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/avatar" />
-
-                </androidx.cardview.widget.CardView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="TerraLink"
-                    android:textColor="@color/on_terracotta"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/btnNotifications"
-                android:layout_width="32dp"
-                android:layout_height="43dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="@color/terracotta_primary"
-                android:contentDescription="Notifications"
-                android:src="@drawable/ic_bell"
-                app:tint="@color/on_terracotta" />
-
-        </RelativeLayout>
+        <include
+            android:id="@+id/appBarContent"
+            layout="@layout/top_app_bar" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -84,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="@dimen/spacing_2xl">
 
             <!-- Header content -->
             <LinearLayout
@@ -92,8 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp">
 
@@ -102,7 +48,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Transaction History"
-                    android:textSize="28sp"
+                    android:textAppearance="?attr/textAppearanceHeadlineSmall"
                     android:textColor="@color/navy_text_primary"
                     android:textStyle="bold" />
 
@@ -120,18 +66,16 @@
                     style="@style/Widget.TerraLink.TextInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp">
+                    android:layout_marginTop="@dimen/spacing_lg"
+                    app:startIconDrawable="@drawable/ic_search">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etSearch"
                         android:layout_width="match_parent"
-                        android:layout_height="48dp"
+                        android:layout_height="@dimen/input_height"
                         android:hint="Search by ID or reference..."
-                        android:drawableStart="@drawable/ic_search"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
                         android:inputType="text"
-                        android:backgroundTint="@color/surface_card"
+                        android:textColor="@color/navy_text_primary"
                         android:textColorHint="@color/text_secondary" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -140,7 +84,7 @@
                 <HorizontalScrollView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
+                    android:layout_marginTop="@dimen/spacing_lg"
                     android:overScrollMode="never"
                     android:scrollbars="none">
 
@@ -149,8 +93,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:paddingTop="4dp"
-                        android:paddingBottom="4dp">
+                        android:paddingTop="@dimen/spacing_xs"
+                        android:paddingBottom="@dimen/spacing_xs">
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chipAll"
@@ -221,9 +165,9 @@
         android:layout_gravity="bottom"
         android:background="@color/surface_card"
         app:fabAlignmentMode="center"
-        app:fabCradleMargin="8dp"
-        app:fabCradleRoundedCornerRadius="50dp"
-        app:fabCradleVerticalOffset="7dp">
+        app:fabCradleMargin="@dimen/fab_cradle_margin"
+        app:fabCradleRoundedCornerRadius="@dimen/fab_cradle_radius"
+        app:fabCradleVerticalOffset="@dimen/fab_cradle_offset">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
@@ -238,12 +182,12 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabNewAction"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
         app:backgroundTint="@color/terralink_button_primary"
         app:layout_anchor="@id/bottomAppBar"
         app:layout_anchorGravity="center"
-        app:maxImageSize="24dp"
+        app:maxImageSize="@dimen/button_icon_size"
         app:srcCompat="@android:drawable/ic_input_add"
         app:tint="@color/surface_card" />
 
