@@ -5,7 +5,10 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.terralink.data.api.LoanApi;
 import com.terralink.data.model.ClientLoansResponse;
+import com.terralink.data.model.CreditScoreResponse;
 import com.terralink.data.model.LoanDetailsResponse;
+import com.terralink.data.model.LoanListItemResponse;
+import com.terralink.data.model.LoanProductResponse;
 import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.ui.common.Resource;
 
@@ -24,7 +27,6 @@ public class LoanRepository {
     public LoanRepository(LoanApi loanApi){
         this.loanApi = loanApi;
     }
-
     public LiveData<Resource <List<ClientLoansResponse>> > getClientLoans(String clientId){
 
         MutableLiveData<Resource< List<ClientLoansResponse>>> result = new MutableLiveData<>();
@@ -54,6 +56,29 @@ public class LoanRepository {
                     }
                 }
         );
+
+        return result;
+    }
+
+    public LiveData<Resource<CreditScoreResponse>> getCreditScore(String clientId){
+        MutableLiveData<Resource<CreditScoreResponse>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getCreditScore(clientId).enqueue(new Callback<CreditScoreResponse>() {
+            @Override
+            public void onResponse(Call<CreditScoreResponse> call, Response<CreditScoreResponse> response) {
+                if(response.isSuccessful() && response.body() != null){
+                    result.postValue(Resource.success(response.body()));
+                }else{
+                    result.postValue(Resource.error("Request Failed: "+response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CreditScoreResponse> call, Throwable t) {
+                result.postValue(Resource.error("Network error: " + t.getMessage()));
+            }
+        });
 
         return result;
     }
@@ -122,6 +147,82 @@ public class LoanRepository {
 
         return results;
 
+    }
+
+    public LiveData<Resource<Void>> createLoanApplication(com.terralink.data.model.LoanApplicationRequest request){
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+
+        result.setValue(Resource.loading());
+
+        loanApi.createLoanApplication(request).enqueue(
+                new retrofit2.Callback<Void>() {
+                    @Override
+                    public void onResponse(retrofit2.Call<Void> call, retrofit2.Response<Void> response) {
+                        if(response.isSuccessful()){
+                            result.postValue(Resource.success(null));
+                        }else{
+                            result.postValue(Resource.error("Request Failed: "+response.code()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(retrofit2.Call<Void> call, Throwable t) {
+                        result.postValue(Resource.error("Network Error: "+t.getMessage()));
+                    }
+                }
+        );
+
+        return result;
+    }
+
+    public LiveData<Resource<List<LoanProductResponse>>> getLoanProducts(){
+        MutableLiveData<Resource<List<LoanProductResponse>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getLoanProducts(true).enqueue(
+                new Callback<List<LoanProductResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<LoanProductResponse>> call, Response<List<LoanProductResponse>> response) {
+                        if(response.isSuccessful() && response.body() != null){
+                            result.postValue(Resource.success(response.body()));
+                        }else{
+                            result.postValue(Resource.error("Request Failed: "+response.code()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<LoanProductResponse>> call, Throwable t) {
+                        result.postValue(Resource.error("Network Error: "+t.getMessage()));
+                    }
+                }
+        );
+
+        return result;
+    }
+
+    public LiveData<Resource<List<LoanListItemResponse>>> getLoans(String status, String search, int page, int pageSize){
+        MutableLiveData<Resource<List<LoanListItemResponse>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getLoans(status, search, page, pageSize).enqueue(
+                new Callback<List<LoanListItemResponse>>() {
+                    @Override
+                    public void onResponse(Call<List<LoanListItemResponse>> call, Response<List<LoanListItemResponse>> response) {
+                        if(response.isSuccessful() && response.body() != null){
+                            result.postValue(Resource.success(response.body()));
+                        }else{
+                            result.postValue(Resource.error("Request Failed: "+response.code()));
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<LoanListItemResponse>> call, Throwable t) {
+                        result.postValue(Resource.error("Network Error: "+t.getMessage()));
+                    }
+                }
+        );
+
+        return result;
     }
 
 

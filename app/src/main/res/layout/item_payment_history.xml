@@ -1,21 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.TerraLink.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    app:cardBackgroundColor="@color/surface_card"
-    app:cardCornerRadius="12dp"
-    app:cardElevation="0dp"
-    app:strokeColor="#DDC1B6"
-    app:strokeWidth="1dp">
+    android:layout_marginBottom="12dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="17dp">
+        android:padding="@dimen/card_padding">
 
         <!-- Icon + title/date -->
         <LinearLayout
@@ -35,7 +31,7 @@
                     android:layout_height="20dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_check_circle"
-                    app:tint="#1E4620" />
+                    app:tint="@color/status_green" />
 
             </FrameLayout>
 
@@ -53,8 +49,8 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:text="September Installment"
-                    android:textColor="#1E1B18"
-                    android:textSize="14sp"
+                    android:textAppearance="?attr/textAppearanceBodyLarge"
+                    android:textColor="@color/navy_text_primary"
                     android:textStyle="bold" />
 
                 <TextView
@@ -62,8 +58,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Sept 24, 2023"
-                    android:textColor="#56423B"
-                    android:textSize="11sp" />
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/text_secondary" />
 
             </LinearLayout>
 
@@ -81,9 +77,9 @@
                 android:id="@+id/tvInstallmentAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="kes 120.00"
-                android:textColor="#1E1B18"
-                android:textSize="14sp"
+                android:text="KES 120.00"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="@color/navy_text_primary"
                 android:textStyle="bold" />
 
             <TextView
@@ -99,12 +95,22 @@
                 android:paddingBottom="1dp"
                 android:text="SUCCESS"
                 android:textAllCaps="true"
-                android:textColor="#1E4620"
-                android:textSize="10sp"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/status_green"
                 android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnPay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Pay"
+                android:visibility="gone"
+                android:backgroundTint="@color/terralink_button_primary"
+                android:textColor="@color/surface_card" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

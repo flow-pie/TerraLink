@@ -3,7 +3,7 @@
 
     <item android:id="@android:id/background">
         <shape android:shape="rectangle">
-            <solid android:color="#F5ECE7" />
+            <solid android:color="@color/terracotta_container" />
             <corners android:radius="9999dp" />
         </shape>
     </item>
@@ -11,7 +11,7 @@
     <item android:id="@android:id/progress">
         <clip>
             <shape android:shape="rectangle">
-                <solid android:color="#9C3F11" />
+                <solid android:color="@color/terracotta_primary" />
                 <corners android:radius="9999dp" />
             </shape>
         </clip>

@@ -5,78 +5,17 @@
     android:layout_height="match_parent"
     android:background="@color/bg_cream">
 
-    <!-- =========================================================
-         TOP APP BAR
-         ========================================================= -->
-
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_scrollFlags="scroll|enterAlways">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:background="@color/terracotta_primary"
-            android:paddingStart="16dp"
-            android:paddingTop="32dp"
-            android:paddingEnd="16dp">
-
-            <LinearLayout
-                android:id="@+id/brandContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#DDC1B6"
-                    app:strokeWidth="1dp">
-
-                    <ImageView
-                        android:id="@+id/imgAvatar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/avatar" />
-
-                </androidx.cardview.widget.CardView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="TerraLink"
-                    android:textColor="@color/on_terracotta"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/btnNotifications"
-                android:layout_width="32dp"
-                android:layout_height="43dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="@color/terracotta_primary"
-                android:contentDescription="Notifications"
-                android:src="@drawable/ic_bell"
-                app:tint="@color/on_terracotta" />
-
-        </RelativeLayout>
+        <include
+            android:id="@+id/appBarContent"
+            layout="@layout/top_app_bar" />
 
     </com.google.android.material.appbar.AppBarLayout>
-
-    <!-- =========================================================
-         MAIN SCROLLABLE CONTENT
-         ========================================================= -->
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -85,109 +24,113 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:paddingBottom="120dp">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_2xl">
 
-    <LinearLayout
-        android:id="@+id/contentContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp">
-
-            <!-- ============ WELCOME / TITLE ============ -->
-
+            <!-- Title -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Your Loans"
-                android:textColor="#1E1B18"
-                android:textSize="24sp"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="@color/navy_text_primary"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/spacing_xs"
                 android:text="Monitor your active financing and review your successful repayment history."
-                android:textColor="#56423B"
-                android:textSize="16sp" />
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/text_secondary" />
 
-            <!-- ============ STATS OVERVIEW ============ -->
-
+            <!-- Stats Overview -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/spacing_xl"
                 android:orientation="horizontal">
 
-                <LinearLayout
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/activeBalanceCard"
+                    style="@style/Widget.TerraLink.Card"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@color/surface_card"
-                    android:orientation="vertical"
-                    android:padding="17dp">
+                    android:layout_marginEnd="8dp">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:letterSpacing="0.08"
-                        android:text="ACTIVE BALANCE"
-                        android:textColor="#8A7269"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical"
+                        android:padding="@dimen/card_padding">
 
-                    <TextView
-                        android:id="@+id/activeBalanceValue"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="KES 1,240.00"
-                        android:textColor="#2E7D32"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="ACTIVE BALANCE"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
 
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/activeBalanceValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:text="KES 1,240.00"
+                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                            android:textColor="@color/status_green"
+                            android:textStyle="bold" />
 
-                <LinearLayout
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
                     android:id="@+id/nextPaymentCard"
+                    style="@style/Widget.TerraLink.Card"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:background="@color/surface_card"
-                    android:orientation="vertical"
-                    android:padding="17dp">
+                    android:layout_marginStart="8dp"
+                    android:layout_weight="1">
 
-                    <TextView
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:letterSpacing="0.08"
-                        android:text="NEXT PAYMENT"
-                        android:textColor="#8A7269"
-                        android:textSize="12sp"
-                        android:textStyle="bold" />
+                        android:orientation="vertical"
+                        android:padding="@dimen/card_padding">
 
-                    <TextView
-                        android:id="@+id/nextPaymentValue"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Oct 12"
-                        android:textColor="#1E1B18"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="NEXT PAYMENT"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
 
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/nextPaymentValue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:text="Oct 12"
+                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                            android:textColor="@color/navy_text_primary"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
             </LinearLayout>
 
-            <!-- ============ ACTIVE LOANS ============ -->
-
+            <!-- Active Loans Header -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/spacing_xl"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -196,8 +139,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Active Loans"
-                    android:textColor="#1E1B18"
-                    android:textSize="18sp"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="@color/navy_text_primary"
                     android:textStyle="bold" />
 
                 <TextView
@@ -205,439 +148,448 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/status_blue_bg"
-                    android:paddingStart="8dp"
-                    android:paddingTop="4dp"
-                    android:paddingEnd="8dp"
-                    android:paddingBottom="4dp"
+                    android:paddingStart="@dimen/spacing_sm"
+                    android:paddingTop="@dimen/spacing_xs"
+                    android:paddingEnd="@dimen/spacing_sm"
+                    android:paddingBottom="@dimen/spacing_xs"
                     android:text="2 Active"
-                    android:textColor="#56423B"
-                    android:textSize="11sp" />
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
+                    android:textColor="@color/status_blue"
+                    android:textStyle="bold" />
 
             </LinearLayout>
 
             <!-- Loan Card 1 (Active) -->
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/loanCard1"
+                style="@style/Widget.TerraLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:background="@color/surface_card"
-                android:orientation="vertical"
-                android:padding="17dp">
+                android:layout_marginTop="@dimen/spacing_lg">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="@dimen/card_padding">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/loan1Title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="BUSINESS EXPANSION LOAN"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
+                                android:textColor="@color/terracotta_dark"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/loan1Id"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="ID: #MF-8829-21"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="@color/text_secondary" />
+
+                        </LinearLayout>
 
                         <TextView
-                            android:id="@+id/loan1Title"
-                            android:layout_width="match_parent"
+                            android:id="@+id/loan1PaidBadge"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:letterSpacing="0.08"
-                            android:text="BUSINESS EXPANSION LOAN"
-                            android:textColor="#9C3F11"
-                            android:textSize="12sp"
+                            android:background="@color/status_green_bg"
+                            android:paddingStart="@dimen/spacing_sm"
+                            android:paddingTop="@dimen/spacing_xs"
+                            android:paddingEnd="@dimen/spacing_sm"
+                            android:paddingBottom="@dimen/spacing_xs"
+                            android:text="Paid: 65%"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="@color/status_green"
                             android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/loan1Id"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="ID: #MF-8829-21"
-                            android:textColor="#56423B"
-                            android:textSize="11sp" />
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/loan1PaidBadge"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/status_green_bg"
-                        android:paddingStart="12dp"
-                        android:paddingTop="4dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="4dp"
-                        android:text="Paid: 65%"
-                        android:textColor="#2E7D32"
-                        android:textSize="11sp" />
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:gravity="bottom"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/loan1AmountValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="KES 850.00 / KES 1,500.00"
+                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                            android:textColor="@color/navy_text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/loan1MonthsLeft"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="4 months left"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="@color/text_secondary" />
+
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/loan1Progress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:max="100"
+                        android:progress="65"
+                        android:progressTint="@color/terracotta_primary"
+                        android:progressBackgroundTint="@color/terracotta_container" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/loan1PayButton"
+                            style="@style/Widget.TerraLink.Button.Primary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Pay Installment" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/loan1DetailsButton"
+                            style="@style/Widget.TerraLink.Button.Outlined"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="Details" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="bottom"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/loan1AmountValue"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="KES 850.00 / KES 1,500.00"
-                        android:textColor="#1E1B18"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/loan1MonthsLeft"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="4 months left"
-                        android:textColor="#56423B"
-                        android:textSize="11sp" />
-
-                </LinearLayout>
-
-                <ProgressBar
-                    android:id="@+id/loan1Progress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="4dp"
-                    android:max="100"
-                    android:progress="65"
-                    android:progressTint="#BC5728"
-                    android:progressBackgroundTint="#EFE6E2" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/loan1PayButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/terralink_button_primary"
-                        android:text="Pay Installment"
-                        android:textAllCaps="false"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp" />
-
-                    <Button
-                        android:id="@+id/loan1DetailsButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:backgroundTint="@color/surface_card"
-                        android:text="Details"
-                        android:textAllCaps="false"
-                        android:textColor="@color/terracotta_primary"
-                        android:textSize="16sp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Loan Card 2 (Pending / Due) -->
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/loanCard2"
+                style="@style/Widget.TerraLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:background="@color/surface_card"
-                android:orientation="vertical"
-                android:padding="17dp">
+                android:layout_marginTop="@dimen/spacing_lg">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="@dimen/card_padding">
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="horizontal">
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/loan2Title"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="AGRICULTURAL EQUIPMENT"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
+                                android:textColor="@color/terracotta_dark"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/loan2Id"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="ID: #MF-9012-05"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="@color/text_secondary" />
+
+                        </LinearLayout>
 
                         <TextView
-                            android:id="@+id/loan2Title"
-                            android:layout_width="match_parent"
+                            android:id="@+id/loan2DueBadge"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:letterSpacing="0.08"
-                            android:text="AGRICULTURAL EQUIPMENT"
-                            android:textColor="#9C3F11"
-                            android:textSize="12sp"
+                            android:background="@color/status_red_bg"
+                            android:paddingStart="@dimen/spacing_sm"
+                            android:paddingTop="@dimen/spacing_xs"
+                            android:paddingEnd="@dimen/spacing_sm"
+                            android:paddingBottom="@dimen/spacing_xs"
+                            android:text="Due Today"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="@color/status_red"
                             android:textStyle="bold" />
-
-                        <TextView
-                            android:id="@+id/loan2Id"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="2dp"
-                            android:text="ID: #MF-9012-05"
-                            android:textColor="#56423B"
-                            android:textSize="11sp" />
 
                     </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/loan2DueBadge"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/status_red_bg"
-                        android:paddingStart="12dp"
-                        android:paddingTop="4dp"
-                        android:paddingEnd="12dp"
-                        android:paddingBottom="4dp"
-                        android:text="Due Today"
-                        android:textColor="#93000A"
-                        android:textSize="11sp" />
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:gravity="bottom"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/loan2AmountValue"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="KES 390.00 / KES 2,000.00"
+                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                            android:textColor="@color/navy_text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/loan2MonthsLeft"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="12 months left"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="@color/text_secondary" />
+
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/loan2Progress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:max="100"
+                        android:progress="20"
+                        android:progressTint="@color/status_red"
+                        android:progressBackgroundTint="@color/status_red_bg" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/loan2PayButton"
+                            style="@style/Widget.TerraLink.Button.Primary"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Pay Now" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/loan2DetailsButton"
+                            style="@style/Widget.TerraLink.Button.Outlined"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:text="Details" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="bottom"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/loan2AmountValue"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="KES 390.00 / KES 2,000.00"
-                        android:textColor="#1E1B18"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/loan2MonthsLeft"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="12 months left"
-                        android:textColor="#56423B"
-                        android:textSize="11sp" />
-
-                </LinearLayout>
-
-                <ProgressBar
-                    android:id="@+id/loan2Progress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="4dp"
-                    android:max="100"
-                    android:progress="20"
-                    android:progressTint="#BA1A1A"
-                    android:progressBackgroundTint="#EFE6E2" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/loan2PayButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:backgroundTint="@color/terralink_button_primary"
-                        android:text="Pay Now"
-                        android:textAllCaps="false"
-                        android:textColor="@android:color/white"
-                        android:textSize="16sp" />
-
-                    <Button
-                        android:id="@+id/loan2DetailsButton"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:backgroundTint="@color/surface_card"
-                        android:text="Details"
-                        android:textAllCaps="false"
-                        android:textColor="@color/terracotta_primary"
-                        android:textSize="16sp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- ============ LOAN HISTORY ============ -->
-
+            <!-- Loan History -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/spacing_xl"
                 android:text="Loan History"
-                android:textColor="#1E1B18"
-                android:textSize="18sp"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="@color/navy_text_primary"
                 android:textStyle="bold" />
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/historyItem1"
+                style="@style/Widget.TerraLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:alpha="0.8"
-                android:background="@color/olive_container"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="17dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@color/surface_stroke"
-                    android:contentDescription="Completed"
-                    android:padding="10dp"
-                    app:tint="@color/text_secondary"
-                    android:src="@drawable/ic_check_circle" />
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:alpha="0.9">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/card_padding">
 
-                    <TextView
-                        android:id="@+id/history1Title"
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@color/olive_container"
+                        android:contentDescription="Completed"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="@color/olive_secondary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Emergency Medical Loan"
-                        android:textColor="#1E1B18"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/history1Date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Completed Aug 2023"
-                        android:textColor="#56423B"
-                        android:textSize="11sp" />
+                        <TextView
+                            android:id="@+id/history1Title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Emergency Medical Loan"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="@color/navy_text_primary"
+                            android:textStyle="bold" />
 
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/history1Date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Completed Aug 2023"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="@color/text_secondary" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/history1Amount"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:text="KES 500.00"
-                        android:textColor="#1E1B18"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:gravity="end"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/history1Status"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginTop="2dp"
-                        android:text="Closed"
-                        android:textColor="#9C3F11"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/history1Amount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="KES 500.00"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="@color/navy_text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/history1Status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Closed"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="@color/terracotta_dark"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-            </LinearLayout>
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/historyItem2"
+                style="@style/Widget.TerraLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:alpha="0.8"
-                android:background="@color/olive_container"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:padding="17dp">
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:background="@color/surface_stroke"
-                    android:contentDescription="Completed"
-                    android:padding="10dp"
-                    android:src="@android:drawable/checkbox_on_background" />
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:alpha="0.9">
 
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical">
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/card_padding">
 
-                    <TextView
-                        android:id="@+id/history2Title"
-                        android:layout_width="match_parent"
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@color/olive_container"
+                        android:contentDescription="Completed"
+                        android:padding="10dp"
+                        android:src="@drawable/ic_check_circle"
+                        app:tint="@color/olive_secondary" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Seed Capital Loan"
-                        android:textColor="#1E1B18"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
+                        android:layout_marginStart="@dimen/spacing_lg"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/history2Date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="2dp"
-                        android:text="Completed Jan 2023"
-                        android:textColor="#56423B"
-                        android:textSize="11sp" />
+                        <TextView
+                            android:id="@+id/history2Title"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Seed Capital Loan"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="@color/navy_text_primary"
+                            android:textStyle="bold" />
 
-                </LinearLayout>
+                        <TextView
+                            android:id="@+id/history2Date"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Completed Jan 2023"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="@color/text_secondary" />
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/history2Amount"
-                        android:layout_width="100dp"
-                        android:layout_height="19dp"
-                        android:layout_gravity="end"
-                        android:text="KES 1,200.00"
-                        android:textColor="#1E1B18"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/history2Status"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:layout_marginTop="2dp"
-                        android:text="Closed"
-                        android:textColor="#9C3F11"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
+                        android:gravity="end"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/history2Amount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="KES 1,200.00"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="@color/navy_text_primary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/history2Status"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="Closed"
+                            android:textAppearance="?attr/textAppearanceBodySmall"
+                            android:textColor="@color/terracotta_dark"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
-
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
+
+    <include
+        android:id="@+id/loadingView"
+        layout="@layout/layout_loading_error" />
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
@@ -647,9 +599,9 @@
         android:layout_gravity="bottom"
         android:background="@color/surface_card"
         app:fabAlignmentMode="center"
-        app:fabCradleMargin="8dp"
-        app:fabCradleRoundedCornerRadius="50dp"
-        app:fabCradleVerticalOffset="7dp">
+        app:fabCradleMargin="@dimen/fab_cradle_margin"
+        app:fabCradleRoundedCornerRadius="@dimen/fab_cradle_radius"
+        app:fabCradleVerticalOffset="@dimen/fab_cradle_offset">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
@@ -664,12 +616,12 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabNewAction"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
         app:backgroundTint="@color/terralink_button_primary"
         app:layout_anchor="@id/bottomAppBar"
         app:layout_anchorGravity="center"
-        app:maxImageSize="24dp"
+        app:maxImageSize="@dimen/button_icon_size"
         app:srcCompat="@android:drawable/ic_input_add"
         app:tint="@color/surface_card" />
 

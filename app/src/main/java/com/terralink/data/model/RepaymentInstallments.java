@@ -3,6 +3,7 @@ package com.terralink.data.model;
 public class RepaymentInstallments {
 
     private long id;
+    private long loanId;
     private int installmentNumber;
     private String dueDate;
     private double principal;
@@ -13,6 +14,8 @@ public class RepaymentInstallments {
     public long getRepaymentScheduleId() {
         return id;
     }
+
+    public long getLoanId() { return loanId; }
 
     public int getInstallmentNumber() {
         return installmentNumber;

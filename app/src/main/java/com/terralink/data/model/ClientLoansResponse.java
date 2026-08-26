@@ -6,6 +6,7 @@ public class ClientLoansResponse {
     private String loanNo;
     private double approvedAmount;
     private double balance;
+    private double repaymentAmount;
     private String status;
 
     public String getLoanId() {
@@ -22,6 +23,10 @@ public class ClientLoansResponse {
 
     public double getBalance() {
         return balance;
+    }
+
+    public double getRepaymentAmount(){
+        return repaymentAmount;
     }
 
     public String getStatus() {

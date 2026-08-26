@@ -1,7 +1,11 @@
 package com.terralink.data.api;
 
 import com.terralink.data.model.ClientLoansResponse;
+import com.terralink.data.model.CreditScoreResponse;
+import com.terralink.data.model.LoanApplicationRequest;
 import com.terralink.data.model.LoanDetailsResponse;
+import com.terralink.data.model.LoanListItemResponse;
+import com.terralink.data.model.LoanProductResponse;
 import com.terralink.data.model.RepaymentInstallments;
 
 import java.util.List;
@@ -9,10 +13,18 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 public interface LoanApi {
     @GET("api/loans/clients/{clientId}/loans")
     Call<List<ClientLoansResponse>> getClientLoans(
+            @Path("clientId") String clientId
+    );
+
+    @GET("api/clients/{clientId}/credit-score")
+    Call<CreditScoreResponse> getCreditScore(
             @Path("clientId") String clientId
     );
 
@@ -24,5 +36,23 @@ public interface LoanApi {
     @GET("api/loans/{loanId}/repayment-schedule")
     Call<List<RepaymentInstallments>> getRepaymentInstallments(
             @Path("loanId") String loanId
+    );
+
+    @POST("api/loan-applications")
+    Call<Void> createLoanApplication(
+            @Body LoanApplicationRequest request
+    );
+
+    @GET("api/loan-products")
+    Call<List<LoanProductResponse>> getLoanProducts(
+            @Query("includeInactive") boolean includeInactive
+    );
+
+    @GET("api/loans")
+    Call<List<LoanListItemResponse>> getLoans(
+            @Query("status") String status,
+            @Query("search") String search,
+            @Query("page") int page,
+            @Query("pageSize") int pageSize
     );
 }

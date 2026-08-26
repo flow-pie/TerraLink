@@ -11,104 +11,45 @@
         android:layout_height="wrap_content"
         app:layout_scrollFlags="scroll|enterAlways">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="110dp"
-            android:background="@color/terracotta_primary"
-            android:paddingStart="16dp"
-            android:paddingTop="32dp"
-            android:paddingEnd="16dp">
-
-            <LinearLayout
-                android:id="@+id/brandContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:cardCornerRadius="20dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="#DDC1B6"
-                    app:strokeWidth="1dp">
-
-                    <ImageView
-                        android:id="@+id/imgAvatar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="centerCrop"
-                        android:src="@drawable/avatar" />
-
-                </androidx.cardview.widget.CardView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="TerraLink"
-                    android:textColor="@color/on_terracotta"
-                    android:textSize="22sp"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
-
-            <ImageButton
-                android:id="@+id/btnNotifications"
-                android:layout_width="32dp"
-                android:layout_height="43dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:background="@color/terracotta_primary"
-                android:contentDescription="Notifications"
-                android:src="@drawable/ic_bell"
-                app:tint="@color/on_terracotta" />
-
-        </RelativeLayout>
+        <include
+            android:id="@+id/appBarContent"
+            layout="@layout/top_app_bar" />
 
     </com.google.android.material.appbar.AppBarLayout>
-
-
-    <!-- =========================================================
-         MAIN SCROLLABLE CONTENT
-         ========================================================= -->
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:paddingBottom="120dp">
+        android:paddingBottom="200dp"
+        android:layout_marginBottom="100dp"
+        >
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="@dimen/spacing_2xl">
 
-
-            <!-- =================================================
-                 SEARCH CLIENT
-                 ================================================= -->
-
+            <!-- Search Client -->
             <LinearLayout
                 android:id="@+id/searchContainer"
                 android:layout_width="match_parent"
-                android:layout_height="52dp"
-                android:layout_marginTop="16dp"
-                android:background="@color/on_terracotta"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:background="@drawable/bg_input_background"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:paddingEnd="12dp">
+                android:paddingStart="@dimen/spacing_lg"
+                android:paddingEnd="@dimen/spacing_lg">
 
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:contentDescription="Search"
-                    android:src="@android:drawable/ic_menu_search" />
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="@color/text_secondary" />
 
                 <EditText
                     android:id="@+id/clientSearchInput"
@@ -121,35 +62,30 @@
                     android:inputType="text"
                     android:padding="0dp"
                     android:singleLine="true"
-                    android:textColor="@color/text_secondary"
-                    android:textColorHint="#7D7D7D"
+                    android:textColor="@color/navy_text_primary"
+                    android:textColorHint="@color/text_muted"
                     android:textSize="14sp" />
 
             </LinearLayout>
 
-
-            <!-- =================================================
-                 CLIENT SELECTION LABEL
-                 ================================================= -->
-
-            <LinearLayout
+            <!-- Client Selection Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/clientSelectionCard"
+                style="@style/Widget.TerraLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:background="@color/on_terracotta"
-                android:elevation="2dp"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:elevation="@dimen/card_elevation_medium"
                 android:orientation="vertical">
 
                 <!-- Header -->
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="38dp"
                     android:background="@color/terracotta_container"
                     android:gravity="center_vertical"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp">
+                    android:paddingStart="@dimen/card_padding"
+                    android:paddingEnd="@dimen/card_padding">
 
                     <TextView
                         android:layout_width="0dp"
@@ -157,87 +93,86 @@
                         android:layout_weight="1"
                         android:text="CLIENT SELECTION"
                         android:textColor="@color/navy_text_primary"
-                        android:textSize="11sp"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"
                         android:textStyle="bold" />
 
                     <TextView
                         android:id="@+id/verificationStatus"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="#E2E9D6"
-                        android:paddingStart="10dp"
-                        android:paddingTop="4dp"
-                        android:paddingEnd="10dp"
-                        android:paddingBottom="4dp"
-                        android:text="✓  Verified"
-                        android:textColor="@color/olive_secondary"
-                        android:textSize="11sp"
+                        android:background="@drawable/bg_pill_success"
+                        android:paddingStart="@dimen/spacing_sm"
+                        android:paddingTop="@dimen/spacing_xs"
+                        android:paddingEnd="@dimen/spacing_sm"
+                        android:paddingBottom="@dimen/spacing_xs"
+                        android:text="Verified"
+                        android:textColor="@color/status_green"
+                        android:textAppearance="?attr/textAppearanceLabelSmall"
                         android:textStyle="bold" />
 
                 </LinearLayout>
 
-
-                <!-- Client information -->
-
+                <!-- Client Information -->
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="104dp"
+                    android:layout_height="180dp"
                     android:orientation="horizontal"
                     android:padding="0dp">
 
                     <ImageView
                         android:id="@+id/clientImage"
-                        android:layout_width="100dp"
-                        android:layout_height="104dp"
+                        android:layout_width="80dp"
+                        android:layout_height="84dp"
                         android:contentDescription="Client photo"
+                        android:layout_marginTop="40dp"
                         android:scaleType="centerCrop"
                         android:src="@drawable/avatar" />
 
                     <LinearLayout
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:gravity="center_vertical"
                         android:orientation="vertical"
-                        android:paddingStart="14dp"
-                        android:paddingEnd="8dp">
+                        android:paddingStart="@dimen/spacing_lg"
+                        android:paddingEnd="@dimen/spacing_lg">
 
                         <TextView
                             android:id="@+id/clientName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="Mariam Wanjiku"
+                            android:textAppearance="?attr/textAppearanceTitleLarge"
                             android:textColor="@color/navy_text_primary"
-                            android:textSize="18sp"
                             android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/clientDetails"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
+                            android:layout_marginTop="@dimen/spacing_xs"
                             android:text="ID: 29384755 • Member since 2021"
-                            android:textColor="@color/text_secondary"
-                            android:textSize="12sp" />
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="@color/text_secondary" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="7dp"
+                            android:layout_marginTop="@dimen/spacing_md"
                             android:orientation="horizontal">
 
                             <TextView
                                 android:id="@+id/creditScore"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:background="#DDF7E7"
-                                android:paddingStart="9dp"
-                                android:paddingTop="4dp"
-                                android:paddingEnd="9dp"
-                                android:paddingBottom="4dp"
+                                android:background="@drawable/bg_pill_success"
+                                android:paddingStart="@dimen/spacing_sm"
+                                android:paddingTop="@dimen/spacing_xs"
+                                android:paddingEnd="@dimen/spacing_sm"
+                                android:paddingBottom="@dimen/spacing_xs"
                                 android:text="CREDIT SCORE: 740"
                                 android:textColor="@color/status_green"
-                                android:textSize="10sp"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
                                 android:textStyle="bold" />
 
                             <TextView
@@ -246,13 +181,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="8dp"
                                 android:background="@color/terracotta_container"
-                                android:paddingStart="10dp"
-                                android:paddingTop="4dp"
-                                android:paddingEnd="10dp"
-                                android:paddingBottom="4dp"
+                                android:paddingStart="@dimen/spacing_sm"
+                                android:paddingTop="@dimen/spacing_xs"
+                                android:paddingEnd="@dimen/spacing_sm"
+                                android:paddingBottom="@dimen/spacing_xs"
                                 android:text="ACTIVE"
                                 android:textColor="@color/text_secondary"
-                                android:textSize="10sp"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
                                 android:textStyle="bold" />
 
                         </LinearLayout>
@@ -261,55 +196,47 @@
 
                 </LinearLayout>
 
-            </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-
-            <!-- =================================================
-                 LOAN PRODUCT
-                 ================================================= -->
-
+            <!-- Loan Product -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/spacing_lg"
                 android:text="LOAN PRODUCT"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="@color/navy_text_primary"
-                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <Spinner
                 android:id="@+id/loanProductSpinner"
                 android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/spacing_sm"
                 android:background="@drawable/bg_input_background"
-                android:paddingStart="14dp"
-                android:paddingEnd="14dp" />
+                android:paddingStart="@dimen/card_padding"
+                android:paddingEnd="@dimen/card_padding" />
 
-
-            <!-- =================================================
-                 REQUESTED AMOUNT
-                 ================================================= -->
-
+            <!-- Requested Amount -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="18dp"
+                android:layout_marginTop="@dimen/spacing_lg"
                 android:text="REQUESTED AMOUNT (KES)"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="@color/navy_text_primary"
-                android:textSize="12sp"
                 android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/amountContainer"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:layout_marginTop="8dp"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/spacing_sm"
                 android:background="@drawable/bg_input_background"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="12dp">
+                android:paddingStart="@dimen/card_padding"
+                android:paddingEnd="@dimen/spacing_lg">
 
                 <EditText
                     android:id="@+id/requestedAmountInput"
@@ -317,6 +244,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@android:color/transparent"
+                    android:gravity="center_vertical"
+                    android:hint="Enter amount"
                     android:inputType="numberDecimal"
                     android:singleLine="true"
                     android:text="2500"
@@ -327,42 +256,43 @@
                     android:layout_width="22dp"
                     android:layout_height="22dp"
                     android:contentDescription="Amount"
-                    android:src="@android:drawable/ic_menu_edit" />
+                    android:src="@android:drawable/ic_menu_edit"
+                    app:tint="@color/text_secondary" />
 
             </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="7dp"
-                android:orientation="horizontal">
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:orientation="horizontal"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp">
 
                 <TextView
+                    android:id="@+id/minAmountLabel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="Min: 5,000"
-                    android:textColor="@color/text_muted"
-                    android:textSize="12sp" />
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/text_muted" />
 
                 <TextView
+                    android:id="@+id/maxAmountLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Max: 500,000"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp" />
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/text_secondary" />
 
             </LinearLayout>
 
-
-            <!-- =================================================
-                 TENURE
-                 ================================================= -->
-
+            <!-- Tenure -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="@dimen/spacing_lg"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -371,8 +301,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="TENURE (MONTHS)"
+                    android:textAppearance="?attr/textAppearanceLabelSmall"
                     android:textColor="@color/navy_text_primary"
-                    android:textSize="12sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -380,8 +310,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="12"
-                    android:textColor="#A9420D"
-                    android:textSize="24sp"
+                    android:textColor="@color/terracotta_dark"
+                    android:textAppearance="?attr/textAppearanceHeadlineSmall"
                     android:textStyle="bold" />
 
             </LinearLayout>
@@ -389,247 +319,195 @@
             <SeekBar
                 android:id="@+id/tenureSeekBar"
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="2dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="@dimen/spacing_sm"
                 android:max="33"
+                android:minHeight="12dp"
+                android:maxHeight="60dp"
                 android:progress="9" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="3m"
-                    android:textColor="#8B7167"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="12m"
-                    android:textColor="#8B7167"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="24m"
-                    android:textColor="#8B7167"
-                    android:textSize="14sp" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="right"
-                    android:text="36m"
-                    android:textColor="#8B7167"
-                    android:textSize="14sp" />
-
-            </LinearLayout>
-
-
-            <!-- =================================================
-                 REPAYMENT PREVIEW
-                 ================================================= -->
-
-            <LinearLayout
+            <!-- Repayment Preview Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:id="@+id/repaymentPreviewCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="26dp"
-                android:background="@color/terracotta_primary"
-                android:orientation="vertical"
-                android:padding="24dp">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Repayment Preview"
-                    android:textColor="#FFFFFF"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <!-- Monthly installment -->
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:backgroundTint="@color/terracotta_light">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="@dimen/card_padding">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Monthly Instalment"
-                        android:textColor="#F8D9C9"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/monthlyInstallmentValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="KES 5,500"
-                        android:textColor="#FFFFFF"
-                        android:textSize="18sp"
+                        android:text="Repayment Preview"
+                        android:textColor="@color/navy_text_primary"
+                        android:textAppearance="?attr/textAppearanceHeadlineSmall"
                         android:textStyle="bold" />
+
+                    <!-- Monthly Installment -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Monthly Instalment"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/monthlyInstallmentValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="KES 5,500"
+                            android:textColor="@color/on_terracotta"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:background="@color/terracotta_container"
+                        android:alpha="0.5" />
+
+                    <!-- Total Interest -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Total Interest"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="@color/text_secondary" />
+
+                        <TextView
+                            android:id="@+id/totalInterestValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="KES 6,000"
+                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:textColor="@color/on_terracotta" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/spacing_md"
+                        android:background="@color/terracotta_container"
+                        android:alpha="0.5" />
+
+                    <!-- Total Repayable -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Total Repayable"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:textColor="@color/navy_dark"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/totalRepayableValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="KES 66,000"
+                            android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                            android:textColor="@color/navy_dark"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Interest Rate -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="INTEREST VS PRINCIPAL"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="@color/text_secondary"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/interestRateValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="9.1% RATE"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="@color/on_terracotta"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <ProgressBar
+                        android:id="@+id/interestProgress"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="8dp"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        android:max="100"
+                        android:progress="91"
+                        android:progressTint="@color/terracotta_light"
+                        android:progressBackgroundTint="@color/terracotta_dark" />
 
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="#C76A3C" />
-
-                <!-- Total interest -->
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Total Interest"
-                        android:textColor="#F8D9C9"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/totalInterestValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="KES 6,000"
-                        android:textColor="#FFFFFF"
-                        android:textSize="14sp" />
-
-                </LinearLayout>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="8dp"
-                    android:background="#C76A3C" />
-
-                <!-- Total repayable -->
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Total Repayable"
-                        android:textColor="#FFFFFF"
-                        android:textSize="17sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/totalRepayableValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="KES 66,000"
-                        android:textColor="#FFFFFF"
-                        android:textSize="22sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <!-- Interest rate -->
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="26dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="INTEREST VS PRINCIPAL"
-                        android:textColor="#F8D9C9"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/interestRateValue"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="9.1% RATE"
-                        android:textColor="#FFFFFF"
-                        android:textSize="11sp"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <ProgressBar
-                    android:id="@+id/interestProgress"
-                    style="?android:attr/progressBarStyleHorizontal"
-                    android:layout_width="match_parent"
-                    android:layout_height="8dp"
-                    android:layout_marginTop="8dp"
-                    android:max="100"
-                    android:progress="91" />
-
-            </LinearLayout>
-
-
-            <!-- =================================================
-                 SUBMIT APPLICATION
-                 ================================================= -->
-
-            <Button
+            <!-- Submit Application -->
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/submitApplicationButton"
+                style="@style/Widget.TerraLink.Button.Primary"
                 android:layout_width="match_parent"
-                android:layout_height="58dp"
-                android:layout_marginTop="24dp"
-                android:backgroundTint="@color/terracotta_primary"
-                android:text="▷  Submit Application"
-                android:textAllCaps="false"
-                android:textColor="#FFFFFF"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+                android:layout_height="@dimen/button_min_height"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:text="Submit Application"
+                app:icon="@drawable/ic_check_circle" />
 
             <TextView
                 android:id="@+id/approvalNotice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="@dimen/spacing_lg"
                 android:gravity="center"
                 android:text="Subject to final verification and approval."
-                android:textColor="#DDBFB0"
-                android:textSize="14sp" />
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="@color/text_muted" />
 
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
-
-
-
-    <!-- =========================================================
-         BOTTOM NAVIGATION
-         ========================================================= -->
 
     <com.google.android.material.bottomappbar.BottomAppBar
         android:id="@+id/bottomAppBar"
@@ -639,9 +517,9 @@
         android:layout_gravity="bottom"
         android:background="@color/surface_card"
         app:fabAlignmentMode="center"
-        app:fabCradleMargin="8dp"
-        app:fabCradleRoundedCornerRadius="50dp"
-        app:fabCradleVerticalOffset="7dp">
+        app:fabCradleMargin="@dimen/fab_cradle_margin"
+        app:fabCradleRoundedCornerRadius="@dimen/fab_cradle_radius"
+        app:fabCradleVerticalOffset="@dimen/fab_cradle_offset">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
@@ -656,14 +534,13 @@
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabNewAction"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="@dimen/fab_size"
+        android:layout_height="@dimen/fab_size"
         app:backgroundTint="@color/terralink_button_primary"
         app:layout_anchor="@id/bottomAppBar"
         app:layout_anchorGravity="center"
-        app:maxImageSize="24dp"
+        app:maxImageSize="@dimen/button_icon_size"
         app:srcCompat="@android:drawable/ic_input_add"
         app:tint="@color/surface_card" />
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
