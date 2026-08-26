@@ -4,9 +4,14 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.terralink.data.api.LoanApi;
+import com.terralink.data.model.AssetResponse;
 import com.terralink.data.model.ClientLoansResponse;
+import com.terralink.data.model.CreditHistoryResponse;
 import com.terralink.data.model.CreditScoreResponse;
+import com.terralink.data.model.IncomeAssessmentResponse;
 import com.terralink.data.model.LoanApplicationResponse;
+import com.terralink.data.model.LoanAppraisalDetailResponse;
+import com.terralink.data.model.LoanAppraisalRequest;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.LoanListItemResponse;
 import com.terralink.data.model.LoanProductResponse;
@@ -248,6 +253,121 @@ public class LoanRepository {
                     }
                 }
         );
+
+        return result;
+    }
+
+    public LiveData<Resource<LoanAppraisalDetailResponse>> getLoanApplicationDetail(int id) {
+        MutableLiveData<Resource<LoanAppraisalDetailResponse>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getLoanApplicationDetail(id).enqueue(new Callback<LoanAppraisalDetailResponse>() {
+            @Override
+            public void onResponse(Call<LoanAppraisalDetailResponse> call, Response<LoanAppraisalDetailResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Failed to load application detail"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoanAppraisalDetailResponse> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<Resource<Void>> appraiseLoan(int applicationId, LoanAppraisalRequest request) {
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.appraiseLoanApplication(applicationId, request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    result.postValue(Resource.success(null));
+                } else {
+                    result.postValue(Resource.error("Appraisal Failed: " + response.message()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<Resource<List<CreditHistoryResponse>>> getCreditHistory(String clientId) {
+        MutableLiveData<Resource<List<CreditHistoryResponse>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getCreditHistory(clientId).enqueue(new Callback<List<CreditHistoryResponse>>() {
+            @Override
+            public void onResponse(Call<List<CreditHistoryResponse>> call, Response<List<CreditHistoryResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Failed to load credit history"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<CreditHistoryResponse>> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<Resource<List<AssetResponse>>> getClientAssets(String clientId) {
+        MutableLiveData<Resource<List<AssetResponse>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getClientAssets(clientId).enqueue(new Callback<List<AssetResponse>>() {
+            @Override
+            public void onResponse(Call<List<AssetResponse>> call, Response<List<AssetResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Failed to load assets"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<AssetResponse>> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<Resource<List<IncomeAssessmentResponse>>> getIncomeAssessments(String clientId) {
+        MutableLiveData<Resource<List<IncomeAssessmentResponse>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getIncomeAssessments(clientId).enqueue(new Callback<List<IncomeAssessmentResponse>>() {
+            @Override
+            public void onResponse(Call<List<IncomeAssessmentResponse>> call, Response<List<IncomeAssessmentResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Failed to load income assessments"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<IncomeAssessmentResponse>> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
 
         return result;
     }

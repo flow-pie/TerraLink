@@ -1,9 +1,14 @@
 package com.terralink.data.api;
 
+import com.terralink.data.model.AssetResponse;
 import com.terralink.data.model.ClientLoansResponse;
+import com.terralink.data.model.CreditHistoryResponse;
 import com.terralink.data.model.CreditScoreResponse;
+import com.terralink.data.model.IncomeAssessmentResponse;
 import com.terralink.data.model.LoanApplicationRequest;
 import com.terralink.data.model.LoanApplicationResponse;
+import com.terralink.data.model.LoanAppraisalDetailResponse;
+import com.terralink.data.model.LoanAppraisalRequest;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.LoanListItemResponse;
 import com.terralink.data.model.LoanProductResponse;
@@ -50,6 +55,32 @@ public interface LoanApi {
             @Query("status") String status,
             @Query("page") int page,
             @Query("pageSize") int pageSize
+    );
+
+    @GET("api/loan-applications/{id}")
+    Call<LoanAppraisalDetailResponse> getLoanApplicationDetail(
+            @Path("id") int id
+    );
+
+    @POST("api/loan-applications/{id}/appraise")
+    Call<Void> appraiseLoanApplication(
+            @Path("id") int applicationId,
+            @Body LoanAppraisalRequest request
+    );
+
+    @GET("api/clients/{clientId}/credit-history")
+    Call<List<CreditHistoryResponse>> getCreditHistory(
+            @Path("clientId") String clientId
+    );
+
+    @GET("api/clients/{clientId}/assets")
+    Call<List<AssetResponse>> getClientAssets(
+            @Path("clientId") String clientId
+    );
+
+    @GET("api/clients/{clientId}/income-assessments")
+    Call<List<IncomeAssessmentResponse>> getIncomeAssessments(
+            @Path("clientId") String clientId
     );
 
     @GET("api/loan-products")

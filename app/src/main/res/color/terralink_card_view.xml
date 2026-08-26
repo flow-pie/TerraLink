@@ -4,9 +4,9 @@
     <!-- Button being pressed -->
     <item
         android:state_pressed="true"
-        android:color="@color/bg_cream" />
+        android:color="@color/olive_container" />
 
     <!-- Normal -->
-    <item android:color="@color/surface_card" />
+    <item android:color="@color/on_terracotta" />
 
 </selector>

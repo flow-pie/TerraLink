@@ -3,6 +3,7 @@ package com.terralink.ui.officer.dashboard;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -16,6 +17,8 @@ import com.terralink.R;
 import com.terralink.data.model.LoanApplicationResponse;
 import com.terralink.data.model.PaginatedResponse;
 import com.terralink.data.model.PortfolioSummaryResponse;
+import com.terralink.ui.auth.LoginStatus;
+import com.terralink.ui.officer.appraisal.LoanAppraisalBottomSheetFragment;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityDashboardBinding;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
@@ -107,22 +110,43 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         viewModel.getPendingAppraisals().observe(this, result -> {
-            if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS && result.getData() != null) {
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
                 PaginatedResponse<LoanApplicationResponse> paginated = result.getData();
                 
                 // Update the pending count metric from the pagination total
                 binding.tvPendingAppraisalsCount.setText(String.format(Locale.getDefault(), "%02d", paginated.getTotalCount()));
 
                 List<LoanApplicationResponse> apps = paginated.getItems();
-                if (apps != null) {
-                    if (apps.size() >= 1) {
-                        binding.tvApplicantName1.setText(apps.get(0).getClientFullName());
-                        binding.tvLoanId1.setText("Loan ID: #" + apps.get(0).getApplicationNo());
-                    }
+                
+                // Reset visibility
+                binding.cardAppraisal1.setVisibility(View.GONE);
+                binding.cardAppraisal2.setVisibility(View.GONE);
+                binding.tvNoPendingAppraisals.setVisibility(View.GONE);
+
+                if (apps != null && !apps.isEmpty()) {
+                    binding.cardAppraisal1.setVisibility(View.VISIBLE);
+                    binding.tvApplicantName1.setText(apps.get(0).getClientFullName());
+                    binding.tvLoanId1.setText("Loan ID: #" + apps.get(0).getApplicationNo());
+                    binding.btnReview1.setOnClickListener(v -> {
+                        LoanAppraisalBottomSheetFragment fragment = LoanAppraisalBottomSheetFragment.newInstance(
+                                apps.get(0).getId()
+                        );
+                        fragment.show(getSupportFragmentManager(), fragment.getTag());
+                    });
+
                     if (apps.size() >= 2) {
+                        binding.cardAppraisal2.setVisibility(View.VISIBLE);
                         binding.tvApplicantName2.setText(apps.get(1).getClientFullName());
                         binding.tvLoanId2.setText("Loan ID: #" + apps.get(1).getApplicationNo());
+                        binding.btnReview2.setOnClickListener(v -> {
+                            LoanAppraisalBottomSheetFragment fragment = LoanAppraisalBottomSheetFragment.newInstance(
+                                    apps.get(1).getId()
+                            );
+                            fragment.show(getSupportFragmentManager(), fragment.getTag());
+                        });
                     }
+                } else {
+                    binding.tvNoPendingAppraisals.setVisibility(View.VISIBLE);
                 }
             }
         });

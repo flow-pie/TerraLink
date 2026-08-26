@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_cream">
@@ -478,8 +479,21 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/tvNoPendingAppraisals"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="24dp"
+                    android:gravity="center"
+                    android:text="No pending appraisals at the moment"
+                    android:textColor="@color/text_muted"
+                    android:textSize="14sp"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
                 <!-- Application card 1 -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAppraisal1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="12dp"
@@ -487,7 +501,9 @@
                     app:cardCornerRadius="8dp"
                     app:cardElevation="0dp"
                     app:strokeColor="@color/surface_stroke"
-                    app:strokeWidth="1dp">
+                    app:strokeWidth="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -582,13 +598,16 @@
 
                 <!-- Application card 2 -->
                 <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardAppraisal2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/surface_card"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="0dp"
                     app:strokeColor="@color/surface_stroke"
-                    app:strokeWidth="1dp">
+                    app:strokeWidth="1dp"
+                    android:visibility="gone"
+                    tools:visibility="visible">
 
                     <LinearLayout
                         android:layout_width="match_parent"
