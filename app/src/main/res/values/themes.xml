@@ -87,4 +87,11 @@
         <item name="android:fontFamily">monospace</item>
     </style>
     <style name="ShapeAppearanceOverlay.Circle" parent="ShapeAppearance.Material3.Corner.Full"/>
+    <style name="Theme.TerraLink.Dialog" parent="Theme.TerraLink">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
 </resources>

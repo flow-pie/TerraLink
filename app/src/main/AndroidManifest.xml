@@ -46,6 +46,27 @@
             android:windowSoftInputMode="stateVisible"
             android:exported="false"
             />
+        <activity
+            android:name=".ui.client.loan.ClientLoansActivity"
+            android:windowSoftInputMode="stateVisible"
+            android:exported="false"
+            />
+
+        <activity
+            android:name=".ui.client.payment.PaymentDialogActivity"
+            android:theme="@style/Theme.TerraLink.Dialog"
+            android:exported="false"
+        />
+
+        <activity
+            android:name=".ui.client.transaction.TransactionHistoryActivity"
+            android:exported="false"
+            />
+
+        <activity
+            android:name=".ui.client.notification.NotificationStatusActivity"
+            android:exported="false"
+            />
     </application>
 
 </manifest>

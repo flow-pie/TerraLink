@@ -11,7 +11,10 @@
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_gravity="center"
-        app:indicatorSize="64dp" />
+        app:indicatorColor="@color/terracotta_primary"
+        app:trackColor="@color/terracotta_container"
+        app:indicatorSize="64dp"
+        app:trackThickness="4dp" />
 
     <LinearLayout
         android:id="@+id/errorGroup"
@@ -27,15 +30,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="An error occurred"
-            android:textColor="@color/navy_text_primary"
             android:textAppearance="?attr/textAppearanceBodyMedium"
+            android:textColor="@color/navy_text_primary"
             android:layout_marginBottom="12dp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnRetry"
+            style="@style/Widget.TerraLink.Button.Outlined"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Widget.TerraLink.Button.Outlined"
             android:text="Retry" />
     </LinearLayout>
 
