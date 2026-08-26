@@ -59,6 +59,11 @@
         />
 
         <activity
+            android:name=".ui.officer.dashboard.DashboardActivity"
+            android:exported="false"
+            />
+
+        <activity
             android:name=".ui.client.transaction.TransactionHistoryActivity"
             android:exported="false"
             />

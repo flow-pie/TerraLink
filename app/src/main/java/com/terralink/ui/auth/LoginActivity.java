@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
+import com.terralink.LauncherActivity;
 import com.terralink.data.model.LoginRequest;
 import com.terralink.data.model.LoginResponse;
 import com.terralink.data.model.UserProfileResponse;
@@ -86,7 +87,9 @@ public class LoginActivity extends AppCompatActivity {
 
                     LoginResponse response = result.getData();
 
-                    startActivity(new Intent(LoginActivity.this, ClientHomepageActivity.class));
+                    // Navigate based on role if available, or just go to Homepage for now.
+                    // Ideally we fetch profile first, but for now Launcher handles session.
+                    startActivity(new Intent(LoginActivity.this, LauncherActivity.class));
                     finish(); //Pressing Back won't take the user back to login.
 
                     break;

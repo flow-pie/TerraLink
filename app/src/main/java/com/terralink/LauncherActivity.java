@@ -12,6 +12,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.terralink.ui.auth.LoginActivity;
 import com.terralink.ui.auth.TokenManager;
 import com.terralink.ui.client.home.ClientHomepageActivity;
+import com.terralink.ui.officer.dashboard.DashboardActivity;
+import com.terralink.data.repository.UserRepository;
+import com.terralink.ui.common.Resource;
 
 import javax.inject.Inject;
 
@@ -23,21 +26,33 @@ public class LauncherActivity extends AppCompatActivity {
     @Inject
     TokenManager tokenManager;
 
+    @Inject
+    UserRepository userRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO!! check user Role
         if(tokenManager.hasSession()){
-            startActivity(
-                    new Intent(this, ClientHomepageActivity.class)
-            );
+            userRepository.getMe().observe(this, result -> {
+                if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS && result.getData() != null) {
+                    String role = result.getData().getRoleName();
+                    if ("Client".equalsIgnoreCase(role)) {
+                        startActivity(new Intent(this, ClientHomepageActivity.class));
+                    } else {
+                        startActivity(new Intent(this, DashboardActivity.class));
+                    }
+                    finish();
+                } else if (result.getStatus() == com.terralink.ui.auth.LoginStatus.ERROR) {
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
+                }
+            });
         }else {
             startActivity(
                     new Intent(this, LoginActivity.class)
             );
+            finish();
         }
-
-        finish();
     }
 }
