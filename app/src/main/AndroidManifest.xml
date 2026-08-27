@@ -71,7 +71,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.officer.reports.OfficerReportsActivity"
+            android:name=".ui.officer.tasks.OfficerTasksActivity"
             android:exported="false" />
 
         <activity

@@ -90,8 +90,8 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(this, com.terralink.ui.officer.loans.OfficerLoansActivity.class));
                 return true;
             }
-            if (id == R.id.nav_reports) {
-                startActivity(new Intent(this, com.terralink.ui.officer.reports.OfficerReportsActivity.class));
+            if (id == R.id.nav_tasks) {
+                startActivity(new Intent(this, com.terralink.ui.officer.tasks.OfficerTasksActivity.class));
                 return true;
             }
             // Handle other nav items

@@ -13,7 +13,7 @@
         android:icon="@drawable/ic_banknote"
         android:title="Loans" />
     <item
-        android:id="@+id/nav_reports"
-        android:icon="@drawable/ic_badge_id"
-        android:title="Reports" />
+        android:id="@+id/nav_tasks"
+        android:icon="@drawable/ic_chart"
+        android:title="Tasks" />
 </menu>

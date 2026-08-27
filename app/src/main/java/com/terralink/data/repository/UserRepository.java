@@ -8,6 +8,9 @@ import com.terralink.data.api.UserApi;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.ui.common.Resource;
 
+import com.terralink.data.model.RefreshTokenRequest;
+import com.terralink.ui.auth.TokenManager;
+
 import javax.inject.Inject;
 
 import retrofit2.Call;
@@ -16,10 +19,38 @@ import retrofit2.Response;
 
 public class UserRepository {
     private final UserApi userApi;
+    private final AuthApi authApi;
+    private final TokenManager tokenManager;
 
     @Inject
-    public UserRepository(UserApi userApi){
+    public UserRepository(UserApi userApi, AuthApi authApi, TokenManager tokenManager){
         this.userApi = userApi;
+        this.authApi = authApi;
+        this.tokenManager = tokenManager;
+    }
+
+    public LiveData<Resource<Void>> logout() {
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        String refreshToken = tokenManager.getRefreshToken();
+        if (refreshToken == null) {
+            result.postValue(Resource.success(null));
+            return result;
+        }
+
+        authApi.logout(new RefreshTokenRequest(refreshToken)).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                result.postValue(Resource.success(null));
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                result.postValue(Resource.success(null)); // Success even on failure to clear local
+            }
+        });
+        return result;
     }
     public LiveData<Resource<UserProfileResponse >> getMe(){
         MutableLiveData<Resource<UserProfileResponse>> result = new MutableLiveData<>();
