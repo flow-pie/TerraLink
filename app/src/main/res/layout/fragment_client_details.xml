@@ -1,88 +1,315 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
     android:background="@drawable/bg_bottom_sheet"
-    android:orientation="vertical"
-    android:padding="@dimen/spacing_2xl">
+    android:orientation="vertical">
 
+    <!-- Drag handle -->
     <View
         android:layout_width="40dp"
         android:layout_height="4dp"
         android:layout_gravity="center_horizontal"
-        android:background="@color/surface_stroke"
-        android:layout_marginBottom="@dimen/spacing_lg" />
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/surface_stroke" />
 
+    <!-- Header -->
     <TextView
         android:id="@+id/tvClientName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="Client Details"
+        android:layout_marginBottom="17dp"
+        android:gravity="center"
+        android:paddingHorizontal="16dp"
+        tools:text="Elena Rodriguez"
         android:textAppearance="?attr/textAppearanceHeadlineSmall"
         android:textColor="@color/navy_text_primary"
         android:textStyle="bold" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#DDC1B6" />
+
+
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="400dp"
-        android:layout_marginTop="16dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:maxHeight="700dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingBottom="24dp">
 
+            <!-- Loan summary card -->
             <com.google.android.material.card.MaterialCardView
-                style="@style/Widget.TerraLink.Card"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="#D8C2B9"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="20dp">
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tvClientNo"
-                        android:layout_width="wrap_content"
+                    <!-- Header row: account number + balance -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="TC-0000"
-                        android:textAppearance="?attr/textAppearanceLabelSmall"
-                        android:textColor="@color/terracotta_primary"
-                        android:textStyle="bold" />
+                        android:background="#66F5E0D6"
+                        android:orientation="horizontal"
+                        android:padding="16dp">
 
-                    <TextView
-                        android:id="@+id/tvPhone"
-                        android:layout_width="wrap_content"
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.05"
+                                android:text="CLIENT NUMBER"
+                                android:textColor="#53433D"
+                                android:textSize="12sp"
+                                android:fontFamily="monospace" />
+
+                            <TextView
+                                android:id="@+id/tvClientNo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="#TC-2024-0982"
+                                android:textColor="#C05D2E"
+                                android:textSize="20sp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:gravity="end"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:letterSpacing="0.05"
+                                android:text="PHONE"
+                                android:textColor="#53433D"
+                                android:textSize="12sp"
+                                android:fontFamily="monospace" />
+
+                            <TextView
+                                android:id="@+id/tvPhone"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="2dp"
+                                android:text="+254 712 345 678"
+                                android:textColor="#5D6D3F"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:fontFamily="monospace" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <!-- 2x2 detail grid -->
+                    <GridLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:text="+254 700 000 000"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
-                        android:textColor="@color/navy_text_primary" />
+                        android:columnCount="2"
+                        android:padding="16dp"
+                        android:rowCount="3">
 
-                    <TextView
-                        android:id="@+id/tvCreatedAt"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="4dp"
-                        android:text="Member since Dec 2023"
-                        android:textAppearance="?attr/textAppearanceBodySmall"
-                        android:textColor="@color/text_muted" />
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+                            <TextView style="@style/TerraLink.Table.Label" android:text="Client Name" />
+                            <TextView android:id="@+id/tvGridClientName" style="@style/TerraLink.Table.Value" android:text="Elena Rodriguez" />
+                        </LinearLayout>
 
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:orientation="vertical">
+                            <TextView style="@style/TerraLink.Table.Label" android:text="Balance" />
+                            <TextView android:id="@+id/tvBalance" style="@style/TerraLink.Table.Value" android:text="Loading..." android:textColor="#5D6D3F" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:layout_marginTop="16dp"
+                            android:orientation="vertical">
+                            <TextView style="@style/TerraLink.Table.Label" android:text="Original Amount" />
+                            <TextView android:id="@+id/tvOriginalAmount" style="@style/TerraLink.Table.Value" android:text="KES 2,500.00" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:layout_marginTop="16dp"
+                            android:orientation="vertical">
+                            <TextView style="@style/TerraLink.Table.Label" android:text="Installments Paid" />
+                            <TextView android:id="@+id/tvInstallmentsPaid" style="@style/TerraLink.Table.Value" android:text="5 / 12" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:layout_marginTop="16dp"
+                            android:orientation="vertical">
+                            <TextView style="@style/TerraLink.Table.Label" android:text="Next Due Date" />
+                            <TextView
+                                android:id="@+id/tvNextDueDate"
+                                style="@style/TerraLink.Table.Value"
+                                android:text="Oct 15, 2024"
+                                android:textColor="@color/terracotta_primary" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:layout_marginTop="16dp"
+                            android:orientation="vertical">
+                            <TextView style="@style/TerraLink.Table.Label" android:text="Registered On" />
+                            <TextView android:id="@+id/tvCreatedAt" style="@style/TerraLink.Table.Value" android:text="Oct 15, 2024" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_columnWeight="1"
+                            android:layout_marginTop="16dp"
+                            android:orientation="vertical">
+                            <TextView style="@style/TerraLink.Table.Label" android:text="Member Status" />
+                            <TextView
+                                android:id="@+id/tvStatus"
+                                style="@style/TerraLink.Table.Value"
+                                android:text="ACTIVE"
+                                android:textColor="@color/status_green" />
+                        </LinearLayout>
+
+                    </GridLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <!-- Repayment schedule section -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Repayment Schedule"
+                        android:textColor="@color/terracotta_primary"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_marginEnd="4dp"
+                        android:src="@android:drawable/stat_sys_download"
+                        app:tint="@color/terracotta_primary" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="EXPORT PDF"
+                        android:textColor="@color/terracotta_primary"
+                        android:textSize="12sp"
+                        android:fontFamily="monospace" />
+                </LinearLayout>
+
+                <!-- Table: wider than the sheet by design -> horizontal scroll,
+                     independent of the vertical NestedScrollView above. -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#D8C2B9"
+                    app:strokeWidth="1dp">
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none">
+
+                        <LinearLayout
+                            android:id="@+id/repaymentScheduleContainer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <!-- Header row -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="#66F5E0D6"
+                                android:orientation="horizontal"
+                                android:padding="16dp">
+
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="48dp" android:text="ID" />
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="90dp" android:text="DUE DATE" />
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="100dp" android:text="AMOUNT KES" />
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="110dp" android:text="PRINCIPAL KES" />
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="100dp" android:text="INTEREST KES" />
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="110dp" android:text="STATUS" />
+                            </LinearLayout>
+
+                            <!-- Rows will be added here dynamically -->
+
+                        </LinearLayout>
+                    </HorizontalScrollView>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnViewLoans"
                 style="@style/Widget.TerraLink.Button.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
-                android:text="View Loan History"
-                app:icon="@drawable/ic_banknote" />
+                android:text="View Full History"
+                app:icon="@drawable/ic_chart" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
