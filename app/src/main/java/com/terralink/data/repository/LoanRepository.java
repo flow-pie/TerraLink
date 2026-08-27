@@ -15,6 +15,7 @@ import com.terralink.data.model.LoanAppraisalDetailResponse;
 import com.terralink.data.model.LoanAppraisalRequest;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.LoanListItemResponse;
+import com.terralink.data.model.LoanProductRequest;
 import com.terralink.data.model.LoanProductResponse;
 import com.terralink.data.model.PaginatedResponse;
 import com.terralink.data.model.RepaymentInstallments;
@@ -204,6 +205,29 @@ public class LoanRepository {
                     }
                 }
         );
+
+        return result;
+    }
+
+    public LiveData<Resource<Void>> createLoanProduct(LoanProductRequest request) {
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.createLoanProduct(request).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    result.postValue(Resource.success(null));
+                } else {
+                    result.postValue(Resource.error("Failed to create product: " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
 
         return result;
     }

@@ -12,6 +12,7 @@ import com.terralink.data.model.LoanAppraisalDetailResponse;
 import com.terralink.data.model.LoanAppraisalRequest;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.LoanListItemResponse;
+import com.terralink.data.model.LoanProductRequest;
 import com.terralink.data.model.LoanProductResponse;
 import com.terralink.data.model.PaginatedResponse;
 import com.terralink.data.model.RepaymentInstallments;
@@ -92,6 +93,11 @@ public interface LoanApi {
     @GET("api/loan-products")
     Call<List<LoanProductResponse>> getLoanProducts(
             @Query("includeInactive") boolean includeInactive
+    );
+
+    @POST("api/loan-products")
+    Call<Void> createLoanProduct(
+            @Body LoanProductRequest request
     );
 
     @GET("api/loans")

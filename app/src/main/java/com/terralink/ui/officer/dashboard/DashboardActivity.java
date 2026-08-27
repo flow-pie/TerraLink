@@ -74,8 +74,9 @@ public class DashboardActivity extends AppCompatActivity {
         });
 
         binding.btnNewLoanProduct.setOnClickListener(v -> {
-            // TODO: Navigate to new loan product
-            Toast.makeText(this, "New Loan Product Clicked", Toast.LENGTH_SHORT).show();
+            com.terralink.ui.officer.products.AddProductBottomSheetFragment fragment = 
+                com.terralink.ui.officer.products.AddProductBottomSheetFragment.newInstance();
+            fragment.show(getSupportFragmentManager(), fragment.getTag());
         });
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
