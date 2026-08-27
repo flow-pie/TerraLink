@@ -1,5 +1,6 @@
 package com.terralink.ui.officer.clients;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.terralink.R;
 import com.terralink.databinding.ActivityOfficerClientsBinding;
 import com.terralink.ui.auth.LoginStatus;
 
@@ -42,10 +44,36 @@ public class OfficerClientsActivity extends AppCompatActivity {
         setupToolbar();
         setupRecyclerView();
         setupSearch();
+        setupBottomNavigation();
 
         loadClients("");
         
         binding.swipeRefresh.setOnRefreshListener(() -> loadClients(binding.etSearch.getText().toString()));
+    }
+
+    private void setupBottomNavigation() {
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_clients);
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_clients) return true;
+            
+            if (id == R.id.nav_dashboard) {
+                startActivity(new Intent(this, com.terralink.ui.officer.dashboard.DashboardActivity.class));
+                finish();
+                return true;
+            }
+            if (id == R.id.nav_loans) {
+                startActivity(new Intent(this, com.terralink.ui.officer.loans.OfficerLoansActivity.class));
+                finish();
+                return true;
+            }
+            if (id == R.id.nav_reports) {
+                startActivity(new Intent(this, com.terralink.ui.officer.reports.OfficerReportsActivity.class));
+                finish();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupToolbar() {

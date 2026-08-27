@@ -1,12 +1,15 @@
 package com.terralink.ui.officer.loans;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import com.terralink.R;
 import com.terralink.databinding.ActivityOfficerLoansBinding;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -30,10 +33,36 @@ public class OfficerLoansActivity extends AppCompatActivity {
         setupToolbar();
         setupRecyclerView();
         setupFilters();
+        setupBottomNavigation();
 
         loadLoans();
 
         binding.swipeRefresh.setOnRefreshListener(this::loadLoans);
+    }
+
+    private void setupBottomNavigation() {
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_loans);
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_loans) return true;
+            
+            if (id == R.id.nav_dashboard) {
+                startActivity(new Intent(this, com.terralink.ui.officer.dashboard.DashboardActivity.class));
+                finish();
+                return true;
+            }
+            if (id == R.id.nav_clients) {
+                startActivity(new Intent(this, com.terralink.ui.officer.clients.OfficerClientsActivity.class));
+                finish();
+                return true;
+            }
+            if (id == R.id.nav_reports) {
+                startActivity(new Intent(this, com.terralink.ui.officer.reports.OfficerReportsActivity.class));
+                finish();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupToolbar() {
@@ -42,7 +71,6 @@ public class OfficerLoansActivity extends AppCompatActivity {
 
     private void setupRecyclerView() {
         adapter = new OfficerLoansAdapter(loan -> {
-            // TODO: Navigate to loan detail
             Toast.makeText(this, "Loan clicked: " + loan.getLoanNo(), Toast.LENGTH_SHORT).show();
         });
         binding.rvLoans.setLayoutManager(new LinearLayoutManager(this));
