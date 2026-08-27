@@ -27,6 +27,7 @@
                 android:background="@drawable/bg_payment_icon_circle">
 
                 <ImageView
+                    android:id="@+id/paymentImage"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
                     android:layout_gravity="center"
@@ -98,16 +99,6 @@
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="@color/status_green"
                 android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/btnPay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="Pay"
-                android:visibility="gone"
-                android:backgroundTint="@color/terralink_button_primary"
-                android:textColor="@color/surface_card" />
 
         </LinearLayout>
 

@@ -1,13 +1,16 @@
 package com.terralink.ui.client.home;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.terralink.R;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.databinding.ItemPaymentHistoryBinding;
@@ -76,22 +79,9 @@ public class RepaymentScheduleAdapter extends RecyclerView.Adapter<RepaymentSche
             binding.tvInstallmentStatus.setText(schedule.getStatus());
 
             if ("PENDING".equalsIgnoreCase(schedule.getStatus())) {
-                binding.btnPay.setVisibility(View.VISIBLE);
-                binding.btnPay.setOnClickListener(v -> {
-                    if (loanDetails != null && v.getContext() instanceof AppCompatActivity) {
-                        AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                        PaymentBottomSheetFragment fragment = PaymentBottomSheetFragment.newInstance(
-                                Long.parseLong(loanDetails.getLoanId()),
-                                schedule.getRepaymentScheduleId(),
-                                loanDetails.getOutStandingAmount(),
-                                loanDetails.getNextInstallmentAmount(),
-                                loanDetails.getNextDueDate()
-                        );
-                        fragment.show(activity.getSupportFragmentManager(), fragment.getTag());
-                    }
-                });
-            } else {
-                binding.btnPay.setVisibility(View.GONE);
+                binding.tvInstallmentStatus.setBackgroundResource(R.drawable.bg_quick_action1_background);
+                binding.tvInstallmentStatus.setTextColor(ContextCompat.getColor(binding.getRoot().getContext(), R.color.on_terracotta));
+                binding.paymentImage.setColorFilter(ContextCompat.getColor(binding.paymentImage.getContext(), R.color.terracotta_primary));
             }
         }
     }
