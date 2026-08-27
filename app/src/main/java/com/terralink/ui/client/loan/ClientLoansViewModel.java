@@ -31,7 +31,7 @@ public class ClientLoansViewModel extends ViewModel {
         return userRepository.getMe();
     }
 
-    public LiveData<Resource<List<LoanListItemResponse>>> getLoans(){
+    public LiveData<Resource<com.terralink.data.model.PaginatedResponse<LoanListItemResponse>>> getLoans(){
         return loanRepository.getLoans("ACTIVE", null, 1, 20);
     }
 

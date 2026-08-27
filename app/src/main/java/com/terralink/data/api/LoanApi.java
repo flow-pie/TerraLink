@@ -101,7 +101,7 @@ public interface LoanApi {
     );
 
     @GET("api/loans")
-    Call<List<LoanListItemResponse>> getLoans(
+    Call<PaginatedResponse<LoanListItemResponse>> getLoans(
             @Query("status") String status,
             @Query("search") String search,
             @Query("page") int page,

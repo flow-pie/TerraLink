@@ -5,9 +5,11 @@ public class LoanListItemResponse {
     private String loanNo;
     private String clientFullName;
     private double approvedAmount;
-    private double outstandingAmount;
+    private double balance;
     private String status;
     private String nextDueDate;
+    private String sector;
+    private int repaymentProgress;
 
     public String getId() {
         return id;
@@ -26,7 +28,11 @@ public class LoanListItemResponse {
     }
 
     public double getOutstandingAmount() {
-        return outstandingAmount;
+        return balance;
+    }
+
+    public double getBalance() {
+        return balance;
     }
 
     public String getStatus() {
@@ -35,5 +41,13 @@ public class LoanListItemResponse {
 
     public String getNextDueDate() {
         return nextDueDate;
+    }
+
+    public String getSector() {
+        return sector;
+    }
+
+    public int getRepaymentProgress() {
+        return repaymentProgress;
     }
 }

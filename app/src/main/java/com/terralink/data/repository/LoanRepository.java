@@ -188,7 +188,7 @@ public class LoanRepository {
         MutableLiveData<Resource<List<LoanProductResponse>>> result = new MutableLiveData<>();
         result.setValue(Resource.loading());
 
-        loanApi.getLoanProducts(true).enqueue(
+        loanApi.getLoanProducts(false).enqueue(
                 new Callback<List<LoanProductResponse>>() {
                     @Override
                     public void onResponse(Call<List<LoanProductResponse>> call, Response<List<LoanProductResponse>> response) {
@@ -232,14 +232,14 @@ public class LoanRepository {
         return result;
     }
 
-    public LiveData<Resource<List<LoanListItemResponse>>> getLoans(String status, String search, int page, int pageSize){
-        MutableLiveData<Resource<List<LoanListItemResponse>>> result = new MutableLiveData<>();
+    public LiveData<Resource<PaginatedResponse<LoanListItemResponse>>> getLoans(String status, String search, int page, int pageSize){
+        MutableLiveData<Resource<PaginatedResponse<LoanListItemResponse>>> result = new MutableLiveData<>();
         result.setValue(Resource.loading());
 
         loanApi.getLoans(status, search, page, pageSize).enqueue(
-                new Callback<List<LoanListItemResponse>>() {
+                new Callback<PaginatedResponse<LoanListItemResponse>>() {
                     @Override
-                    public void onResponse(Call<List<LoanListItemResponse>> call, Response<List<LoanListItemResponse>> response) {
+                    public void onResponse(Call<PaginatedResponse<LoanListItemResponse>> call, Response<PaginatedResponse<LoanListItemResponse>> response) {
                         if(response.isSuccessful() && response.body() != null){
                             result.postValue(Resource.success(response.body()));
                         }else{
@@ -248,7 +248,7 @@ public class LoanRepository {
                     }
 
                     @Override
-                    public void onFailure(Call<List<LoanListItemResponse>> call, Throwable t) {
+                    public void onFailure(Call<PaginatedResponse<LoanListItemResponse>> call, Throwable t) {
                         result.postValue(Resource.error("Network Error: "+t.getMessage()));
                     }
                 }

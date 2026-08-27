@@ -1,118 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.TerraLink.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="0dp"
+    app:strokeColor="@color/surface_stroke"
+    app:strokeWidth="1dp">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="wrap_content">
 
-        <LinearLayout
+        <View
+            android:id="@+id/viewStatusIndicator"
+            android:layout_width="4dp"
+            android:layout_height="0dp"
+            android:background="@color/status_green"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:padding="16dp"
+            app:layout_constraintStart_toEndOf="@id/viewStatusIndicator"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgClient"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:scaleType="centerCrop"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.Circle"
+                android:src="@drawable/avatar" />
 
             <TextView
-                android:id="@+id/tvLoanNo"
+                android:id="@+id/tvClientName"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="L-00000"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="@color/terracotta_primary"
-                android:textStyle="bold" />
+                android:layout_marginStart="12dp"
+                android:textColor="@color/navy_text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/tvAmount"
+                app:layout_constraintStart_toEndOf="@+id/imgClient"
+                app:layout_constraintTop_toTopOf="@+id/imgClient"
+                tools:text="Amara Okafor" />
+
+            <TextView
+                android:id="@+id/tvLoanSub"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/tvStatus"
+                app:layout_constraintStart_toStartOf="@+id/tvClientName"
+                app:layout_constraintTop_toBottomOf="@+id/tvClientName"
+                tools:text="LID-90244 • Agribusiness" />
+
+            <TextView
+                android:id="@+id/tvAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/navy_text_primary"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tvClientName"
+                tools:text="KES 45,000" />
 
             <TextView
                 android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_status_badge_green"
+                android:layout_marginTop="4dp"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="2dp"
-                android:text="ACTIVE"
-                android:textAppearance="?attr/textAppearanceLabelSmall"
-                android:textColor="@color/status_green"
-                android:textStyle="bold" />
-        </LinearLayout>
+                android:textAllCaps="true"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tvAmount"
+                tools:background="@drawable/bg_status_badge_green"
+                tools:text="ACTIVE"
+                tools:textColor="@color/status_green" />
 
-        <TextView
-            android:id="@+id/tvClientName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Client Full Name"
-            android:textAppearance="?attr/textAppearanceTitleMedium"
-            android:textColor="@color/navy_text_primary"
-            android:textStyle="bold" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvProgressLabel"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginTop="16dp"
+                android:text="Repayment Progress"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgClient" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Amount"
-                    android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="@color/text_secondary" />
-
-                <TextView
-                    android:id="@+id/tvApprovedAmount"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KES 0.00"
-                    android:textAppearance="?attr/textAppearanceBodyLarge"
-                    android:textColor="@color/navy_text_primary"
-                    android:textStyle="bold" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvProgressPercent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/tvProgressLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:text="65%" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Outstanding"
-                    android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="@color/text_secondary" />
+            <com.google.android.material.progressindicator.LinearProgressIndicator
+                android:id="@+id/progressRepayment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                app:indicatorColor="@color/terracotta_primary"
+                app:layout_constraintTop_toBottomOf="@+id/tvProgressLabel"
+                app:trackColor="@color/surface_stroke"
+                app:trackThickness="6dp"
+                app:trackCornerRadius="4dp"
+                tools:progress="65" />
 
-                <TextView
-                    android:id="@+id/tvOutstanding"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="KES 0.00"
-                    android:textAppearance="?attr/textAppearanceBodyLarge"
-                    android:textColor="@color/status_red"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvNextDue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:text="Next Payment: 2023-12-01"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="@color/text_muted" />
-
-    </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </com.google.android.material.card.MaterialCardView>
