@@ -52,7 +52,75 @@ public class DashboardActivity extends AppCompatActivity {
 
         setupRecyclerView();
         setupClickListeners();
-        observeViewModel();
+        
+        binding.swipeRefresh.setOnRefreshListener(this::loadData);
+        loadData();
+    }
+
+    private void loadData() {
+        binding.swipeRefresh.setRefreshing(true);
+        
+        // Profile
+        viewModel.getProfile().observe(this, result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS) {
+                UserProfileResponse profile = result.getData();
+                if (profile != null) {
+                    binding.tvWelcome.setText(String.format("Welcome, %s", profile.getFullName().split(" ")[0]));
+                    binding.tvRegionId.setText(String.format("Employee ID: %s | Role: %s", 
+                            profile.getEmployeeNo(), profile.getRoleName()));
+                }
+                checkAllLoaded();
+            } else if (result.getStatus() == LoginStatus.ERROR) {
+                Toast.makeText(this, "Error loading profile: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                checkAllLoaded();
+            }
+        });
+
+        // Portfolio Summary
+        viewModel.getPortfolioSummary().observe(this, result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS) {
+                PortfolioSummaryResponse summary = result.getData();
+                if (summary != null) {
+                    binding.tvActiveLoans.setText(String.format(Locale.getDefault(), "%d ", summary.getActiveLoansCount()));
+                    binding.tvDisbursed.setText(String.format(Locale.getDefault(), "KES %,.0f", summary.getDisbursedAmountMtd()));
+                    binding.tvTotalClients.setText(String.format(Locale.getDefault(), "%d ", summary.getTotalClients()));
+                }
+                checkAllLoaded();
+            } else if (result.getStatus() == LoginStatus.ERROR) {
+                Toast.makeText(this, "Error loading summary: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                checkAllLoaded();
+            }
+        });
+
+        // Pending Appraisals
+        viewModel.getPendingAppraisals().observe(this, result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+                PaginatedResponse<LoanApplicationResponse> paginated = result.getData();
+                List<LoanApplicationResponse> allApps = paginated.getItems();
+                java.util.List<LoanApplicationResponse> pendingApps = new java.util.ArrayList<>();
+                if (allApps != null) {
+                    for (LoanApplicationResponse app : allApps) {
+                        String status = app.getStatus();
+                        if ("SUBMITTED".equals(status) || "UNDER_REVIEW".equals(status) || "INFO_REQUESTED".equals(status)) {
+                            pendingApps.add(app);
+                        }
+                    }
+                }
+                binding.tvPendingAppraisalsCount.setText(String.format(Locale.getDefault(), "%02d", pendingApps.size()));
+                binding.tvNoPendingAppraisals.setVisibility(pendingApps.isEmpty() ? View.VISIBLE : View.GONE);
+                binding.rvPendingAppraisals.setVisibility(pendingApps.isEmpty() ? View.GONE : View.VISIBLE);
+                appraisalAdapter.submitList(pendingApps);
+                checkAllLoaded();
+            } else if (result.getStatus() == LoginStatus.ERROR) {
+                checkAllLoaded();
+            }
+        });
+    }
+
+    private void checkAllLoaded() {
+        // Simple logic to hide refreshing when data comes back. 
+        // In a more robust app, we'd count the successful/failed requests.
+        binding.swipeRefresh.setRefreshing(false);
     }
 
     private void setupRecyclerView() {
@@ -62,6 +130,7 @@ public class DashboardActivity extends AppCompatActivity {
         });
         binding.rvPendingAppraisals.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
         binding.rvPendingAppraisals.setAdapter(appraisalAdapter);
+        binding.rvPendingAppraisals.setNestedScrollingEnabled(false);
     }
 
     private void setupClickListeners() {
@@ -94,69 +163,7 @@ public class DashboardActivity extends AppCompatActivity {
                 startActivity(new Intent(this, com.terralink.ui.officer.tasks.OfficerTasksActivity.class));
                 return true;
             }
-            // Handle other nav items
             return true;
-        });
-    }
-
-    private void observeViewModel() {
-        viewModel.getProfile().observe(this, result -> {
-            switch (result.getStatus()) {
-                case SUCCESS:
-                    UserProfileResponse profile = result.getData();
-                    if (profile != null) {
-                        binding.tvWelcome.setText(String.format("Welcome, %s", profile.getFullName().split(" ")[0]));
-                        binding.tvRegionId.setText(String.format("Employee ID: %s | Role: %s", 
-                                profile.getEmployeeNo(), profile.getRoleName()));
-                    }
-                    break;
-                case ERROR:
-                    Toast.makeText(this, "Error loading profile: " + result.getMessage(), Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        });
-
-        viewModel.getPortfolioSummary().observe(this, result -> {
-            switch (result.getStatus()) {
-                case SUCCESS:
-                    PortfolioSummaryResponse summary = result.getData();
-                    if (summary != null) {
-                        binding.tvActiveLoans.setText(String.format(Locale.getDefault(), "%d ", summary.getActiveLoansCount()));
-                        binding.tvDisbursed.setText(String.format(Locale.getDefault(), "KES %,.0f", summary.getDisbursedAmountMtd()));
-                        binding.tvTotalClients.setText(String.format(Locale.getDefault(), "%d ", summary.getTotalClients()));
-                    }
-                    break;
-                case ERROR:
-                    Toast.makeText(this, "Error loading summary: " + result.getMessage(), Toast.LENGTH_SHORT).show();
-                    break;
-            }
-        });
-
-        viewModel.getPendingAppraisals().observe(this, result -> {
-            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
-                PaginatedResponse<LoanApplicationResponse> paginated = result.getData();
-                
-                List<LoanApplicationResponse> allApps = paginated.getItems();
-                java.util.List<LoanApplicationResponse> pendingApps = new java.util.ArrayList<>();
-                
-                if (allApps != null) {
-                    for (LoanApplicationResponse app : allApps) {
-                        String status = app.getStatus();
-                        if ("SUBMITTED".equals(status) || "UNDER_REVIEW".equals(status) || "INFO_REQUESTED".equals(status)) {
-                            pendingApps.add(app);
-                        }
-                    }
-                }
-
-                // Update the pending count metric
-                binding.tvPendingAppraisalsCount.setText(String.format(Locale.getDefault(), "%02d", pendingApps.size()));
-
-                // Reset visibility
-                binding.tvNoPendingAppraisals.setVisibility(pendingApps.isEmpty() ? View.VISIBLE : View.GONE);
-                binding.rvPendingAppraisals.setVisibility(pendingApps.isEmpty() ? View.GONE : View.VISIBLE);
-                
-                appraisalAdapter.submitList(pendingApps);
-            }
         });
     }
 }
