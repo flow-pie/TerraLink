@@ -2,88 +2,243 @@ package com.terralink.ui.client.notification;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.terralink.R;
+import com.terralink.data.model.LoanApplicationStatusResponse;
 import com.terralink.data.model.NotificationResponse;
 import com.terralink.databinding.ActivityNotificationStatusBinding;
+import com.terralink.databinding.LayoutTimelineItemBinding;
 import com.terralink.ui.client.home.ClientHomepageActivity;
-import com.terralink.ui.client.notification.NotificationStatusViewModel;
-import com.terralink.ui.common.Resource;
+import com.terralink.ui.client.loan.ApplyLoanActivity;
+import com.terralink.ui.client.loan.ClientLoansActivity;
+import com.terralink.ui.client.profile.ProfileActivity;
+import com.terralink.ui.client.transaction.TransactionHistoryActivity;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
 public class NotificationStatusActivity extends AppCompatActivity {
 
+    public static final String EXTRA_APPLICATION_ID = "extra_application_id";
+    public static final String EXTRA_LOAN_NO = "extra_loan_no";
+
     private NotificationStatusViewModel viewModel;
     private NotificationAdapter notificationAdapter;
+    private ActivityNotificationStatusBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityNotificationStatusBinding binding = ActivityNotificationStatusBinding.inflate(getLayoutInflater());
+        binding = ActivityNotificationStatusBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         viewModel = new ViewModelProvider(this).get(NotificationStatusViewModel.class);
 
+        setupNavigation();
+        setupNotifications();
+
+        int applicationId = getIntent().getIntExtra(EXTRA_APPLICATION_ID, -1);
+        String loanNo = getIntent().getStringExtra(EXTRA_LOAN_NO);
+
+        if (applicationId != -1) {
+            fetchApplicationStatus(applicationId, loanNo);
+        } else {
+            binding.statusContainer.setVisibility(View.GONE);
+        }
+    }
+
+    private void setupNavigation() {
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, ClientHomepageActivity.class));
+                return true;
+            } else if (id == R.id.nav_loans) {
+                startActivity(new Intent(this, ClientLoansActivity.class));
+                return true;
+            } else if (id == R.id.nav_history) {
+                startActivity(new Intent(this, TransactionHistoryActivity.class));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, ProfileActivity.class));
+                return true;
+            }
+            return false;
+        });
+
+        binding.fabNewAction.setOnClickListener(v -> startActivity(new Intent(this, ApplyLoanActivity.class)));
+        binding.appBarContent.btnNotifications.setOnClickListener(v -> { /* Already here */ });
+    }
+
+    private void setupNotifications() {
         notificationAdapter = new NotificationAdapter(new ArrayList<>());
         binding.rvNotifications.setLayoutManager(new LinearLayoutManager(this));
         binding.rvNotifications.setAdapter(notificationAdapter);
 
-        binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
-
-        binding.fabNewAction.setOnClickListener(v -> {
-            finish();
-        });
-
-        binding.appBarContent.btnNotifications.setOnClickListener(v -> {
-            startActivity(new Intent(this, ClientHomepageActivity.class));
-        });
-
         binding.btnMarkAllRead.setOnClickListener(v -> {
             viewModel.markAllAsRead().observe(this, result -> {
-                switch (result.getStatus()){
-                    case LOADING:
-                        break;
-                    case SUCCESS:
-                        Toast.makeText(this, "All notifications marked as read", Toast.LENGTH_SHORT).show();
-                        break;
-                    case ERROR:
-                        Toast.makeText(this, "Failed to update notifications", Toast.LENGTH_SHORT).show();
-                        break;
+                if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS) {
+                    Toast.makeText(this, "All marked as read", Toast.LENGTH_SHORT).show();
                 }
             });
         });
 
         viewModel.getNotifications().observe(this, result -> {
-            switch (result.getStatus()){
+            if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS && result.getData() != null) {
+                notificationAdapter.setNotifications(result.getData());
+            }
+        });
+    }
+
+    private void fetchApplicationStatus(int id, String loanNo) {
+        binding.tvLoanReference.setText(loanNo != null ? "#" + loanNo : "Application #" + id);
+        
+        viewModel.getLoanStatus(id).observe(this, result -> {
+            switch (result.getStatus()) {
                 case LOADING:
-                    binding.loadingView.getRoot().setVisibility(android.view.View.VISIBLE);
+                    binding.loadingView.getRoot().setVisibility(View.VISIBLE);
                     break;
                 case SUCCESS:
-                    binding.loadingView.getRoot().setVisibility(android.view.View.GONE);
-                    List<NotificationResponse> notifications = result.getData();
-                    if(notifications != null){
-                        notificationAdapter.setNotifications(notifications);
-                        if(notifications.isEmpty()){
-                            Toast.makeText(this, "No notifications yet", Toast.LENGTH_SHORT).show();
-                        }
+                    binding.loadingView.getRoot().setVisibility(View.GONE);
+                    if (result.getData() != null) {
+                        populateTimeline(result.getData());
                     }
                     break;
                 case ERROR:
-                    binding.loadingView.getRoot().setVisibility(android.view.View.GONE);
-                    String message = result.getMessage() != null ? result.getMessage() : "Failed to load notifications";
-                    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                    binding.loadingView.getRoot().setVisibility(View.GONE);
+                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
                     break;
             }
         });
+    }
+
+    private void populateTimeline(LoanApplicationStatusResponse data) {
+        binding.statusContainer.setVisibility(View.VISIBLE);
+        binding.tvStatusBadge.setText(data.getStatus());
+
+        // Update badge color based on status
+        int badgeBg = R.drawable.bg_status_badge_green;
+        int badgeText = R.color.status_green;
+
+        if ("REJECTED".equals(data.getStatus())) {
+            badgeBg = R.drawable.bg_status_badge_red;
+            badgeText = R.color.status_red;
+        } else if ("INFO_REQUESTED".equals(data.getStatus())) {
+            badgeBg = R.drawable.bg_status_badge_red; 
+            badgeText = R.color.terracotta_primary;
+        } else if ("SUBMITTED".equals(data.getStatus()) || "UNDER_REVIEW".equals(data.getStatus())) {
+            badgeBg = R.drawable.bg_status_badge_red; 
+            badgeText = R.color.terracotta_primary;
+        }
+
+        binding.tvStatusBadge.setBackgroundResource(badgeBg);
+        binding.tvStatusBadge.setTextColor(ContextCompat.getColor(this, badgeText));
+
+        // Handle Officer Feedback (Decision Notes)
+        if (data.getDecisionNotes() != null && !data.getDecisionNotes().trim().isEmpty()) {
+            binding.cardOfficerFeedback.setVisibility(View.VISIBLE);
+            
+            // Format decision date
+            String decisionDate = data.getDecidedAt() != null ? formatDate(data.getDecidedAt()) : "Recent";
+            binding.tvFeedbackTitle.setText("OFFICER FEEDBACK • " + decisionDate.toUpperCase());
+            binding.tvFeedbackNotes.setText(data.getDecisionNotes());
+            
+            // Adjust styling based on urgency
+            if ("REJECTED".equals(data.getStatus())) {
+                binding.cardOfficerFeedback.setCardBackgroundColor(ContextCompat.getColor(this, R.color.status_red_bg));
+                binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(this, R.color.status_red));
+                binding.ivFeedbackIcon.setImageResource(R.drawable.ic_lock); 
+                binding.ivFeedbackIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_red));
+            } else if ("INFO_REQUESTED".equals(data.getStatus())) {
+                binding.cardOfficerFeedback.setCardBackgroundColor(ContextCompat.getColor(this, R.color.status_amber_bg));
+                binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(this, R.color.status_amber));
+                binding.ivFeedbackIcon.setImageResource(R.drawable.ic_help_circle); 
+                binding.ivFeedbackIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_amber));
+            } else {
+                binding.cardOfficerFeedback.setCardBackgroundColor(ContextCompat.getColor(this, R.color.terracotta_container));
+                binding.tvFeedbackTitle.setTextColor(ContextCompat.getColor(this, R.color.status_green));
+                binding.ivFeedbackIcon.setImageResource(R.drawable.ic_check_circle);
+                binding.ivFeedbackIcon.setColorFilter(ContextCompat.getColor(this, R.color.status_green));
+            }
+        } else {
+            binding.cardOfficerFeedback.setVisibility(View.GONE);
+        }
+        
+        if (data.getAssignedOfficer() != null) {
+            binding.cardOfficer.setVisibility(View.VISIBLE);
+            binding.tvOfficerName.setText(data.getAssignedOfficer().getFullName());
+            binding.tvOfficerId.setText("Officer ID: " + data.getAssignedOfficer().getEmployeeNo());
+        }
+
+        List<LoanApplicationStatusResponse.TimelineStage> timeline = data.getTimeline();
+        if (timeline == null) return;
+
+        for (LoanApplicationStatusResponse.TimelineStage stage : timeline) {
+            switch (stage.getStage()) {
+                case "SUBMITTED":
+                    updateStep(LayoutTimelineItemBinding.bind(binding.stepSubmitted.getRoot()), "Application Submitted", stage.getCompletedAt(), data.getStatus());
+                    break;
+                case "UNDER_REVIEW":
+                    updateStep(LayoutTimelineItemBinding.bind(binding.stepReview.getRoot()), "Under Review", stage.getCompletedAt(), data.getStatus());
+                    break;
+                case "APPROVAL":
+                    updateStep(LayoutTimelineItemBinding.bind(binding.stepApproval.getRoot()), "Final Approval", stage.getCompletedAt(), data.getStatus());
+                    break;
+                case "DISBURSEMENT":
+                    updateStep(LayoutTimelineItemBinding.bind(binding.stepDisbursement.getRoot()), "Disbursement", stage.getCompletedAt(), data.getStatus());
+                    LayoutTimelineItemBinding.bind(binding.stepDisbursement.getRoot()).indicatorLine.setVisibility(View.GONE);
+                    break;
+            }
+        }
+    }
+
+    private void updateStep(LayoutTimelineItemBinding step, String title, String time, String overallStatus) {
+        step.tvTitle.setText(title);
+        if (time != null) {
+            step.tvTitle.setTextColor(ContextCompat.getColor(this, R.color.navy_text_primary));
+            step.tvTime.setText(formatDate(time));
+            step.tvTime.setTextColor(ContextCompat.getColor(this, R.color.text_secondary));
+            
+            // If the application was rejected at this specific stage
+            if ("REJECTED".equals(overallStatus)) {
+                step.indicatorDot.setBackgroundResource(R.drawable.bg_status_badge_red);
+                step.indicatorLine.setBackgroundColor(ContextCompat.getColor(this, R.color.status_red));
+                step.tvTitle.setTextColor(ContextCompat.getColor(this, R.color.status_red));
+            } else {
+                step.indicatorDot.setBackgroundResource(R.drawable.bg_stepper_active);
+                step.indicatorLine.setBackgroundColor(ContextCompat.getColor(this, R.color.terracotta_primary));
+            }
+        } else {
+            step.tvTitle.setTextColor(ContextCompat.getColor(this, R.color.text_muted));
+            step.tvTime.setText("Pending");
+            step.indicatorDot.setBackgroundResource(R.drawable.bg_stepper_inactive);
+            step.indicatorLine.setBackgroundColor(ContextCompat.getColor(this, R.color.stepper_track));
+        }
+    }
+
+    private String formatDate(String dateStr) {
+        try {
+            SimpleDateFormat input = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat output = new SimpleDateFormat("dd MMM, yyyy • hh:mm a", Locale.getDefault());
+            Date date = input.parse(dateStr);
+            return output.format(date);
+        } catch (Exception e) {
+            return dateStr;
+        }
     }
 }

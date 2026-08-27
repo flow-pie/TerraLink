@@ -100,15 +100,6 @@ public class LoanAppraisalBottomSheetFragment extends BottomSheetDialogFragment 
             binding.clientStatus.setText(score.getRating());
         }
 
-        // 3. Cash Flow
-//        LoanAppraisalDetailResponse.IncomeAssessment income = data.getIncomeAssessment();
-//        if (income != null) {
-//            binding.tvBusinessRevenue.setText(String.format(Locale.getDefault(), "+ %,.0f", income.getBusinessRevenue()));
-//            binding.tvOtherIncome.setText(String.format(Locale.getDefault(), "+ %,.0f", income.getOtherIncome()));
-//            binding.tvExpenses.setText(String.format(Locale.getDefault(), "- %,.0f", income.getHouseholdExpenses()));
-//            binding.tvDisposableIncome.setText(String.format(Locale.getDefault(), "KES %,.0f", income.getDisposableIncome()));
-//        }
-
         // 4. Asset Inventory
         populateAssets(data.getAssets());
 

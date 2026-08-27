@@ -35,17 +35,17 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public NotificationViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType){
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_transaction_card, parent, false);
+                .inflate(R.layout.item_notification_card, parent, false);
         return new NotificationViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position){
         NotificationResponse notification = notifications.get(position);
-        holder.tvTxTitle.setText(notification.getTitle() != null ? notification.getTitle() : "Notification");
-        holder.tvTxRef.setText(notification.getMessage() != null ? notification.getMessage() : "");
-        holder.tvTxDate.setText(formatDate(notification.getCreatedAt()));
-        holder.tvTxAmount.setText(notification.isRead() ? "Read" : "Unread");
+        holder.tvTitle.setText(notification.getTitle() != null ? notification.getTitle() : "Notification");
+        holder.tvMessage.setText(notification.getMessage() != null ? notification.getMessage() : "");
+        holder.tvDate.setText(formatDate(notification.getCreatedAt()));
+        holder.indicatorDot.setVisibility(notification.isRead() ? View.GONE : View.VISIBLE);
     }
 
     @Override
@@ -66,15 +66,15 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     public static class NotificationViewHolder extends RecyclerView.ViewHolder{
-        TextView tvTxTitle, tvTxRef, tvTxDate, tvTxAmount, tvTxStatus;
+        TextView tvTitle, tvMessage, tvDate;
+        View indicatorDot;
 
         public NotificationViewHolder(@NonNull View itemView){
             super(itemView);
-            tvTxTitle = itemView.findViewById(R.id.tvTxTitle);
-            tvTxRef = itemView.findViewById(R.id.tvTxRef);
-            tvTxDate = itemView.findViewById(R.id.tvTxDate);
-            tvTxAmount = itemView.findViewById(R.id.tvTxAmount);
-            tvTxStatus = itemView.findViewById(R.id.tvTxStatus);
+            tvTitle = itemView.findViewById(R.id.tvTitle);
+            tvMessage = itemView.findViewById(R.id.tvMessage);
+            tvDate = itemView.findViewById(R.id.tvDate);
+            indicatorDot = itemView.findViewById(R.id.indicatorDot);
         }
     }
 }

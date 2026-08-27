@@ -33,6 +33,7 @@ public class DashboardActivity extends AppCompatActivity {
 
     private DashboardViewModel viewModel;
     private ActivityDashboardBinding binding;
+    private PendingAppraisalAdapter appraisalAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +50,18 @@ public class DashboardActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
+        setupRecyclerView();
         setupClickListeners();
         observeViewModel();
+    }
+
+    private void setupRecyclerView() {
+        appraisalAdapter = new PendingAppraisalAdapter(app -> {
+            LoanAppraisalBottomSheetFragment fragment = LoanAppraisalBottomSheetFragment.newInstance(app.getId());
+            fragment.show(getSupportFragmentManager(), fragment.getTag());
+        });
+        binding.rvPendingAppraisals.setLayoutManager(new androidx.recyclerview.widget.LinearLayoutManager(this));
+        binding.rvPendingAppraisals.setAdapter(appraisalAdapter);
     }
 
     private void setupClickListeners() {
@@ -70,6 +81,18 @@ public class DashboardActivity extends AppCompatActivity {
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_dashboard) return true;
+            if (id == R.id.nav_clients) {
+                startActivity(new Intent(this, com.terralink.ui.officer.clients.OfficerClientsActivity.class));
+                return true;
+            }
+            if (id == R.id.nav_loans) {
+                startActivity(new Intent(this, com.terralink.ui.officer.loans.OfficerLoansActivity.class));
+                return true;
+            }
+            if (id == R.id.nav_reports) {
+                startActivity(new Intent(this, com.terralink.ui.officer.reports.OfficerReportsActivity.class));
+                return true;
+            }
             // Handle other nav items
             return true;
         });
@@ -112,41 +135,26 @@ public class DashboardActivity extends AppCompatActivity {
             if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
                 PaginatedResponse<LoanApplicationResponse> paginated = result.getData();
                 
-                // Update the pending count metric from the pagination total
-                binding.tvPendingAppraisalsCount.setText(String.format(Locale.getDefault(), "%02d", paginated.getTotalCount()));
-
-                List<LoanApplicationResponse> apps = paginated.getItems();
+                List<LoanApplicationResponse> allApps = paginated.getItems();
+                java.util.List<LoanApplicationResponse> pendingApps = new java.util.ArrayList<>();
                 
-                // Reset visibility
-                binding.cardAppraisal1.setVisibility(View.GONE);
-                binding.cardAppraisal2.setVisibility(View.GONE);
-                binding.tvNoPendingAppraisals.setVisibility(View.GONE);
-
-                if (apps != null && !apps.isEmpty()) {
-                    binding.cardAppraisal1.setVisibility(View.VISIBLE);
-                    binding.tvApplicantName1.setText(apps.get(0).getClientFullName());
-                    binding.tvLoanId1.setText("Loan ID: #" + apps.get(0).getApplicationNo());
-                    binding.btnReview1.setOnClickListener(v -> {
-                        LoanAppraisalBottomSheetFragment fragment = LoanAppraisalBottomSheetFragment.newInstance(
-                                apps.get(0).getId()
-                        );
-                        fragment.show(getSupportFragmentManager(), fragment.getTag());
-                    });
-
-                    if (apps.size() >= 2) {
-                        binding.cardAppraisal2.setVisibility(View.VISIBLE);
-                        binding.tvApplicantName2.setText(apps.get(1).getClientFullName());
-                        binding.tvLoanId2.setText("Loan ID: #" + apps.get(1).getApplicationNo());
-                        binding.btnReview2.setOnClickListener(v -> {
-                            LoanAppraisalBottomSheetFragment fragment = LoanAppraisalBottomSheetFragment.newInstance(
-                                    apps.get(1).getId()
-                            );
-                            fragment.show(getSupportFragmentManager(), fragment.getTag());
-                        });
+                if (allApps != null) {
+                    for (LoanApplicationResponse app : allApps) {
+                        String status = app.getStatus();
+                        if ("SUBMITTED".equals(status) || "UNDER_REVIEW".equals(status) || "INFO_REQUESTED".equals(status)) {
+                            pendingApps.add(app);
+                        }
                     }
-                } else {
-                    binding.tvNoPendingAppraisals.setVisibility(View.VISIBLE);
                 }
+
+                // Update the pending count metric
+                binding.tvPendingAppraisalsCount.setText(String.format(Locale.getDefault(), "%02d", pendingApps.size()));
+
+                // Reset visibility
+                binding.tvNoPendingAppraisals.setVisibility(pendingApps.isEmpty() ? View.VISIBLE : View.GONE);
+                binding.rvPendingAppraisals.setVisibility(pendingApps.isEmpty() ? View.GONE : View.VISIBLE);
+                
+                appraisalAdapter.submitList(pendingApps);
             }
         });
     }

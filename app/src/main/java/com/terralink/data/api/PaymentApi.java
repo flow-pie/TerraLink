@@ -23,6 +23,7 @@ public interface PaymentApi {
     @GET("api/payments/clients/{clientId}/payments")
     Call<PaginatedResponse<PaymentHistoryResponse>> getClientPayments(
             @Path("clientId") String clientId,
+            @Query("type") String type,
             @Query("page") int page,
             @Query("pageSize") int pageSize
     );

@@ -1,11 +1,16 @@
 package com.terralink.data.api;
 
+import com.terralink.data.model.ClientListItemResponse;
+import com.terralink.data.model.PaginatedResponse;
+
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
 import retrofit2.Call;
+import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
 import retrofit2.http.Part;
+import retrofit2.http.Query;
 
 public interface ClientApi {
 
@@ -21,5 +26,12 @@ public interface ClientApi {
             @Part MultipartBody.Part nationalIdFront,
             @Part MultipartBody.Part nationalIdBack,
             @Part MultipartBody.Part passportPhoto
+    );
+
+    @GET("api/clients")
+    Call<PaginatedResponse<ClientListItemResponse>> getClients(
+            @Query("page") int page,
+            @Query("pageSize") int pageSize,
+            @Query("search") String search
     );
 }

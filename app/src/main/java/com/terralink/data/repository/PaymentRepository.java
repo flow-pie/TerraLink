@@ -73,11 +73,11 @@ public class PaymentRepository {
         return result;
     }
 
-    public LiveData<Resource<List<PaymentHistoryResponse>>> getClientPayments(String clientId){
+    public LiveData<Resource<List<PaymentHistoryResponse>>> getClientPayments(String clientId, String type){
         MutableLiveData<Resource<List<PaymentHistoryResponse>>> result = new MutableLiveData<>();
         result.setValue(Resource.loading());
 
-        paymentApi.getClientPayments(clientId, 1, 20).enqueue(
+        paymentApi.getClientPayments(clientId, type, 1, 50).enqueue(
                 new Callback<PaginatedResponse<PaymentHistoryResponse>>() {
                     @Override
                     public void onResponse(Call<PaginatedResponse<PaymentHistoryResponse>> call, Response<PaginatedResponse<PaymentHistoryResponse>> response) {

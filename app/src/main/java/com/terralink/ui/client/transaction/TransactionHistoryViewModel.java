@@ -30,7 +30,7 @@ public class TransactionHistoryViewModel extends ViewModel {
         return userRepository.getMe();
     }
 
-    public LiveData<Resource<List<PaymentHistoryResponse>>> getTransactions(String clientId){
-        return paymentRepository.getClientPayments(clientId);
+    public LiveData<Resource<List<PaymentHistoryResponse>>> getTransactions(String clientId, String type){
+        return paymentRepository.getClientPayments(clientId, type);
     }
 }

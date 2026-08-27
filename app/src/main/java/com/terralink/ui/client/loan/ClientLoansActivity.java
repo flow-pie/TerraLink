@@ -12,9 +12,7 @@ import com.terralink.R;
 import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityClientLoansBinding;
-import com.terralink.ui.client.home.RepaymentScheduleAdapter;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
-import com.terralink.ui.client.payment.PaymentDialogActivity;
 
 import java.util.List;
 import java.util.Locale;
@@ -94,53 +92,61 @@ public class ClientLoansActivity extends AppCompatActivity {
 
     private void bindLoanCard(ActivityClientLoansBinding binding, ClientLoansResponse loan, int cardNumber){
         if(cardNumber == 1){
-            binding.loan1Title.setText(loan.getLoanNo() != null ? loan.getLoanNo() : "LOAN");
+            binding.loan1Title.setText(loan.getReferenceNo() != null ? loan.getReferenceNo() : "LOAN");
             binding.loan1Id.setText("ID: " + (loan.getLoanId() != null ? loan.getLoanId() : "N/A"));
-            binding.loan1AmountValue.setText(String.format(
-                    Locale.US,
-                    "KES %,.2f / KES %,.2f",
-                    loan.getRepaymentAmount() - loan.getBalance(),
-                    loan.getRepaymentAmount()
-            ));
-            binding.loan1MonthsLeft.setText(loan.getStatus() != null ? loan.getStatus() : "");
-            binding.loan1PaidBadge.setText(loan.getStatus() != null ? loan.getStatus() : "ACTIVE");
+            
+            if ("Application".equals(loan.getType())) {
+                binding.loan1AmountValue.setText("Application Pending");
+                binding.loan1MonthsLeft.setText("Submitted: " + (loan.getSubmittedAt() != null ? loan.getSubmittedAt().split("T")[0] : ""));
+                binding.loan1PaidBadge.setText("SUBMITTED");
+                binding.loan1PayButton.setVisibility(View.GONE);
+            } else {
+                binding.loan1AmountValue.setText(String.format(
+                        Locale.US,
+                        "KES %,.2f / KES %,.2f",
+                        loan.getRepaymentAmount() - loan.getBalance(),
+                        loan.getRepaymentAmount()
+                ));
+                binding.loan1MonthsLeft.setText(loan.getStatus() != null ? loan.getStatus() : "");
+                binding.loan1PaidBadge.setText(loan.getStatus() != null ? loan.getStatus() : "ACTIVE");
+                binding.loan1PayButton.setVisibility(View.VISIBLE);
+            }
 
             binding.loan1PayButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, PaymentDialogActivity.class);
-                intent.putExtra(PaymentDialogActivity.EXTRA_LOAN_ID, Long.parseLong(loan.getLoanId()));
-                intent.putExtra(PaymentDialogActivity.EXTRA_SCHEDULE_ID, Objects.requireNonNull(RepaymentScheduleAdapter.getNextPendingInstallment()).getRepaymentScheduleId());
-                intent.putExtra(PaymentDialogActivity.EXTRA_AMOUNT, loan.getBalance());
-                intent.putExtra(PaymentDialogActivity.EXTRA_INSTALLMENT, RepaymentScheduleAdapter.getNextPendingInstallment().getTotalDue());
-                intent.putExtra(PaymentDialogActivity.EXTRA_INSTALLMENT_DUE_DATE, RepaymentScheduleAdapter.getNextPendingInstallment().getDueDate());
-                startActivity(intent);
+                Toast.makeText(this, "Please manage payments from the Home dashboard", Toast.LENGTH_SHORT).show();
             });
 
             binding.loan1DetailsButton.setOnClickListener(v -> {
-                Toast.makeText(this, "Loan: " + loan.getLoanNo() + "\nStatus: " + loan.getStatus(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Loan: " + loan.getReferenceNo() + "\nStatus: " + loan.getStatus(), Toast.LENGTH_LONG).show();
             });
 
         }else if(cardNumber == 2){
-            binding.loan2Title.setText(loan.getLoanNo() != null ? loan.getLoanNo() : "LOAN");
+            binding.loan2Title.setText(loan.getReferenceNo() != null ? loan.getReferenceNo() : "LOAN");
             binding.loan2Id.setText("ID: " + (loan.getLoanId() != null ? loan.getLoanId() : "N/A"));
-            binding.loan2AmountValue.setText(String.format(
-                    Locale.US,
-                    "KES %,.2f / KES %,.2f",
-                    loan.getRepaymentAmount() - loan.getBalance(),
-                    loan.getRepaymentAmount()
-            ));
-            binding.loan2MonthsLeft.setText(loan.getStatus() != null ? loan.getStatus() : "");
-            binding.loan2DueBadge.setText(loan.getStatus() != null ? loan.getStatus() : "ACTIVE");
+            
+            if ("Application".equals(loan.getType())) {
+                binding.loan2AmountValue.setText("Application Pending");
+                binding.loan2MonthsLeft.setText("Submitted: " + (loan.getSubmittedAt() != null ? loan.getSubmittedAt().split("T")[0] : ""));
+                binding.loan2DueBadge.setText("SUBMITTED");
+                binding.loan2PayButton.setVisibility(View.GONE);
+            } else {
+                binding.loan2AmountValue.setText(String.format(
+                        Locale.US,
+                        "KES %,.2f / KES %,.2f",
+                        loan.getRepaymentAmount() - loan.getBalance(),
+                        loan.getRepaymentAmount()
+                ));
+                binding.loan2MonthsLeft.setText(loan.getStatus() != null ? loan.getStatus() : "");
+                binding.loan2DueBadge.setText(loan.getStatus() != null ? loan.getStatus() : "ACTIVE");
+                binding.loan2PayButton.setVisibility(View.VISIBLE);
+            }
 
             binding.loan2PayButton.setOnClickListener(v -> {
-                Intent intent = new Intent(this, PaymentDialogActivity.class);
-                intent.putExtra(PaymentDialogActivity.EXTRA_LOAN_ID, Long.parseLong(loan.getLoanId()));
-                intent.putExtra(PaymentDialogActivity.EXTRA_SCHEDULE_ID, 1);
-                intent.putExtra(PaymentDialogActivity.EXTRA_AMOUNT, loan.getBalance());
-                startActivity(intent);
+                Toast.makeText(this, "Please manage payments from the Home dashboard", Toast.LENGTH_SHORT).show();
             });
 
             binding.loan2DetailsButton.setOnClickListener(v -> {
-                Toast.makeText(this, "Loan: " + loan.getLoanNo() + "\nStatus: " + loan.getStatus(), Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Loan: " + loan.getReferenceNo() + "\nStatus: " + loan.getStatus(), Toast.LENGTH_LONG).show();
             });
         }
     }

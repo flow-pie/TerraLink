@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.terralink.data.api.ClientApi;
+import com.terralink.data.model.ClientListItemResponse;
+import com.terralink.data.model.PaginatedResponse;
 import com.terralink.ui.common.Resource;
 
 import java.io.File;
@@ -73,6 +75,29 @@ public class ClientRepository {
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<Resource<PaginatedResponse<ClientListItemResponse>>> getClients(int page, int pageSize, String search) {
+        MutableLiveData<Resource<PaginatedResponse<ClientListItemResponse>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        clientApi.getClients(page, pageSize, search).enqueue(new Callback<PaginatedResponse<ClientListItemResponse>>() {
+            @Override
+            public void onResponse(Call<PaginatedResponse<ClientListItemResponse>> call, Response<PaginatedResponse<ClientListItemResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Failed to load clients"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<PaginatedResponse<ClientListItemResponse>> call, Throwable t) {
                 result.postValue(Resource.error("Network Error: " + t.getMessage()));
             }
         });

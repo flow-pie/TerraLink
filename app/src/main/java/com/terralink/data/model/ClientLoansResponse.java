@@ -3,18 +3,20 @@ package com.terralink.data.model;
 public class ClientLoansResponse {
 
     private String id;
-    private String loanNo;
+    private String referenceNo;
     private double approvedAmount;
     private double balance;
     private double repaymentAmount;
+    private String type;
     private String status;
+    private String submittedAt;
 
     public String getLoanId() {
         return id;
     }
 
-    public String getLoanNo() {
-        return loanNo;
+    public String getReferenceNo() {
+        return referenceNo;
     }
 
     public double getApprovedAmount() {
@@ -29,7 +31,20 @@ public class ClientLoansResponse {
         return repaymentAmount;
     }
 
+    public String getType() {
+        return type;
+    }
+
     public String getStatus() {
         return status;
+    }
+
+    public String getSubmittedAt() {
+        return submittedAt;
+    }
+    
+    // Compatibility for existing code
+    public String getLoanNo() {
+        return referenceNo;
     }
 }

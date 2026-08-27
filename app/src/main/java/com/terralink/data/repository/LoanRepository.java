@@ -10,6 +10,7 @@ import com.terralink.data.model.CreditHistoryResponse;
 import com.terralink.data.model.CreditScoreResponse;
 import com.terralink.data.model.IncomeAssessmentResponse;
 import com.terralink.data.model.LoanApplicationResponse;
+import com.terralink.data.model.LoanApplicationStatusResponse;
 import com.terralink.data.model.LoanAppraisalDetailResponse;
 import com.terralink.data.model.LoanAppraisalRequest;
 import com.terralink.data.model.LoanDetailsResponse;
@@ -273,6 +274,29 @@ public class LoanRepository {
 
             @Override
             public void onFailure(Call<LoanAppraisalDetailResponse> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+
+        return result;
+    }
+
+    public LiveData<Resource<LoanApplicationStatusResponse>> getLoanApplicationStatus(int id) {
+        MutableLiveData<Resource<LoanApplicationStatusResponse>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getLoanApplicationStatus(id).enqueue(new Callback<LoanApplicationStatusResponse>() {
+            @Override
+            public void onResponse(Call<LoanApplicationStatusResponse> call, Response<LoanApplicationStatusResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Failed to load status"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<LoanApplicationStatusResponse> call, Throwable t) {
                 result.postValue(Resource.error("Network Error: " + t.getMessage()));
             }
         });

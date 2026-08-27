@@ -80,6 +80,10 @@ public class ProfileActivity extends AppCompatActivity {
                                         Toast.makeText(this, "Syncing data...", Toast.LENGTH_SHORT).show();
                                     });
 
+                                    profileBinding.helpSupportCard.setOnClickListener(v -> {
+                                        Toast.makeText(this, "Support line: +254 700 000 000", Toast.LENGTH_LONG).show();
+                                    });
+
                                     profileBinding.logoutCard.setOnClickListener(v -> {
                                         logout();
                                     });

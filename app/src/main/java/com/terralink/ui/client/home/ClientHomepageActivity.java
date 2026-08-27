@@ -3,6 +3,7 @@ package com.terralink.ui.client.home;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -14,17 +15,20 @@ import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityClientHomepageBinding;
+import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.client.loan.ApplyLoanActivity;
 import com.terralink.ui.client.loan.ClientLoansActivity;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
-import com.terralink.ui.client.payment.PaymentDialogActivity;
+import com.terralink.ui.client.payment.PaymentBottomSheetFragment;
 import com.terralink.ui.client.profile.ProfileActivity;
 import com.terralink.ui.client.transaction.TransactionHistoryActivity;
+import com.terralink.ui.common.Resource;
 
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -33,295 +37,246 @@ public class ClientHomepageActivity extends AppCompatActivity {
 
     private HomeViewModel viewModel;
     private RepaymentScheduleAdapter repaymentScheduleAdapter;
+    private LoanSelectorAdapter loanSelectorAdapter;
+    private ActivityClientHomepageBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        binding = ActivityClientHomepageBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        ActivityClientHomepageBinding homepageBinding = ActivityClientHomepageBinding
-                .inflate(getLayoutInflater());
+        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        
+        initView();
+        observeViewModel();
+    }
 
-        setContentView(homepageBinding.getRoot());
-
-        homepageBinding.appBarContent.btnNotifications.setOnClickListener(v -> {
+    private void initView() {
+        binding.appBarContent.btnNotifications.setOnClickListener(v -> {
             startActivity(new Intent(this, NotificationStatusActivity.class));
         });
 
-        repaymentScheduleAdapter =
-                new RepaymentScheduleAdapter(new ArrayList<>());
+        repaymentScheduleAdapter = new RepaymentScheduleAdapter(new ArrayList<>());
+        binding.rvRecentPayments.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvRecentPayments.setAdapter(repaymentScheduleAdapter);
 
-        homepageBinding.rvRecentPayments.setLayoutManager(
-                new LinearLayoutManager(this)
-        );
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.nav_home) return true;
+            
+            if (itemId == R.id.nav_loans) {
+                startActivity(new Intent(this, ClientLoansActivity.class));
+            } else if (itemId == R.id.nav_history) {
+                startActivity(new Intent(this, TransactionHistoryActivity.class));
+            } else if (itemId == R.id.nav_profile) {
+                startActivity(new Intent(this, ProfileActivity.class));
+            }
+            return true;
+        });
 
-        homepageBinding.rvRecentPayments.setAdapter(
-                repaymentScheduleAdapter
-        );
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
 
-        viewModel = new ViewModelProvider(this)
-                .get(HomeViewModel.class);
+        binding.fabNewAction.setOnClickListener(v -> {
+            startActivity(new Intent(this, ApplyLoanActivity.class));
+        });
+    }
 
-        // get active user info
-        viewModel.getActiveUser().observe(this,
-                result -> {
-                    switch (result.getStatus()){
-                        case LOADING:
+    private void observeViewModel() {
+        viewModel.getActiveUser().observe(this, this::handleUserResult);
+    }
 
-                            // Show loading UI.
-                            homepageBinding.tvBorrowerName.setText("Loading...");
+    private void handleUserResult(Resource<UserProfileResponse> result) {
+        switch (result.getStatus()) {
+            case LOADING:
+                binding.tvBorrowerName.setText("Loading...");
+                break;
+            case SUCCESS:
+                UserProfileResponse client = result.getData();
+                if (client != null && client.getFullName() != null) {
+                    binding.tvBorrowerName.setText(client.getFullName());
+                    fetchClientLoans(client.getClientId());
+                }
+                break;
+            case ERROR:
+                binding.tvBorrowerName.setText("Error loading profile");
+                handleError("UserProfile", result.getMessage());
+                break;
+            default:
+                break;
+        }
+    }
 
-                            break;
-
-                        case SUCCESS:
-
-                            UserProfileResponse client =
-                                    result.getData();
-
-                            if (client != null && client.getFullName() != null) {
-                                homepageBinding.tvBorrowerName.setText(client.getFullName());
-
-                                viewModel.getClientLoans(client.getClientId()).observe(this,
-                                        loanResult->{
-                                                switch (loanResult.getStatus()){
-                                                    case LOADING:
-
-                                                        homepageBinding.tvLoanBalance.setText(
-                                                                "Loading..."
-                                                        );
-
-                                                        break;
-
-                                                    case SUCCESS:
-
-                                                        List<ClientLoansResponse> loans = loanResult.getData();
-
-                                                        if (loans != null && !loans.isEmpty()) {
-
-                                                            ClientLoansResponse loan = loans.get(0);
-                                                            //get loan detail using the obtained loan ID
-                                                            viewModel.getClientDetails(loan.getLoanId()).observe(
-                                                                    this,
-                                                                    loanDetailsResults ->{
-                                                                        switch (loanDetailsResults.getStatus()){
-                                                                            case LOADING:
-
-                                                                                homepageBinding.tvLoanBalance.setText(
-                                                                                        "Loading..."
-                                                                                );
-
-                                                                                break;
-
-                                                                            case SUCCESS:
-                                                                                LoanDetailsResponse loanDetails = loanDetailsResults.getData();
-
-                                                                                homepageBinding.tvLoanBalance.setText(
-                                                                                        String.format(
-                                                                                                Locale.getDefault(),
-                                                                                                "KES %,.2f",
-                                                                                                loanDetails.getOutStandingAmount()
-                                                                                        )
-                                                                                );
-                                                                                homepageBinding.nextInstallment.setText(
-                                                                                        String.format(
-                                                                                                Locale.getDefault(),
-                                                                                                "KES %,.2f",
-                                                                                                loanDetails.getNextInstallmentAmount()
-                                                                                        )
-                                                                                );
-                                                                                homepageBinding.nextInstallmentDueDate.setText("Due by "+loanDetails.getNextDueDate());
-
-                                                                                 homepageBinding.cardNewLoanApp.setOnClickListener(v -> {
-                                                                                     startActivity(new Intent(this, ApplyLoanActivity.class));
-                                                                                 });
-
-                                                                                 homepageBinding.btnMakePayment.setOnClickListener(v -> {
-                                                                                     Intent paymentIntent = new Intent(this, PaymentDialogActivity.class);
-                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_LOAN_ID, Long.parseLong(loanDetails.getLoanId()));
-                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_SCHEDULE_ID, Objects.requireNonNull(RepaymentScheduleAdapter.getNextPendingInstallment()).getRepaymentScheduleId());
-                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_AMOUNT, loanDetails.getOutStandingAmount());
-                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_INSTALLMENT, loanDetails.getNextInstallmentAmount());
-                                                                                     paymentIntent.putExtra(PaymentDialogActivity.EXTRA_INSTALLMENT_DUE_DATE, loanDetails.getNextDueDate());
-                                                                                     startActivity(paymentIntent);
-                                                                                 });
-                                                                                homepageBinding.intrestRate.setText(loanDetails.getInterestRate());
-
-                                                                                long days = loanDetails.getDaysUntilNextDueDate();
-
-                                                                                if (days > 0) {
-                                                                                    homepageBinding.nextCycle.setText(
-                                                                                            days + " days remaining"
-                                                                                    );
-                                                                                } else if (days == 0) {
-                                                                                    homepageBinding.nextCycle.setText(
-                                                                                            "Due today"
-                                                                                    );
-                                                                                } else {
-                                                                                    homepageBinding.nextCycle.setText(
-                                                                                            "Overdue by " + Math.abs(days) + " days"
-                                                                                    );
-                                                                                }
-
-                                                                                int paid = loanDetails.getInstallmentsPaid();
-                                                                                int total = loanDetails.getInstallmentsTotal();
-
-                                                                                int progress = 0;
-
-                                                                                if (total > 0)
-                                                                                    progress = (int) ((paid / (double) total) * 100); //eg 3/6 = 50
-
-                                                                                homepageBinding.progressRepayment.setMax(total);
-                                                                                homepageBinding.progressRepayment.setProgress(progress);
-
-                                                                                homepageBinding.tvInstallmentsProgress.setText(
-                                                                                        String.format(
-                                                                                                Locale.getDefault(),
-                                                                                                "%d of %d installments paid",
-                                                                                                paid,
-                                                                                                total
-                                                                                        )
-                                                                                );
-
-                                                                                double totalAmountPaid = loanDetails.getTotalRepayment()- loanDetails.getOutStandingAmount();
-                                                                                homepageBinding.tvTotalPaid.setText(
-                                                                                        String.format(
-                                                                                                Locale.getDefault(),
-                                                                                                "KES %,.2f",
-                                                                                                totalAmountPaid
-                                                                                        )
-                                                                                );
-
-                                                                                homepageBinding.loanAmountTotal.setText(
-                                                                                        String.format(
-                                                                                                Locale.getDefault(),
-                                                                                                "KSH %,.2f",
-                                                                                                loanDetails.getTotalRepayment()
-                                                                                        )
-                                                                                );
-
-                                                                                viewModel.getRepaymentInstallments(
-                                                                                        loanDetails.getLoanId()
-                                                                                ).observe(this, scheduleResult -> {
-
-                                                                                    switch (scheduleResult.getStatus()) {
-
-                                                                                        case LOADING:
-
-                                                                                            break;
-
-                                                                                        case SUCCESS:
-
-                                                                                            List<RepaymentInstallments> schedules =
-                                                                                                    scheduleResult.getData();
-
-                                                                                            if (schedules != null) {
-
-                                                                                                repaymentScheduleAdapter.setSchedules(
-                                                                                                        schedules,
-                                                                                                        loanDetails
-                                                                                                );
-                                                                                            }
-
-                                                                                            break;
-
-                                                                                        case ERROR:
-
-                                                                                            Log.e(
-                                                                                                    "HomeActivity",
-                                                                                                    "Failed to load repayment schedule: "
-                                                                                                            + scheduleResult.getMessage()
-                                                                                            );
-
-                                                                                            break;
-                                                                                    }
-                                                                                });
-
-
-                                                                                break;
-
-                                                                            case ERROR:
-                                                                                String message = loanDetailsResults.getMessage() != null ? loanDetailsResults.getMessage() : "Unknown error occurred";
-                                                                                Toast.makeText(
-                                                                                        this,
-                                                                                        message,
-                                                                                        Toast.LENGTH_LONG
-                                                                                ).show();
-
-                                                                                Log.e("HomeActivity", "onCreate: "+ message);
-                                                                        }
-                                                                    }
-                                                            );
-                                                        }
-
-                                                        break;
-
-                                                    case ERROR:
-
-                                                        homepageBinding.tvLoanBalance.setText(
-                                                                "Unable to load"
-                                                        );
-
-                                                        break;
-                                                }
-                                        }
-                                );
-
-                                homepageBinding.bottomNavigationView.setOnItemSelectedListener(item->{
-
-                                    int itemId = item.getItemId();
-
-                                    if(itemId == R.id.nav_home)
-                                        return true;
-
-                                    else if (itemId == R.id.nav_loans) {
-                                        startActivity(new Intent(this, ClientLoansActivity.class));
-                                        return true;
-                                    }
-
-                                    else if (itemId == R.id.nav_history) {
-                                        Intent historyIntent = new Intent(this, TransactionHistoryActivity.class);
-                                        startActivity(historyIntent);
-                                        return true;
-                                    }
-
-                                    else if(itemId == R.id.nav_profile) {
-                                        Intent intent = new Intent(
-                                                ClientHomepageActivity.this,
-                                                ProfileActivity.class
-                                        );
-
-                                        startActivity(intent);
-                                        return true;
-                                    }
-
-                                    return true;
-                                });
+    private void fetchClientLoans(String clientId) {
+        viewModel.getClientLoans(clientId).observe(this, result -> {
+            switch (result.getStatus()) {
+                case LOADING:
+                    binding.tvLoanBalance.setText("Loading...");
+                    break;
+                case SUCCESS:
+                    List<ClientLoansResponse> loans = result.getData();
+                    if (loans != null && !loans.isEmpty()) {
+                        binding.emptyStateContainer.setVisibility(View.GONE);
+                        
+                        // Check if we have any active loans to show details for
+                        ClientLoansResponse primaryLoan = null;
+                        for (ClientLoansResponse l : loans) {
+                            if ("Loan".equals(l.getType())) {
+                                primaryLoan = l;
+                                break;
                             }
+                        }
 
-                            break;
+                        if (primaryLoan != null) {
+                            binding.loanContentContainer.setVisibility(View.VISIBLE);
+                            fetchLoanDetails(primaryLoan.getLoanId());
+                        } else {
+                            // Only applications exist
+                            binding.loanContentContainer.setVisibility(View.GONE);
+                        }
 
-                        case ERROR:
+                        setupLoanSelector(loans);
+                    } else {
+                        binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                        binding.loanContentContainer.setVisibility(View.GONE);
+                        binding.rvLoanSelector.setVisibility(View.GONE);
+                        
+                        binding.btnApplyFirstLoan.setOnClickListener(v -> {
+                            startActivity(new Intent(this, ApplyLoanActivity.class));
+                        });
+                    }
+                    break;
+                case ERROR:
+                    binding.tvLoanBalance.setText("Unable to load");
+                    handleError("ClientLoans", result.getMessage());
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
 
-                            // Show an error message.
-                            homepageBinding.tvBorrowerName.setText("Error loading profile");
-                            String message = result.getMessage() != null ? result.getMessage() : "Unknown error occurred";
-                            Toast.makeText(
-                                this,
-                                    message,
-                                    Toast.LENGTH_LONG
-                            ).show();
+    private void setupLoanSelector(List<ClientLoansResponse> loans) {
+        List<ClientLoansResponse> unapprovedLoans = loans.stream()
+                .filter(loan -> !"APPROVED".equals(loan.getStatus()))
+                .collect(Collectors.toList());
 
-                            Log.e("HomeActivity", "onCreate: "+ message);
+        loanSelectorAdapter = new LoanSelectorAdapter(unapprovedLoans, loan -> {
+            if ("Application".equals(loan.getType()) ) {
+                Intent intent = new Intent(this, NotificationStatusActivity.class);
+                intent.putExtra(NotificationStatusActivity.EXTRA_APPLICATION_ID, Integer.parseInt(loan.getLoanId()));
+                intent.putExtra(NotificationStatusActivity.EXTRA_LOAN_NO, loan.getReferenceNo());
+                startActivity(intent);
+            } else {
+                binding.loanContentContainer.setVisibility(View.VISIBLE);
+                fetchLoanDetails(loan.getLoanId());
+            }
+        });
+        binding.rvLoanSelector.setAdapter(loanSelectorAdapter);
+        binding.rvLoanSelector.setVisibility(loans.isEmpty() ? View.GONE : View.VISIBLE);
+    }
 
-                            break;
-                     }
-                 }
-         );
+    private void fetchLoanDetails(String loanId) {
+        viewModel.getClientDetails(loanId).observe(this, result -> {
+            switch (result.getStatus()) {
+                case LOADING:
+                    binding.tvLoanBalance.setText("Loading...");
+                    repaymentScheduleAdapter.setSchedules(new ArrayList<>(), null);
+                    break;
+                case SUCCESS:
+                    LoanDetailsResponse loanDetails = result.getData();
+                    if (loanDetails != null) {
+                        updateLoanDetailsUI(loanDetails);
+                        fetchRepaymentInstallments(loanDetails.getLoanId(), loanDetails);
+                    }
+                    break;
+                case ERROR:
+                    handleError("LoanDetails", result.getMessage());
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
 
-        homepageBinding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
+    private void updateLoanDetailsUI(LoanDetailsResponse details) {
+        binding.tvLoanBalance.setText(String.format(Locale.getDefault(), "KES %,.2f", details.getOutStandingAmount()));
+        binding.nextInstallment.setText(String.format(Locale.getDefault(), "KES %,.2f", details.getNextInstallmentAmount()));
+        binding.nextInstallmentDueDate.setText("Due by " + details.getNextDueDate());
+        binding.intrestRate.setText(details.getInterestRate());
 
-        homepageBinding.fabNewAction.setOnClickListener(v -> {
+        setupLoanActions(details);
+        updateDueDateCycle(details);
+        updateRepaymentProgress(details);
+    }
+
+    private void setupLoanActions(LoanDetailsResponse details) {
+        binding.cardNewLoanApp.setOnClickListener(v -> {
             startActivity(new Intent(this, ApplyLoanActivity.class));
         });
 
+        binding.btnMakePayment.setOnClickListener(v -> {
+            RepaymentInstallments next = repaymentScheduleAdapter.getNextPendingInstallment();
+            if (next == null) {
+                Toast.makeText(this, "No pending installments", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            PaymentBottomSheetFragment fragment = PaymentBottomSheetFragment.newInstance(
+                    Long.parseLong(details.getLoanId()),
+                    next.getRepaymentScheduleId(),
+                    details.getOutStandingAmount(),
+                    details.getNextInstallmentAmount(),
+                    details.getNextDueDate()
+            );
+            fragment.show(getSupportFragmentManager(), fragment.getTag());
+        });
+    }
+
+    private void updateDueDateCycle(LoanDetailsResponse details) {
+        long days = details.getDaysUntilNextDueDate();
+        if (days > 0) {
+            binding.nextCycle.setText(days + " days remaining");
+        } else if (days == 0) {
+            binding.nextCycle.setText("Due today");
+        } else {
+            binding.nextCycle.setText("Overdue by " + Math.abs(days) + " days");
+        }
+    }
+
+    private void updateRepaymentProgress(LoanDetailsResponse details) {
+        int paid = details.getInstallmentsPaid();
+        int total = details.getInstallmentsTotal();
+        int progress = (total > 0) ? (int) ((paid / (double) total) * 100) : 0;
+
+        binding.progressRepayment.setMax(total);
+        binding.progressRepayment.setProgress(progress);
+        binding.tvInstallmentsProgress.setText(String.format(Locale.getDefault(), "%d of %d installments paid", paid, total));
+
+        double totalAmountPaid = details.getTotalRepayment() - details.getOutStandingAmount();
+        binding.tvTotalPaid.setText(String.format(Locale.getDefault(), "KES %,.2f", totalAmountPaid));
+        binding.loanAmountTotal.setText(String.format(Locale.getDefault(), "KSH %,.2f", details.getTotalRepayment()));
+    }
+
+    private void fetchRepaymentInstallments(String loanId, LoanDetailsResponse loanDetails) {
+        viewModel.getRepaymentInstallments(loanId).observe(this, result -> {
+            switch (result.getStatus()) {
+                case SUCCESS:
+                    if (result.getData() != null) {
+                        repaymentScheduleAdapter.setSchedules(result.getData(), loanDetails);
+                    }
+                    break;
+                case ERROR:
+                    Log.e("HomeActivity", "Failed to load repayment schedule: " + result.getMessage());
+                    break;
+                default:
+                    break;
+            }
+        });
+    }
+
+    private void handleError(String tag, String message) {
+        String displayMessage = message != null ? message : "Unknown error occurred";
+        Toast.makeText(this, displayMessage, Toast.LENGTH_LONG).show();
+        Log.e("HomeActivity", tag + ": " + displayMessage);
     }
 }

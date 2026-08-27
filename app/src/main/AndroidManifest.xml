@@ -53,12 +53,6 @@
             />
 
         <activity
-            android:name=".ui.client.payment.PaymentDialogActivity"
-            android:theme="@style/Theme.TerraLink.Dialog"
-            android:exported="false"
-        />
-
-        <activity
             android:name=".ui.officer.dashboard.DashboardActivity"
             android:exported="false"
             />
@@ -67,6 +61,18 @@
             android:name=".ui.officer.registration.RegisterClientActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.officer.clients.OfficerClientsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.officer.loans.OfficerLoansActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.officer.reports.OfficerReportsActivity"
+            android:exported="false" />
 
         <activity
             android:name=".ui.client.transaction.TransactionHistoryActivity"

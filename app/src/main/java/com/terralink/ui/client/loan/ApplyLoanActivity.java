@@ -114,6 +114,11 @@ public class ApplyLoanActivity extends AppCompatActivity {
                 binding.clientName.setText(user.getFullName());
                 binding.clientDetails.setText(String.format("ID: %s • Role: %s", user.getEmployeeNo(), user.getRoleName()));
                 
+                // If it's a client, hide the search bar
+                if ("Borrower".equals(user.getRoleName()) || "Client".equals(user.getRoleName())) {
+                    binding.searchContainer.setVisibility(View.GONE);
+                }
+                
                 fetchCreditScore(user.getClientId());
                 fetchLoanProducts();
             }

@@ -1,51 +1,41 @@
 package com.terralink.ui.client.home;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.databinding.ItemPaymentHistoryBinding;
-import com.terralink.ui.client.payment.PaymentDialogActivity;
+import com.terralink.ui.client.payment.PaymentBottomSheetFragment;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 public class RepaymentScheduleAdapter extends RecyclerView.Adapter<RepaymentScheduleAdapter.ViewHolder> {
 
-    private static List<RepaymentInstallments> schedules = Collections.emptyList();
+    private final List<RepaymentInstallments> schedules = new ArrayList<>();
     private LoanDetailsResponse loanDetails;
 
-    public RepaymentScheduleAdapter(
-            List<RepaymentInstallments> schedules
-    ){
-        RepaymentScheduleAdapter.schedules =new ArrayList<>(schedules);
+    public RepaymentScheduleAdapter(List<RepaymentInstallments> schedules) {
+        this.schedules.addAll(schedules);
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        ItemPaymentHistoryBinding binding = ItemPaymentHistoryBinding.inflate(
-                LayoutInflater.from(parent.getContext()),
-                parent,
-                false
-                );
+        ItemPaymentHistoryBinding binding = ItemPaymentHistoryBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        RepaymentInstallments schedule = schedules.get(position);
-        holder.bind(schedule);
+        holder.bind(schedules.get(position));
     }
 
     @Override
@@ -53,19 +43,18 @@ public class RepaymentScheduleAdapter extends RecyclerView.Adapter<RepaymentSche
         return schedules.size();
     }
 
-    public void setSchedules(
-            List<RepaymentInstallments> schedules, LoanDetailsResponse loanDetails) {
-
+    public void setSchedules(List<RepaymentInstallments> newSchedules, LoanDetailsResponse loanDetails) {
         this.schedules.clear();
-        this.schedules.addAll(schedules);
+        if (newSchedules != null) {
+            this.schedules.addAll(newSchedules);
+        }
         this.loanDetails = loanDetails;
-
         notifyDataSetChanged();
     }
 
-    public static  RepaymentInstallments getNextPendingInstallment(){
-        for(RepaymentInstallments schedule : schedules){
-            if("PENDING".equals(schedule.getStatus())){
+    public RepaymentInstallments getNextPendingInstallment() {
+        for (RepaymentInstallments schedule : schedules) {
+            if ("PENDING".equals(schedule.getStatus())) {
                 return schedule;
             }
         }
@@ -75,47 +64,30 @@ public class RepaymentScheduleAdapter extends RecyclerView.Adapter<RepaymentSche
     public class ViewHolder extends RecyclerView.ViewHolder {
         private final ItemPaymentHistoryBinding binding;
 
-        ViewHolder(ItemPaymentHistoryBinding binding){
+        ViewHolder(ItemPaymentHistoryBinding binding) {
             super(binding.getRoot());
-            this.binding =binding;
+            this.binding = binding;
         }
 
-        void bind(RepaymentInstallments schedule){
-            binding.tvInstallmentTitle.setText(
-                    String.format(
-                            Locale.getDefault(),
-                            "Installment %d",
-                            schedule.getInstallmentNumber()
-                    )
-            );
-
+        void bind(RepaymentInstallments schedule) {
+            binding.tvInstallmentTitle.setText(String.format(Locale.getDefault(), "Installment %d", schedule.getInstallmentNumber()));
             binding.tvInstallmentDate.setText(schedule.getDueDate());
+            binding.tvInstallmentAmount.setText(String.format(Locale.getDefault(), "KES %,.0f", schedule.getTotalDue()));
+            binding.tvInstallmentStatus.setText(schedule.getStatus());
 
-            binding.tvInstallmentAmount.setText(
-                    String.format(
-                            Locale.getDefault(),
-                            "KES %, .0f",
-                            schedule.getTotalDue()
-                    )
-            );
-
-            binding.tvInstallmentStatus.setText(
-                    schedule.getStatus()
-            );
-
-            // show Pay button for pending installments
-            if ("PENDING".equalsIgnoreCase(schedule.getStatus())){
+            if ("PENDING".equalsIgnoreCase(schedule.getStatus())) {
                 binding.btnPay.setVisibility(View.VISIBLE);
                 binding.btnPay.setOnClickListener(v -> {
-                    Context ctx = v.getContext();
-                    Intent paymentIntent = new Intent(ctx, PaymentDialogActivity.class);
-                    if (loanDetails != null) {
-                        paymentIntent.putExtra(PaymentDialogActivity.EXTRA_LOAN_ID, Long.parseLong(loanDetails.getLoanId()));
-                        paymentIntent.putExtra(PaymentDialogActivity.EXTRA_SCHEDULE_ID, Objects.requireNonNull(RepaymentScheduleAdapter.getNextPendingInstallment()).getRepaymentScheduleId());
-                        paymentIntent.putExtra(PaymentDialogActivity.EXTRA_AMOUNT, loanDetails.getOutStandingAmount());
-                        paymentIntent.putExtra(PaymentDialogActivity.EXTRA_INSTALLMENT, loanDetails.getNextInstallmentAmount());
-                        paymentIntent.putExtra(PaymentDialogActivity.EXTRA_INSTALLMENT_DUE_DATE, loanDetails.getNextDueDate());
-                        ctx.startActivity(paymentIntent);
+                    if (loanDetails != null && v.getContext() instanceof AppCompatActivity) {
+                        AppCompatActivity activity = (AppCompatActivity) v.getContext();
+                        PaymentBottomSheetFragment fragment = PaymentBottomSheetFragment.newInstance(
+                                Long.parseLong(loanDetails.getLoanId()),
+                                schedule.getRepaymentScheduleId(),
+                                loanDetails.getOutStandingAmount(),
+                                loanDetails.getNextInstallmentAmount(),
+                                loanDetails.getNextDueDate()
+                        );
+                        fragment.show(activity.getSupportFragmentManager(), fragment.getTag());
                     }
                 });
             } else {

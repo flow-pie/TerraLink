@@ -40,6 +40,6 @@ public class DashboardViewModel extends ViewModel {
     }
 
     public LiveData<Resource<PaginatedResponse<LoanApplicationResponse>>> getPendingAppraisals() {
-        return loanRepository.getLoanApplications("SUBMITTED", 1, 10);
+        return loanRepository.getLoanApplications(null, 1, 20);
     }
 }

@@ -7,6 +7,7 @@ import com.terralink.data.model.CreditScoreResponse;
 import com.terralink.data.model.IncomeAssessmentResponse;
 import com.terralink.data.model.LoanApplicationRequest;
 import com.terralink.data.model.LoanApplicationResponse;
+import com.terralink.data.model.LoanApplicationStatusResponse;
 import com.terralink.data.model.LoanAppraisalDetailResponse;
 import com.terralink.data.model.LoanAppraisalRequest;
 import com.terralink.data.model.LoanDetailsResponse;
@@ -59,6 +60,11 @@ public interface LoanApi {
 
     @GET("api/loan-applications/{id}")
     Call<LoanAppraisalDetailResponse> getLoanApplicationDetail(
+            @Path("id") int id
+    );
+
+    @GET("api/loan-applications/{id}/status")
+    Call<LoanApplicationStatusResponse> getLoanApplicationStatus(
             @Path("id") int id
     );
 
