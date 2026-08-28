@@ -69,7 +69,7 @@
                         android:background="@drawable/bg_status_badge_green"
                         android:paddingHorizontal="12dp"
                         android:paddingVertical="4dp"
-                        android:text="SUBMITTED"
+                        tools:text="SUBMITTED"
                         android:textAppearance="?attr/textAppearanceLabelSmall"
                         android:textColor="@color/status_green"
                         android:textStyle="bold" />
@@ -81,7 +81,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="#ML-88294-TX"
+                    tools:text="#ML-88294-TX"
                     android:textAppearance="?attr/textAppearanceHeadlineLarge"
                     android:textColor="@color/navy_text_primary"
                     android:textStyle="bold" />
@@ -91,7 +91,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Agriculture Development Loan"
+                    tools:text="Agriculture Development Loan"
                     android:textAppearance="?attr/textAppearanceBodyLarge"
                     android:textColor="@color/text_secondary" />
 
@@ -141,7 +141,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="Please provide a more detailed business plan regarding the poultry expansion."
+                                tools:text="Please provide a more detailed business plan regarding the poultry expansion."
                                 android:textAppearance="?attr/textAppearanceBodyMedium"
                                 android:textColor="@color/navy_text_primary"
                                 android:textStyle="italic" />
@@ -236,7 +236,7 @@
                                 android:id="@+id/tvOfficerName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Assigned Officer"
+                                tools:text="Assigned Officer"
                                 android:textAppearance="?attr/textAppearanceTitleMedium"
                                 android:textColor="@color/navy_text_primary"
                                 android:textStyle="bold" />
@@ -245,7 +245,7 @@
                                 android:id="@+id/tvOfficerId"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="ID: #0000"
+                                tools:text="ID: #0000"
                                 android:textAppearance="?attr/textAppearanceBodySmall"
                                 android:textColor="@color/text_secondary" />
                         </LinearLayout>

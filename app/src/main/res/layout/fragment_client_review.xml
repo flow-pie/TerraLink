@@ -3,6 +3,7 @@
 <androidx.core.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_cream"
@@ -115,7 +116,7 @@
                                 android:id="@+id/tvFullName"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Amina Wanjiku"
+                                tools:text="Amina Wanjiku"
                                 android:textColor="@color/navy_text_primary"
                                 android:textStyle="bold"
                                 android:textSize="14sp" />
@@ -139,7 +140,7 @@
                                 android:id="@+id/tvPhone"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="+254 712 408 221"
+                                tools:text="+254 712 408 221"
                                 android:textColor="@color/navy_text_primary"
                                 android:textStyle="bold"
                                 android:textSize="14sp" />
@@ -170,7 +171,7 @@
                                 android:id="@+id/tvGovernmentId"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="284-71-9032"
+                                tools:text="284-71-9032"
                                 android:fontFamily="monospace"
                                 android:textColor="@color/navy_text_primary"
                                 android:textStyle="bold"
@@ -195,7 +196,7 @@
                                 android:id="@+id/tvDateOfBirth"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="1988-04-17"
+                                tools:text="1988-04-17"
                                 android:textColor="@color/navy_text_primary"
                                 android:textStyle="bold"
                                 android:textSize="14sp" />
@@ -223,7 +224,7 @@
                             android:id="@+id/tvEmail"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="amina@example.com"
+                            tools:text="amina@example.com"
                             android:textColor="@color/navy_text_primary"
                             android:textStyle="bold"
                             android:textSize="14sp" />
@@ -291,7 +292,7 @@
                                 android:id="@+id/tvGroup"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Unity Cooperative A"
+                                tools:text="Unity Cooperative A"
                                 android:textColor="@color/navy_text_primary"
                                 android:textStyle="bold"
                                 android:textSize="14sp" />
@@ -315,7 +316,7 @@
                                 android:id="@+id/tvRegion"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="East Cluster"
+                                tools:text="East Cluster"
                                 android:textColor="@color/navy_text_primary"
                                 android:textStyle="bold"
                                 android:textSize="14sp" />
@@ -342,7 +343,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Plot 45, Industrial Area, East Cluster — verified for first-time loan applicant intake."
+                            tools:text="Plot 45, Industrial Area, East Cluster — verified for first-time loan applicant intake."
                             android:textColor="@color/terracotta_dark"
                             android:textStyle="bold"
                             android:textSize="12sp" />

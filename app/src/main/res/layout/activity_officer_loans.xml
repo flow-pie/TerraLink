@@ -163,7 +163,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
-                                android:text="142"
+                                tools:text="142"
                                 android:textColor="@color/navy_text_primary"
                                 android:textSize="22sp"
                                 android:textStyle="bold" />

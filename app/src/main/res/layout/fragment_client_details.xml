@@ -94,7 +94,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="#TC-2024-0982"
+                                tools:text="#TC-2024-0982"
                                 android:textColor="#C05D2E"
                                 android:textSize="20sp"
                                 android:textStyle="bold" />
@@ -120,7 +120,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
-                                android:text="+254 712 345 678"
+                                tools:text="+254 712 345 678"
                                 android:textColor="#5D6D3F"
                                 android:textSize="18sp"
                                 android:textStyle="bold"
@@ -142,7 +142,7 @@
                             android:layout_columnWeight="1"
                             android:orientation="vertical">
                             <TextView style="@style/TerraLink.Table.Label" android:text="Client Name" />
-                            <TextView android:id="@+id/tvGridClientName" style="@style/TerraLink.Table.Value" android:text="Elena Rodriguez" />
+                            <TextView android:id="@+id/tvGridClientName" style="@style/TerraLink.Table.Value" tools:text="Elena Rodriguez" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -161,7 +161,7 @@
                             android:layout_marginTop="16dp"
                             android:orientation="vertical">
                             <TextView style="@style/TerraLink.Table.Label" android:text="Original Amount" />
-                            <TextView android:id="@+id/tvOriginalAmount" style="@style/TerraLink.Table.Value" android:text="KES 2,500.00" />
+                            <TextView android:id="@+id/tvOriginalAmount" style="@style/TerraLink.Table.Value" tools:text="KES 2,500.00" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -171,7 +171,7 @@
                             android:layout_marginTop="16dp"
                             android:orientation="vertical">
                             <TextView style="@style/TerraLink.Table.Label" android:text="Installments Paid" />
-                            <TextView android:id="@+id/tvInstallmentsPaid" style="@style/TerraLink.Table.Value" android:text="5 / 12" />
+                            <TextView android:id="@+id/tvInstallmentsPaid" style="@style/TerraLink.Table.Value" tools:text="5 / 12" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -184,7 +184,7 @@
                             <TextView
                                 android:id="@+id/tvNextDueDate"
                                 style="@style/TerraLink.Table.Value"
-                                android:text="Oct 15, 2024"
+                                tools:text="Oct 15, 2024"
                                 android:textColor="@color/terracotta_primary" />
                         </LinearLayout>
 
@@ -195,7 +195,7 @@
                             android:layout_marginTop="16dp"
                             android:orientation="vertical">
                             <TextView style="@style/TerraLink.Table.Label" android:text="Registered On" />
-                            <TextView android:id="@+id/tvCreatedAt" style="@style/TerraLink.Table.Value" android:text="Oct 15, 2024" />
+                            <TextView android:id="@+id/tvCreatedAt" style="@style/TerraLink.Table.Value" tools:text="Oct 15, 2024" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -208,7 +208,7 @@
                             <TextView
                                 android:id="@+id/tvStatus"
                                 style="@style/TerraLink.Table.Value"
-                                android:text="ACTIVE"
+                                tools:text="ACTIVE"
                                 android:textColor="@color/status_green" />
                         </LinearLayout>
 

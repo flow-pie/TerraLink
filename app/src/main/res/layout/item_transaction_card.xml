@@ -2,6 +2,7 @@
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.TerraLink.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -41,7 +42,7 @@
                 android:id="@+id/tvTxTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Loan Repayment"
+                tools:text="Loan Repayment"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="@color/navy_text_primary"
                 android:textStyle="bold" />
@@ -51,7 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Ref: QK7891230"
+                tools:text="Ref: QK7891230"
                 android:textAppearance="?attr/textAppearanceBodyMedium"
                 android:textColor="@color/text_secondary" />
 
@@ -60,7 +61,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="12 Oct 2023 • 14:32"
+                tools:text="12 Oct 2023 • 14:32"
                 android:textAppearance="?attr/textAppearanceBodySmall"
                 android:textColor="@color/text_muted" />
 
@@ -76,7 +77,7 @@
                 android:id="@+id/tvTxAmount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="KES 4,250.00"
+                tools:text="KES 4,250.00"
                 android:textAppearance="?attr/textAppearanceTitleMedium"
                 android:textColor="@color/navy_text_primary"
                 android:textStyle="bold" />
@@ -89,7 +90,7 @@
                 android:background="@drawable/bg_pill_success"
                 android:paddingHorizontal="10dp"
                 android:paddingVertical="4dp"
-                android:text="Paid"
+                tools:text="Paid"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="@color/status_green"
                 android:textStyle="bold" />

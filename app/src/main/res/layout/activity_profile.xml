@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_cream">
@@ -58,7 +59,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Marcus"
+                tools:text="Marcus"
                 android:textAppearance="?attr/textAppearanceHeadlineLarge"
                 android:textColor="@color/navy_text_primary"
                 android:textStyle="bold" />
@@ -68,7 +69,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="ML-8842"
+                tools:text="ML-8842"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="@color/text_secondary"
                 android:layout_marginTop="6dp" />
@@ -100,7 +101,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text="+254 700 000 000"
+                        tools:text="+254 700 000 000"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
                         android:textColor="@color/navy_text_primary" />
 
@@ -142,7 +143,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_sm"
-                            android:text="99%"
+                            tools:text="99%"
                             android:textAppearance="?attr/textAppearanceHeadlineSmall"
                             android:textColor="@color/navy_text_primary"
                             android:textStyle="bold" />
@@ -183,7 +184,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_sm"
-                            android:text="Gold"
+                            tools:text="Gold"
                             android:textAppearance="?attr/textAppearanceHeadlineSmall"
                             android:textColor="@color/navy_text_primary"
                             android:textStyle="bold" />
@@ -254,7 +255,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="MFA not enabled"
+                            tools:text="MFA not enabled"
                             android:textAppearance="?attr/textAppearanceBodyMedium"
                             android:textColor="@color/text_secondary" />
 
@@ -313,7 +314,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Last synced: 2m ago"
+                            tools:text="Last synced: 2m ago"
                             android:textAppearance="?attr/textAppearanceBodyMedium"
                             android:textColor="@color/text_secondary" />
 

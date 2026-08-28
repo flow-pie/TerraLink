@@ -473,7 +473,7 @@
                             android:id="@+id/history1Title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Emergency Medical Loan"
+                            tools:text="Emergency Medical Loan"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textColor="@color/navy_text_primary"
                             android:textStyle="bold" />
@@ -483,7 +483,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Completed Aug 2023"
+                            tools:text="Completed Aug 2023"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="@color/text_secondary" />
 
@@ -499,7 +499,7 @@
                             android:id="@+id/history1Amount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="KES 500.00"
+                            tools:text="KES 500.00"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textColor="@color/navy_text_primary"
                             android:textStyle="bold" />
@@ -509,7 +509,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Closed"
+                            tools:text="Closed"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="@color/terracotta_dark"
                             android:textStyle="bold" />
@@ -554,7 +554,7 @@
                             android:id="@+id/history2Title"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Seed Capital Loan"
+                            tools:text="Seed Capital Loan"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textColor="@color/navy_text_primary"
                             android:textStyle="bold" />
@@ -564,7 +564,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Completed Jan 2023"
+                            tools:text="Completed Jan 2023"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="@color/text_secondary" />
 
@@ -580,7 +580,7 @@
                             android:id="@+id/history2Amount"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="KES 1,200.00"
+                            tools:text="KES 1,200.00"
                             android:textAppearance="?attr/textAppearanceBodyLarge"
                             android:textColor="@color/navy_text_primary"
                             android:textStyle="bold" />
@@ -590,7 +590,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:text="Closed"
+                            tools:text="Closed"
                             android:textAppearance="?attr/textAppearanceBodySmall"
                             android:textColor="@color/terracotta_dark"
                             android:textStyle="bold" />

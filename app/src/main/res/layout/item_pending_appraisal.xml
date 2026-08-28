@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardAppraisal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -43,7 +44,7 @@
                     android:id="@+id/tvApplicantName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Jane Doe"
+                    tools:text="Jane Doe"
                     android:textColor="@color/navy_text_primary"
                     android:textStyle="bold"
                     android:textSize="16sp" />
@@ -51,7 +52,7 @@
                     android:id="@+id/tvLoanId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Loan ID: #ML-8821"
+                    tools:text="Loan ID: #ML-8821"
                     android:textColor="@color/text_muted"
                     android:textSize="12sp" />
             </LinearLayout>
@@ -60,7 +61,7 @@
                 android:id="@+id/tvPriority"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="SUBMITTED"
+                tools:text="SUBMITTED"
                 android:textAllCaps="true"
                 android:textColor="@color/terracotta_primary"
                 android:textStyle="bold"
