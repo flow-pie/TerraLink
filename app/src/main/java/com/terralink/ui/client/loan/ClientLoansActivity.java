@@ -3,22 +3,18 @@ package com.terralink.ui.client.loan;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.terralink.R;
 import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityClientLoansBinding;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
 import com.terralink.ui.common.SnackbarUtils;
-
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
-
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -36,7 +32,8 @@ public class ClientLoansActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(ClientLoansViewModel.class);
 
         binding.bottomNavigationView.setSelectedItemId(R.id.nav_loans);
-        setupNavigation(binding);
+        setupNavigation();
+        setupRecyclerView();
 
         binding.fabNewAction.setOnClickListener(v -> {
             startActivity(new Intent(this, ApplyLoanActivity.class));
@@ -47,11 +44,11 @@ public class ClientLoansActivity extends AppCompatActivity {
         });
 
         binding.swipeRefresh.setOnRefreshListener(() -> {
-            loadData(binding);
+            loadData();
             binding.swipeRefresh.setRefreshing(false);
         });
 
-        loadData(binding);
+        loadData();
     }
 
     @Override
@@ -60,7 +57,7 @@ public class ClientLoansActivity extends AppCompatActivity {
         binding.bottomNavigationView.setSelectedItemId(R.id.nav_loans);
     }
 
-    private void setupNavigation(ActivityClientLoansBinding binding) {
+    private void setupNavigation() {
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
@@ -79,143 +76,83 @@ public class ClientLoansActivity extends AppCompatActivity {
         });
     }
 
-    private void loadData(ActivityClientLoansBinding binding) {
+    private void setupRecyclerView() {
+        binding.rvLoanList.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void loadData() {
         viewModel.getActiveUser().observe(this, userResult -> {
-            switch (userResult.getStatus()) {
-                case LOADING:
-                    binding.loadingView.getRoot().setVisibility(View.VISIBLE);
-                    break;
-                case SUCCESS:
-                    UserProfileResponse user = userResult.getData();
-                    if (user != null) {
-                        viewModel.getClientLoans(user.getClientId()).observe(this, result -> {
-                            switch (result.getStatus()) {
-                                case LOADING:
-                                    binding.loadingView.getRoot().setVisibility(View.VISIBLE);
-                                    break;
-                                case SUCCESS:
-                                    binding.loadingView.getRoot().setVisibility(View.GONE);
-                                    List<ClientLoansResponse> loans = result.getData();
-                                    if (loans != null && !loans.isEmpty()) {
-                                        updateSummary(binding, loans);
-                                        bindLoanCard(binding, loans.get(0), 1);
-                                        if (loans.size() > 1) {
-                                            bindLoanCard(binding, loans.get(1), 2);
-                                            binding.loanCard2.setVisibility(View.VISIBLE);
-                                        } else {
-                                            binding.loanCard2.setVisibility(View.GONE);
-                                        }
-                                        binding.loanCard1.setVisibility(View.VISIBLE);
-                                        binding.tvEmptyState.setVisibility(View.GONE);
-                                    } else {
-                                        binding.loanCard1.setVisibility(View.GONE);
-                                        binding.loanCard2.setVisibility(View.GONE);
-                                        binding.activeBalanceValue.setText("KES 0.00");
-                                        binding.nextPaymentValue.setText("None");
-                                        binding.activeLoansCountBadge.setText("0 Active");
-                                        binding.tvEmptyState.setVisibility(View.VISIBLE);
-                                    }
-                                    
-                                    // Hide placeholders for history
-                                    binding.historyItem1.setVisibility(View.GONE);
-                                    binding.historyItem2.setVisibility(View.GONE);
-                                    break;
-                                case ERROR:
-                                    binding.loadingView.getRoot().setVisibility(View.GONE);
-                                    String message = result.getMessage() != null ? result.getMessage() : "Failed to load loans";
-                                    SnackbarUtils.showError(binding.getRoot(), message);
-                                    break;
-                            }
-                        });
-                    }
-                    break;
-                case ERROR:
-                    binding.loadingView.getRoot().setVisibility(View.GONE);
-                    String message = userResult.getMessage() != null ? userResult.getMessage() : "Failed to load user profile";
-                    SnackbarUtils.showError(binding.getRoot(), message);
-                    break;
+            if (userResult.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS) {
+                UserProfileResponse user = userResult.getData();
+                if (user != null) {
+                    viewModel.getClientLoans(user.getClientId()).observe(this, result -> {
+                        switch (result.getStatus()) {
+                            case LOADING:
+                                binding.loadingView.getRoot().setVisibility(View.VISIBLE);
+                                break;
+                            case SUCCESS:
+                                binding.loadingView.getRoot().setVisibility(View.GONE);
+                                if (result.getData() != null) {
+                                    updateUI(result.getData());
+                                }
+                                break;
+                            case ERROR:
+                                binding.loadingView.getRoot().setVisibility(View.GONE);
+                                SnackbarUtils.showError(binding.getRoot(), result.getMessage());
+                                break;
+                        }
+                    });
+                }
             }
         });
     }
 
-    private void updateSummary(ActivityClientLoansBinding binding, List<ClientLoansResponse> loans) {
-        double totalBalance = 0;
-        int activeCount = 0;
+    private void updateUI(List<ClientLoansResponse> loans) {
+        List<ClientLoansResponse> portfolioLoans = new ArrayList<>();
+        List<ClientLoansResponse> historyLoans = new ArrayList<>();
+
         for (ClientLoansResponse loan : loans) {
-            if (!"Application".equals(loan.getType())) {
-                totalBalance += loan.getBalance();
-                activeCount++;
+            String status = loan.getStatus();
+            if ("REJECTED".equals(status) || "CLOSED".equals(status)) {
+                historyLoans.add(loan);
+            } else {
+                portfolioLoans.add(loan);
             }
         }
-        binding.activeBalanceValue.setText(String.format(Locale.US, "KES %,.2f", totalBalance));
-        binding.activeLoansCountBadge.setText(activeCount + " Active");
-        
-        // Find next payment date from the first active loan if any
-        if (activeCount > 0) {
-            binding.nextPaymentValue.setText("Pending"); // Placeholder until schedule is fetched per loan
+
+        // Setup Portfolio Adapter
+        LoanListAdapter portfolioAdapter = new LoanListAdapter(portfolioLoans, loan -> {
+            LoanDetailsBottomSheetFragment fragment = LoanDetailsBottomSheetFragment.newInstance(loan);
+            fragment.show(getSupportFragmentManager(), fragment.getTag());
+        });
+        binding.rvLoanList.setAdapter(portfolioAdapter);
+
+        // Setup History Adapter
+        if (!historyLoans.isEmpty()) {
+            binding.tvHistoryHeader.setVisibility(View.VISIBLE);
+            binding.rvLoanHistory.setVisibility(View.VISIBLE);
+            LoanListAdapter historyAdapter = new LoanListAdapter(historyLoans, loan -> {
+                LoanDetailsBottomSheetFragment fragment = LoanDetailsBottomSheetFragment.newInstance(loan);
+                fragment.show(getSupportFragmentManager(), fragment.getTag());
+            });
+            binding.rvLoanHistory.setLayoutManager(new LinearLayoutManager(this));
+            binding.rvLoanHistory.setAdapter(historyAdapter);
         } else {
-            binding.nextPaymentValue.setText("None");
+            binding.tvHistoryHeader.setVisibility(View.GONE);
+            binding.rvLoanHistory.setVisibility(View.GONE);
         }
-    }
 
-    private void bindLoanCard(ActivityClientLoansBinding binding, ClientLoansResponse loan, int cardNumber){
-        if(cardNumber == 1){
-            binding.loan1Title.setText(loan.getReferenceNo() != null ? loan.getReferenceNo() : "LOAN");
-            binding.loan1Id.setText("ID: " + (loan.getLoanId() != null ? loan.getLoanId() : "N/A"));
-            
-            if ("Application".equals(loan.getType())) {
-                binding.loan1AmountValue.setText("Application Pending");
-                binding.loan1MonthsLeft.setText("Submitted: " + (loan.getSubmittedAt() != null ? loan.getSubmittedAt().split("T")[0] : ""));
-                binding.loan1PaidBadge.setText("SUBMITTED");
-                binding.loan1PayButton.setVisibility(View.GONE);
-            } else {
-                binding.loan1AmountValue.setText(String.format(
-                        Locale.US,
-                        "KES %,.2f / KES %,.2f",
-                        loan.getRepaymentAmount() - loan.getBalance(),
-                        loan.getRepaymentAmount()
-                ));
-                binding.loan1MonthsLeft.setText(loan.getStatus() != null ? loan.getStatus() : "");
-                binding.loan1PaidBadge.setText(loan.getStatus() != null ? loan.getStatus() : "ACTIVE");
-                binding.loan1PayButton.setVisibility(View.VISIBLE);
+        binding.tvEmptyState.setVisibility(loans.isEmpty() ? View.VISIBLE : View.GONE);
+        binding.totalCountBadge.setText(portfolioLoans.size() + " Active");
+
+        double totalActiveBalance = 0;
+        for (ClientLoansResponse loan : portfolioLoans) {
+            if ("Loan".equals(loan.getType()) && "ACTIVE".equals(loan.getStatus())) {
+                totalActiveBalance += loan.getBalance();
             }
-
-            binding.loan1PayButton.setOnClickListener(v -> {
-                SnackbarUtils.showInfo(binding.getRoot(), "Please manage payments from the Home dashboard");
-            });
-
-            binding.loan1DetailsButton.setOnClickListener(v -> {
-                SnackbarUtils.showInfo(binding.getRoot(), "Loan: " + loan.getReferenceNo() + "\nStatus: " + loan.getStatus());
-            });
-
-        }else if(cardNumber == 2){
-            binding.loan2Title.setText(loan.getReferenceNo() != null ? loan.getReferenceNo() : "LOAN");
-            binding.loan2Id.setText("ID: " + (loan.getLoanId() != null ? loan.getLoanId() : "N/A"));
-            
-            if ("Application".equals(loan.getType())) {
-                binding.loan2AmountValue.setText("Application Pending");
-                binding.loan2MonthsLeft.setText("Submitted: " + (loan.getSubmittedAt() != null ? loan.getSubmittedAt().split("T")[0] : ""));
-                binding.loan2DueBadge.setText("SUBMITTED");
-                binding.loan2PayButton.setVisibility(View.GONE);
-            } else {
-                binding.loan2AmountValue.setText(String.format(
-                        Locale.US,
-                        "KES %,.2f / KES %,.2f",
-                        loan.getRepaymentAmount() - loan.getBalance(),
-                        loan.getRepaymentAmount()
-                ));
-                binding.loan2MonthsLeft.setText(loan.getStatus() != null ? loan.getStatus() : "");
-                binding.loan2DueBadge.setText(loan.getStatus() != null ? loan.getStatus() : "ACTIVE");
-                binding.loan2PayButton.setVisibility(View.VISIBLE);
-            }
-
-            binding.loan2PayButton.setOnClickListener(v -> {
-                SnackbarUtils.showInfo(binding.getRoot(), "Please manage payments from the Home dashboard");
-            });
-
-            binding.loan2DetailsButton.setOnClickListener(v -> {
-                SnackbarUtils.showInfo(binding.getRoot(), "Loan: " + loan.getReferenceNo() + "\nStatus: " + loan.getStatus());
-            });
         }
+
+        binding.activeBalanceValue.setText(String.format(Locale.getDefault(), "KES %,.2f", totalActiveBalance));
+        binding.nextPaymentValue.setText("Oct 12"); // Placeholder
     }
 }

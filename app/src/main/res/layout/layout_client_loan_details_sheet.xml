@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_bottom_sheet"
+    android:paddingBottom="32dp">
+
+    <!-- Drag handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"
+        android:background="@color/surface_stroke" />
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvLoanTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Loan #ML-88294"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvLoanSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="Active • KES 45,000"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/text_secondary" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvStatusBadge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            tools:text="ACTIVE"
+            android:background="@drawable/bg_status_badge_green"
+            android:textColor="@color/status_green"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginVertical="16dp"
+        android:background="@color/surface_stroke" />
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="600dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="24dp">
+
+            <!-- APPLICATION TIMELINE (Visible if Application) -->
+            <LinearLayout
+                android:id="@+id/layoutApplicationTimeline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Application Progress"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="@color/navy_text_primary"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp" />
+
+                <include android:id="@+id/stepSubmitted" layout="@layout/layout_timeline_item" />
+                <include android:id="@+id/stepReview" layout="@layout/layout_timeline_item" />
+                <include android:id="@+id/stepApproval" layout="@layout/layout_timeline_item" />
+                <include android:id="@+id/stepDisbursement" layout="@layout/layout_timeline_item" />
+
+            </LinearLayout>
+
+            <!-- ACTIVE LOAN DETAILS (Visible if Active Loan) -->
+            <LinearLayout
+                android:id="@+id/layoutActiveLoanDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
+
+                <!-- Repayment Progress -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Repayment Details"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="@color/navy_text_primary"
+                    android:textStyle="bold" />
+
+                <GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:rowCount="2"
+                    android:layout_marginTop="16dp">
+
+                    <LinearLayout android:orientation="vertical" android:layout_columnWeight="1">
+                        <TextView style="@style/TerraLink.Table.Label" android:text="Balance" />
+                        <TextView android:id="@+id/tvBalanceValue" style="@style/TerraLink.Table.Value" tools:text="KES 24,000" />
+                    </LinearLayout>
+
+                    <LinearLayout android:orientation="vertical" android:layout_columnWeight="1">
+                        <TextView style="@style/TerraLink.Table.Label" android:text="Next Payment" />
+                        <TextView android:id="@+id/tvNextPaymentValue" style="@style/TerraLink.Table.Value" tools:text="Oct 12" />
+                    </LinearLayout>
+
+                </GridLayout>
+
+                <!-- Schedule Table -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Upcoming Schedule"
+                    android:textAppearance="?attr/textAppearanceTitleSmall"
+                    android:textColor="@color/terracotta_primary"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="8dp" />
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="@color/surface_stroke"
+                    app:strokeWidth="1dp">
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/repaymentScheduleContainer"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <!-- Header -->
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@color/terracotta_container"
+                                android:padding="12dp"
+                                android:orientation="horizontal">
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="40dp" android:text="ID" />
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="80dp" android:text="DATE" />
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="100dp" android:text="AMOUNT" />
+                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="80dp" android:text="STATUS" />
+                            </LinearLayout>
+
+                            <!-- Rows will be added here -->
+
+                        </LinearLayout>
+                    </HorizontalScrollView>
+                </com.google.android.material.card.MaterialCardView>
+
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMainAction"
+                style="@style/Widget.TerraLink.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Make Payment"
+                app:icon="@drawable/ic_wallet" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

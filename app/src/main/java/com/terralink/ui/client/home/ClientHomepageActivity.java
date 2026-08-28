@@ -130,30 +130,50 @@ public class ClientHomepageActivity extends AppCompatActivity {
                 binding.tvLoanBalance.setText("Loading...");
                 break;
             case SUCCESS:
-                List<ClientLoansResponse> loans = result.getData();
-                if (loans != null && !loans.isEmpty()) {
+                List<ClientLoansResponse> allLoans = result.getData();
+                if (allLoans != null && !allLoans.isEmpty()) {
                     binding.emptyStateContainer.setVisibility(View.GONE);
                     
-                    ClientLoansResponse primaryLoan = null;
-                    for (ClientLoansResponse l : loans) {
-                        if ("Loan".equals(l.getType())) {
-                            primaryLoan = l;
-                            break;
-                        }
+                    // Filter for active loans only for the carousel
+                    List<ClientLoansResponse> activeLoans = allLoans.stream()
+                            .filter(l -> "Loan".equals(l.getType()))
+                            .collect(Collectors.toList());
+
+                    // Check for pending applications (not yet active or rejected)
+                    boolean hasPendingApplication = allLoans.stream()
+                            .anyMatch(l -> "Application".equals(l.getType()) && 
+                                    !"REJECTED".equals(l.getStatus()) && 
+                                    !"ACTIVE".equals(l.getStatus()));
+
+                    if (hasPendingApplication) {
+                        binding.cardPendingApplication.setVisibility(View.VISIBLE);
+                        binding.cardPendingApplication.setOnClickListener(v -> {
+                            startActivity(new Intent(this, ClientLoansActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                        });
+                    } else {
+                        binding.cardPendingApplication.setVisibility(View.GONE);
                     }
 
-                    if (primaryLoan != null) {
+                    if (!activeLoans.isEmpty()) {
                         binding.loanContentContainer.setVisibility(View.VISIBLE);
+                        binding.rvLoanSelector.setVisibility(View.VISIBLE);
+                        
+                        ClientLoansResponse primaryLoan = activeLoans.get(0);
                         viewModel.refreshLoanDetails(primaryLoan.getLoanId());
+                        setupLoanSelector(activeLoans);
                     } else {
                         binding.loanContentContainer.setVisibility(View.GONE);
+                        binding.rvLoanSelector.setVisibility(View.GONE);
+                        
+                        if (!hasPendingApplication) {
+                            binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                        }
                     }
-
-                    setupLoanSelector(loans);
                 } else {
                     binding.emptyStateContainer.setVisibility(View.VISIBLE);
                     binding.loanContentContainer.setVisibility(View.GONE);
                     binding.rvLoanSelector.setVisibility(View.GONE);
+                    binding.cardPendingApplication.setVisibility(View.GONE);
                     
                     binding.btnApplyFirstLoan.setOnClickListener(v -> {
                         startActivity(new Intent(this, ApplyLoanActivity.class));
@@ -204,20 +224,9 @@ public class ClientHomepageActivity extends AppCompatActivity {
     }
 
     private void setupLoanSelector(List<ClientLoansResponse> loans) {
-        List<ClientLoansResponse> unapprovedLoans = loans.stream()
-                .filter(loan -> !"APPROVED".equals(loan.getStatus()))
-                .collect(Collectors.toList());
-
-        loanSelectorAdapter = new LoanSelectorAdapter(unapprovedLoans, loan -> {
-            if ("Application".equals(loan.getType()) ) {
-                Intent intent = new Intent(this, NotificationStatusActivity.class);
-                intent.putExtra(NotificationStatusActivity.EXTRA_APPLICATION_ID, Integer.parseInt(loan.getLoanId()));
-                intent.putExtra(NotificationStatusActivity.EXTRA_LOAN_NO, loan.getReferenceNo());
-                startActivity(intent);
-            } else {
-                binding.loanContentContainer.setVisibility(View.VISIBLE);
-                viewModel.refreshLoanDetails(loan.getLoanId());
-            }
+        loanSelectorAdapter = new LoanSelectorAdapter(loans, loan -> {
+            binding.loanContentContainer.setVisibility(View.VISIBLE);
+            viewModel.refreshLoanDetails(loan.getLoanId());
         });
         binding.rvLoanSelector.setAdapter(loanSelectorAdapter);
         binding.rvLoanSelector.setVisibility(loans.isEmpty() ? View.GONE : View.VISIBLE);
