@@ -34,4 +34,16 @@ public interface ClientApi {
             @Query("pageSize") int pageSize,
             @Query("search") String search
     );
+
+    @POST("api/clients/{id}/verify")
+    Call<Void> verifyClient(@retrofit2.http.Path("id") int id);
+
+    @POST("api/clients/{id}/reject")
+    Call<Void> rejectClient(
+            @retrofit2.http.Path("id") int id,
+            @retrofit2.http.Body com.terralink.data.model.VerificationRejectRequest request
+    );
+
+    @GET("api/clients/{id}/kyc-documents")
+    Call<java.util.List<com.terralink.data.model.KycDocumentResponse>> getKycDocuments(@retrofit2.http.Path("id") int id);
 }

@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.terralink.data.api.ClientApi;
 import com.terralink.data.model.ClientListItemResponse;
+import com.terralink.data.model.KycDocumentResponse;
 import com.terralink.data.model.PaginatedResponse;
+import com.terralink.data.model.VerificationRejectRequest;
 import com.terralink.ui.common.Resource;
 
 import java.io.File;
@@ -102,6 +104,85 @@ public class ClientRepository {
             }
         });
 
+        return result;
+    }
+
+    public LiveData<Resource<Void>> verifyClient(int clientId) {
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+        clientApi.verifyClient(clientId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    result.postValue(Resource.success(null));
+                } else {
+                    String errorMsg = "Verification failed: " + response.code();
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg += " - " + response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    result.postValue(Resource.error(errorMsg));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+        return result;
+    }
+
+    public LiveData<Resource<Void>> rejectClient(int clientId, String reason) {
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+        clientApi.rejectClient(clientId, new VerificationRejectRequest(reason)).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    result.postValue(Resource.success(null));
+                } else {
+                    String errorMsg = "Rejection failed: " + response.code();
+                    try {
+                        if (response.errorBody() != null) {
+                            errorMsg += " - " + response.errorBody().string();
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    result.postValue(Resource.error(errorMsg));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+        return result;
+    }
+
+    public LiveData<Resource<java.util.List<KycDocumentResponse>>> getKycDocuments(int clientId) {
+        MutableLiveData<Resource<java.util.List<KycDocumentResponse>>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+        clientApi.getKycDocuments(clientId).enqueue(new Callback<java.util.List<KycDocumentResponse>>() {
+            @Override
+            public void onResponse(Call<java.util.List<KycDocumentResponse>> call, Response<java.util.List<KycDocumentResponse>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Failed to load KYC documents"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<java.util.List<KycDocumentResponse>> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
         return result;
     }
 

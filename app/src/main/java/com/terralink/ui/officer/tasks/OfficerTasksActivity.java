@@ -6,18 +6,19 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.terralink.R;
-import com.terralink.data.model.LoanApplicationResponse;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityOfficerTasksBinding;
 import com.terralink.ui.auth.LoginActivity;
 import com.terralink.ui.auth.TokenManager;
 import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.officer.appraisal.LoanAppraisalBottomSheetFragment;
-import com.terralink.ui.officer.dashboard.PendingAppraisalAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class OfficerTasksActivity extends AppCompatActivity {
 
     private ActivityOfficerTasksBinding binding;
     private OfficerTasksViewModel viewModel;
-    private PendingAppraisalAdapter adapter;
+    private OfficerTaskAdapter adapter;
 
     @Inject
     TokenManager tokenManager;
@@ -41,6 +42,12 @@ public class OfficerTasksActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityOfficerTasksBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, windowInsets) -> {
+            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
+            return WindowInsetsCompat.CONSUMED;
+        });
 
         viewModel = new ViewModelProvider(this).get(OfficerTasksViewModel.class);
 
@@ -64,9 +71,15 @@ public class OfficerTasksActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerView() {
-        adapter = new PendingAppraisalAdapter(app -> {
-            LoanAppraisalBottomSheetFragment fragment = LoanAppraisalBottomSheetFragment.newInstance(app.getId());
-            fragment.show(getSupportFragmentManager(), fragment.getTag());
+        adapter = new OfficerTaskAdapter(task -> {
+            if (task.getType() == OfficerTask.Type.APPRAISAL) {
+                LoanAppraisalBottomSheetFragment fragment = LoanAppraisalBottomSheetFragment.newInstance(task.getId());
+                fragment.show(getSupportFragmentManager(), fragment.getTag());
+            } else {
+                ClientVerificationBottomSheetFragment fragment = ClientVerificationBottomSheetFragment.newInstance(
+                        task.getId(), task.getTitle(), task.getSubtitle().replace("Client No: ", ""));
+                fragment.show(getSupportFragmentManager(), fragment.getTag());
+            }
         });
         binding.rvTasks.setLayoutManager(new LinearLayoutManager(this));
         binding.rvTasks.setAdapter(adapter);
@@ -98,7 +111,7 @@ public class OfficerTasksActivity extends AppCompatActivity {
     }
 
     private void loadTasks() {
-        viewModel.getPendingTasks().observe(this, result -> {
+        viewModel.getCombinedTasks().observe(this, result -> {
             switch (result.getStatus()) {
                 case LOADING:
                     binding.swipeRefresh.setRefreshing(true);
@@ -106,14 +119,8 @@ public class OfficerTasksActivity extends AppCompatActivity {
                 case SUCCESS:
                     binding.swipeRefresh.setRefreshing(false);
                     if (result.getData() != null) {
-                        List<LoanApplicationResponse> actionable = new ArrayList<>();
-                        for (LoanApplicationResponse app : result.getData().getItems()) {
-                            if ("SUBMITTED".equals(app.getStatus()) || "INFO_REQUESTED".equals(app.getStatus())) {
-                                actionable.add(app);
-                            }
-                        }
-                        adapter.submitList(actionable);
-                        binding.tvEmptyState.setVisibility(actionable.isEmpty() ? View.VISIBLE : View.GONE);
+                        adapter.submitList(result.getData());
+                        binding.tvEmptyState.setVisibility(result.getData().isEmpty() ? View.VISIBLE : View.GONE);
                     }
                     break;
                 case ERROR:
