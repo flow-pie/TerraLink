@@ -24,16 +24,18 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class ClientLoansActivity extends AppCompatActivity {
 
     private ClientLoansViewModel viewModel;
+    private ActivityClientLoansBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ActivityClientLoansBinding binding = ActivityClientLoansBinding.inflate(getLayoutInflater());
+        binding = ActivityClientLoansBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         viewModel = new ViewModelProvider(this).get(ClientLoansViewModel.class);
 
         binding.bottomNavigationView.setSelectedItemId(R.id.nav_loans);
+        setupNavigation(binding);
 
         binding.fabNewAction.setOnClickListener(v -> {
             startActivity(new Intent(this, ApplyLoanActivity.class));
@@ -49,6 +51,31 @@ public class ClientLoansActivity extends AppCompatActivity {
         });
 
         loadData(binding);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_loans);
+    }
+
+    private void setupNavigation(ActivityClientLoansBinding binding) {
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, com.terralink.ui.client.home.ClientHomepageActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                return true;
+            } else if (id == R.id.nav_loans) {
+                return true;
+            } else if (id == R.id.nav_history) {
+                startActivity(new Intent(this, com.terralink.ui.client.transaction.TransactionHistoryActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, com.terralink.ui.client.profile.ProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                return true;
+            }
+            return false;
+        });
     }
 
     private void loadData(ActivityClientLoansBinding binding) {

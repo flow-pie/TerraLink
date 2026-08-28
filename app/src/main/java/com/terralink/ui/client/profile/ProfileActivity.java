@@ -28,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 public class ProfileActivity extends AppCompatActivity {
 
     private  ProfileViewModel viewModel;
+    private ActivityProfileBinding binding;
 
     @Inject
     TokenManager tokenManager;
@@ -36,20 +37,20 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ActivityProfileBinding profileBinding = ActivityProfileBinding.inflate(getLayoutInflater());
-        setContentView(profileBinding.getRoot());
+        binding = ActivityProfileBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         viewModel = new ViewModelProvider(this).get(ProfileViewModel.class);
 
-        profileBinding.bottomNavigationView.setSelectedItemId(R.id.nav_profile);
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_profile);
 
-        profileBinding.fabNewAction.setOnClickListener(v -> {
+        binding.fabNewAction.setOnClickListener(v -> {
             startActivity(new Intent(this, ApplyLoanActivity.class));
         });
 
-        profileBinding.swipeRefresh.setOnRefreshListener(() -> {
+        binding.swipeRefresh.setOnRefreshListener(() -> {
             viewModel.refreshProfile();
-            profileBinding.swipeRefresh.setRefreshing(false);
+            binding.swipeRefresh.setRefreshing(false);
         });
 
         viewModel.getActiveUser().observe(this,
@@ -58,42 +59,42 @@ public class ProfileActivity extends AppCompatActivity {
                             case LOADING:
 
                                 // Show loading UI.
-                                profileBinding.loadingView.getRoot().setVisibility(View.VISIBLE);
+                                binding.loadingView.getRoot().setVisibility(View.VISIBLE);
                                 break;
 
                             case SUCCESS:
                                 UserProfileResponse client =
                                         result.getData();
-                                profileBinding.loadingView.getRoot().setVisibility(View.GONE);
+                                binding.loadingView.getRoot().setVisibility(View.GONE);
 
                                 // Populate your existing XML.
                                 if (client != null && client.getFullName() != null) {
-                                    profileBinding.tvProfileName.setText(client.getFullName());
-                                    profileBinding.tvEmployeeId.setText(client.getEmployeeNo());
+                                    binding.tvProfileName.setText(client.getFullName());
+                                    binding.tvEmployeeId.setText(client.getEmployeeNo());
 
-                                    profileBinding.securityDetails.setText(
+                                    binding.securityDetails.setText(
                                             client.isMfaEnabled()
                                                     ? "MFA enabled"
                                                     : "MFA not enabled"
                                     );
 
-                                    profileBinding.securityCard.setOnClickListener(v -> {
+                                    binding.securityCard.setOnClickListener(v -> {
                                         Toast.makeText(this, "Security settings coming soon", Toast.LENGTH_SHORT).show();
                                     });
 
-                                    profileBinding.dataSyncCard.setOnClickListener(v -> {
+                                    binding.dataSyncCard.setOnClickListener(v -> {
                                         Toast.makeText(this, "Syncing data...", Toast.LENGTH_SHORT).show();
                                     });
 
-                                    profileBinding.helpSupportCard.setOnClickListener(v -> {
+                                    binding.helpSupportCard.setOnClickListener(v -> {
                                         Toast.makeText(this, "Support line: +254 700 000 000", Toast.LENGTH_LONG).show();
                                     });
 
-                                    profileBinding.logoutCard.setOnClickListener(v -> {
+                                    binding.logoutCard.setOnClickListener(v -> {
                                         logout();
                                     });
 
-                                    profileBinding.appBarContent.btnNotifications.setOnClickListener(v -> {
+                                    binding.appBarContent.btnNotifications.setOnClickListener(v -> {
                                         startActivity(new Intent(this, NotificationStatusActivity.class));
                                     });
 
@@ -102,7 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 break;
 
                             case ERROR:
-                                profileBinding.loadingView.getRoot().setVisibility(View.GONE);
+                                binding.loadingView.getRoot().setVisibility(View.GONE);
                                 // Show an error message.
                                 String message = result.getMessage() != null ? result.getMessage() : "Unknown error occurred";
                                 Toast.makeText(
@@ -118,17 +119,17 @@ public class ProfileActivity extends AppCompatActivity {
                 }
         );
 
-        profileBinding.bottomNavigationView.setOnItemSelectedListener(item -> {
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if(itemId == R.id.nav_home) {
-                startActivity(new Intent(this, ClientHomepageActivity.class));
+                startActivity(new Intent(this, ClientHomepageActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             } else if(itemId == R.id.nav_loans) {
-                startActivity(new Intent(this, ClientLoansActivity.class));
+                startActivity(new Intent(this, ClientLoansActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             } else if(itemId == R.id.nav_history) {
-                startActivity(new Intent(this, TransactionHistoryActivity.class));
+                startActivity(new Intent(this, TransactionHistoryActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             } else if(itemId == R.id.nav_profile) {
                 return true;
@@ -137,6 +138,12 @@ public class ProfileActivity extends AppCompatActivity {
             return false;
         });
 
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_profile);
     }
 
     private void logout() {

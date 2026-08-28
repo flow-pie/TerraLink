@@ -59,6 +59,12 @@ public class ClientHomepageActivity extends AppCompatActivity {
         binding.swipeRefresh.setRefreshing(false);
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
+    }
+
     private void initView() {
         binding.appBarContent.btnNotifications.setOnClickListener(v -> {
             startActivity(new Intent(this, NotificationStatusActivity.class));
@@ -73,11 +79,11 @@ public class ClientHomepageActivity extends AppCompatActivity {
             if (itemId == R.id.nav_home) return true;
             
             if (itemId == R.id.nav_loans) {
-                startActivity(new Intent(this, ClientLoansActivity.class));
+                startActivity(new Intent(this, ClientLoansActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
             } else if (itemId == R.id.nav_history) {
-                startActivity(new Intent(this, TransactionHistoryActivity.class));
+                startActivity(new Intent(this, TransactionHistoryActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
             } else if (itemId == R.id.nav_profile) {
-                startActivity(new Intent(this, ProfileActivity.class));
+                startActivity(new Intent(this, ProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
             }
             return true;
         });

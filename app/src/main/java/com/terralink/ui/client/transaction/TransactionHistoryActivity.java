@@ -52,20 +52,26 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_history);
+    }
+
     private void setupNavigation() {
         binding.bottomNavigationView.setSelectedItemId(R.id.nav_history);
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
-                startActivity(new Intent(this, ClientHomepageActivity.class));
+                startActivity(new Intent(this, ClientHomepageActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             } else if (id == R.id.nav_loans) {
-                startActivity(new Intent(this, ClientLoansActivity.class));
+                startActivity(new Intent(this, ClientLoansActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             } else if (id == R.id.nav_history) {
                 return true;
             } else if (id == R.id.nav_profile) {
-                startActivity(new Intent(this, ProfileActivity.class));
+                startActivity(new Intent(this, ProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             }
             return false;

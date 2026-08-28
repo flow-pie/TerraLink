@@ -47,6 +47,7 @@ public class ApplyLoanActivity extends AppCompatActivity {
         viewModel = new ViewModelProvider(this).get(ApplyLoanViewModel.class);
 
         binding.bottomNavigationView.setSelectedItemId(R.id.nav_loans);
+        setupNavigation();
 
         binding.fabNewAction.setOnClickListener(v -> finish());
 
@@ -57,6 +58,39 @@ public class ApplyLoanActivity extends AppCompatActivity {
         setupSpinners();
         setupListeners();
         fetchInitialData();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set selection without triggering navigation
+        binding.bottomNavigationView.setOnItemSelectedListener(null);
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_loans);
+        setupNavigation();
+    }
+
+    private void setupNavigation() {
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+            if (id == R.id.nav_home) {
+                startActivity(new Intent(this, com.terralink.ui.client.home.ClientHomepageActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                finish();
+                return true;
+            } else if (id == R.id.nav_loans) {
+                startActivity(new Intent(this, com.terralink.ui.client.loan.ClientLoansActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                finish();
+                return true;
+            } else if (id == R.id.nav_history) {
+                startActivity(new Intent(this, com.terralink.ui.client.transaction.TransactionHistoryActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                finish();
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, com.terralink.ui.client.profile.ProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
+                finish();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void setupSpinners() {

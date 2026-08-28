@@ -69,21 +69,30 @@ public class NotificationStatusActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set selection without triggering navigation
+        binding.bottomNavigationView.setOnItemSelectedListener(null);
+        binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        setupNavigation();
+    }
+
     private void setupNavigation() {
         binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
-                startActivity(new Intent(this, ClientHomepageActivity.class));
+                startActivity(new Intent(this, ClientHomepageActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             } else if (id == R.id.nav_loans) {
-                startActivity(new Intent(this, ClientLoansActivity.class));
+                startActivity(new Intent(this, ClientLoansActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             } else if (id == R.id.nav_history) {
-                startActivity(new Intent(this, TransactionHistoryActivity.class));
+                startActivity(new Intent(this, TransactionHistoryActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             } else if (id == R.id.nav_profile) {
-                startActivity(new Intent(this, ProfileActivity.class));
+                startActivity(new Intent(this, ProfileActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
                 return true;
             }
             return false;
