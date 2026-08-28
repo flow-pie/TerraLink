@@ -71,6 +71,10 @@ public class ClientHomepageActivity extends AppCompatActivity {
             startActivity(new Intent(this, NotificationStatusActivity.class));
         });
 
+        binding.btnApplyFirstLoan.setOnClickListener(v -> {
+            startActivity(new Intent(this, ApplyLoanActivity.class));
+        });
+
         repaymentScheduleAdapter = new RepaymentScheduleAdapter(new ArrayList<>());
         binding.rvRecentPayments.setLayoutManager(new LinearLayoutManager(this));
         binding.rvRecentPayments.setAdapter(repaymentScheduleAdapter);
@@ -167,6 +171,9 @@ public class ClientHomepageActivity extends AppCompatActivity {
                         
                         if (!hasPendingApplication) {
                             binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                            binding.btnApplyFirstLoan.setOnClickListener(v -> {
+                                startActivity(new Intent(this, ApplyLoanActivity.class));
+                            });
                         }
                     }
                 } else {
