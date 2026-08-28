@@ -69,7 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         binding.tvNoAccount.setOnClickListener(v -> {
-            Toast.makeText(this, "Registration is officer-assisted. Please visit a branch.", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, com.terralink.ui.officer.registration.RegisterClientActivity.class));
         });
 
     }

@@ -23,6 +23,8 @@ public interface ClientApi {
             @Part("dateOfBirth") RequestBody dateOfBirth,
             @Part("gender") RequestBody gender,
             @Part("address") RequestBody address,
+            @Part("email") RequestBody email,
+            @Part("password") RequestBody password,
             @Part MultipartBody.Part nationalIdFront,
             @Part MultipartBody.Part nationalIdBack,
             @Part MultipartBody.Part passportPhoto

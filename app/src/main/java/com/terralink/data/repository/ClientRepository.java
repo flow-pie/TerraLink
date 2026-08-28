@@ -36,6 +36,8 @@ public class ClientRepository {
             String dateOfBirth,
             String gender,
             String address,
+            String email,
+            String password,
             File idFront,
             File idBack,
             File passportPhoto
@@ -49,6 +51,8 @@ public class ClientRepository {
         RequestBody dobPart = toPlainTextBody(dateOfBirth);
         RequestBody genderPart = toPlainTextBody(gender);
         RequestBody addressPart = toPlainTextBody(address);
+        RequestBody emailPart = toPlainTextBody(email);
+        RequestBody passwordPart = toPlainTextBody(password);
 
         MultipartBody.Part idFrontPart = prepareFilePart("nationalIdFront", idFront);
         MultipartBody.Part idBackPart = prepareFilePart("nationalIdBack", idBack);
@@ -56,6 +60,7 @@ public class ClientRepository {
 
         clientApi.registerClient(
                 fullNamePart, nationalIdPart, phonePart, dobPart, genderPart, addressPart,
+                emailPart, passwordPart,
                 idFrontPart, idBackPart, passportPart
         ).enqueue(new Callback<Void>() {
             @Override

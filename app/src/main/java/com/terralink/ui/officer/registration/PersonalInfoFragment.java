@@ -1,5 +1,6 @@
 package com.terralink.ui.officer.registration;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -15,6 +16,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.terralink.databinding.FragmentPersonalInfoBinding;
+
+import java.util.Calendar;
+import java.util.Locale;
 
 public class PersonalInfoFragment extends Fragment {
 
@@ -41,6 +45,33 @@ public class PersonalInfoFragment extends Fragment {
         binding.etGovId.setText(viewModel.nationalId);
         binding.etPhone.setText(viewModel.phone);
         binding.etDob.setText(viewModel.dateOfBirth);
+        binding.etEmail.setText(viewModel.email);
+        binding.etPassword.setText(viewModel.password);
+
+        binding.etDob.setFocusable(false);
+        binding.etDob.setClickable(true);
+        binding.etDob.setOnClickListener(v -> showDatePicker());
+    }
+
+    private void showDatePicker() {
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        // Calculate max date allowed (18 years ago from today)
+        Calendar maxDate = Calendar.getInstance();
+        maxDate.set(year - 18, month, day);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
+                (view, year1, monthOfYear, dayOfMonth) -> {
+                    String date = String.format(Locale.getDefault(), "%04d-%02d-%02d", year1, monthOfYear + 1, dayOfMonth);
+                    binding.etDob.setText(date);
+                    viewModel.dateOfBirth = date;
+                }, year - 18, month, day);
+        
+        datePickerDialog.getDatePicker().setMaxDate(maxDate.getTimeInMillis());
+        datePickerDialog.show();
     }
 
     private void setupGenderSpinner() {
@@ -70,6 +101,102 @@ public class PersonalInfoFragment extends Fragment {
         binding.etGovId.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.nationalId = s));
         binding.etPhone.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.phone = s));
         binding.etDob.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.dateOfBirth = s));
+        binding.etEmail.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.email = s));
+        binding.etPassword.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.password = s));
+    }
+
+    public boolean validate() {
+        boolean valid = true;
+        if (isEmpty(viewModel.fullName)) {
+            binding.tilFullName.setError("Full name is required");
+            valid = false;
+        } else {
+            binding.tilFullName.setError(null);
+        }
+
+        if (isEmpty(viewModel.nationalId)) {
+            binding.tilGovId.setError("ID is required");
+            valid = false;
+        } else if (viewModel.nationalId.length() != 8) {
+            binding.tilGovId.setError("ID must be exactly 8 digits");
+            valid = false;
+        } else if (!viewModel.nationalId.matches("\\d+")) {
+            binding.tilGovId.setError("ID must be numeric");
+            valid = false;
+        } else {
+            binding.tilGovId.setError(null);
+        }
+
+        if (isEmpty(viewModel.phone)) {
+            binding.tilPhone.setError("Phone is required");
+            valid = false;
+        } else if (viewModel.phone.length() != 10) {
+            binding.tilPhone.setError("Phone must be exactly 10 digits");
+            valid = false;
+        } else if (!viewModel.phone.matches("\\d+")) {
+            binding.tilPhone.setError("Phone must be numeric");
+            valid = false;
+        } else {
+            binding.tilPhone.setError(null);
+        }
+
+        if (isEmpty(viewModel.dateOfBirth)) {
+            binding.tilDob.setError("DOB is required");
+            valid = false;
+        } else if (!viewModel.dateOfBirth.matches("\\d{4}-\\d{2}-\\d{2}")) {
+            binding.tilDob.setError("Use format YYYY-MM-DD");
+            valid = false;
+        } else {
+            // Additional check for 18 years
+            try {
+                String[] parts = viewModel.dateOfBirth.split("-");
+                int year = Integer.parseInt(parts[0]);
+                int month = Integer.parseInt(parts[1]) - 1;
+                int day = Integer.parseInt(parts[2]);
+                
+                Calendar dob = Calendar.getInstance();
+                dob.set(year, month, day);
+                
+                Calendar minAge = Calendar.getInstance();
+                minAge.add(Calendar.YEAR, -18);
+                
+                if (dob.after(minAge)) {
+                    binding.tilDob.setError("Client must be at least 18 years old");
+                    valid = false;
+                } else {
+                    binding.tilDob.setError(null);
+                }
+            } catch (Exception e) {
+                binding.tilDob.setError("Invalid date");
+                valid = false;
+            }
+        }
+
+        if (isEmpty(viewModel.email)) {
+            binding.tilEmail.setError("Email is required");
+            valid = false;
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(viewModel.email).matches()) {
+            binding.tilEmail.setError("Invalid email format");
+            valid = false;
+        } else {
+            binding.tilEmail.setError(null);
+        }
+
+        if (isEmpty(viewModel.password)) {
+            binding.tilPassword.setError("Password is required");
+            valid = false;
+        } else if (viewModel.password.length() < 6) {
+            binding.tilPassword.setError("Password must be at least 6 characters");
+            valid = false;
+        } else {
+            binding.tilPassword.setError(null);
+        }
+
+        return valid;
+    }
+
+    private boolean isEmpty(String s) {
+        return s == null || s.trim().isEmpty();
     }
 
     private static class SimpleTextWatcher implements TextWatcher {

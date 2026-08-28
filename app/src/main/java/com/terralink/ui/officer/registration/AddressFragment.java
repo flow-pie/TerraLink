@@ -40,4 +40,13 @@ public class AddressFragment extends Fragment {
             @Override public void afterTextChanged(Editable s) {}
         });
     }
+
+    public boolean validate() {
+        if (viewModel.address == null || viewModel.address.trim().isEmpty()) {
+            binding.tilAddress.setError("Address is required");
+            return false;
+        }
+        binding.tilAddress.setError(null);
+        return true;
+    }
 }

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     android:padding="16dp">
 
     <com.google.android.material.card.MaterialCardView
@@ -92,8 +93,9 @@
                             android:id="@+id/etGovId"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="000-00-000"
-                            android:inputType="text" />
+                            android:hint="12345678"
+                            android:inputType="number"
+                            android:maxLength="8" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
@@ -133,8 +135,9 @@
                             android:id="@+id/etPhone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="+254 700 000"
-                            android:inputType="phone" />
+                            android:hint="0712345678"
+                            android:inputType="phone"
+                            android:maxLength="10" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <TextView
@@ -190,7 +193,61 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="YYYY-MM-DD"
-                    android:inputType="date" />
+                    android:inputType="none"
+                    android:focusable="false"
+                    android:clickable="true"
+                    android:cursorVisible="false" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- EMAIL -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="EMAIL ADDRESS"
+                android:textColor="@color/navy_text_primary"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilEmail"
+                style="@style/Widget.TerraLink.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="amina@example.com"
+                    android:inputType="textEmailAddress" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- PASSWORD -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="PASSWORD"
+                android:textColor="@color/navy_text_primary"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilPassword"
+                style="@style/Widget.TerraLink.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="••••••••"
+                    android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>

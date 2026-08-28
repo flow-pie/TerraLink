@@ -26,6 +26,7 @@ public class RegisterClientActivity extends AppCompatActivity {
     private ActivityRegisterClientBinding binding;
     private RegisterClientViewModel viewModel;
     private int currentStep = 1;
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,9 +35,9 @@ public class RegisterClientActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, windowInsets) -> {
-            Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(insets.left, insets.top, insets.right, insets.bottom);
-            return WindowInsetsCompat.CONSUMED;
+            Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return windowInsets;
         });
 
         viewModel = new ViewModelProvider(this).get(RegisterClientViewModel.class);
@@ -44,11 +45,13 @@ public class RegisterClientActivity extends AppCompatActivity {
         showStep(1);
 
         binding.btnNextStep.setOnClickListener(v -> {
-            if (currentStep < 4) {
-                currentStep++;
-                showStep(currentStep);
-            } else {
-                performRegistration();
+            if (validateCurrentStep()) {
+                if (currentStep < 4) {
+                    currentStep++;
+                    showStep(currentStep);
+                } else {
+                    performRegistration();
+                }
             }
         });
 
@@ -61,25 +64,24 @@ public class RegisterClientActivity extends AppCompatActivity {
     }
 
     private void showStep(int step) {
-        Fragment fragment;
         switch (step) {
             case 1:
-                fragment = new PersonalInfoFragment();
+                currentFragment = new PersonalInfoFragment();
                 binding.btnPreviousStep.setVisibility(View.GONE);
                 binding.btnNextStep.setText("NEXT STEP");
                 break;
             case 2:
-                fragment = new AddressFragment();
+                currentFragment = new AddressFragment();
                 binding.btnPreviousStep.setVisibility(View.VISIBLE);
                 binding.btnNextStep.setText("NEXT STEP");
                 break;
             case 3:
-                fragment = new KycDocumentsFragment();
+                currentFragment = new KycDocumentsFragment();
                 binding.btnPreviousStep.setVisibility(View.VISIBLE);
                 binding.btnNextStep.setText("NEXT STEP");
                 break;
             case 4:
-                fragment = new ReviewFragment();
+                currentFragment = new ReviewFragment();
                 binding.btnPreviousStep.setVisibility(View.VISIBLE);
                 binding.btnNextStep.setText("REGISTER CLIENT");
                 break;
@@ -88,10 +90,21 @@ public class RegisterClientActivity extends AppCompatActivity {
         }
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.stepFragmentContainer, fragment)
+                .replace(R.id.stepFragmentContainer, currentFragment)
                 .commit();
 
         updateStepperUI(step);
+    }
+
+    private boolean validateCurrentStep() {
+        if (currentFragment instanceof PersonalInfoFragment) {
+            return ((PersonalInfoFragment) currentFragment).validate();
+        } else if (currentFragment instanceof AddressFragment) {
+            return ((AddressFragment) currentFragment).validate();
+        } else if (currentFragment instanceof KycDocumentsFragment) {
+            return ((KycDocumentsFragment) currentFragment).validate();
+        }
+        return true;
     }
 
     private void updateStepperUI(int step) {
@@ -131,6 +144,7 @@ public class RegisterClientActivity extends AppCompatActivity {
     private boolean validateForm() {
         if (isEmpty(viewModel.fullName) || isEmpty(viewModel.nationalId) || 
             isEmpty(viewModel.phone) || isEmpty(viewModel.dateOfBirth) || 
+            isEmpty(viewModel.email) || isEmpty(viewModel.password) ||
             isEmpty(viewModel.address)) {
             Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
             return false;

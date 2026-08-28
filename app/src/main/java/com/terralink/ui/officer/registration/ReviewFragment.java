@@ -33,6 +33,7 @@ public class ReviewFragment extends Fragment {
         binding.tvGovernmentId.setText(viewModel.nationalId);
         binding.tvPhone.setText(viewModel.phone);
         binding.tvDateOfBirth.setText(viewModel.dateOfBirth);
+        binding.tvEmail.setText(viewModel.email);
         binding.tvAddressNote.setText(viewModel.address);
 
         // Previews for images

@@ -24,6 +24,8 @@ public class RegisterClientViewModel extends ViewModel {
     public String dateOfBirth;
     public String gender = "MALE";
     public String address;
+    public String email;
+    public String password;
     public File idFront;
     public File idBack;
     public File passportPhoto;
@@ -36,6 +38,7 @@ public class RegisterClientViewModel extends ViewModel {
     public LiveData<Resource<Void>> register() {
         return clientRepository.registerClient(
                 fullName, nationalId, phone, dateOfBirth, gender, address,
+                email, password,
                 idFront, idBack, passportPhoto
         );
     }

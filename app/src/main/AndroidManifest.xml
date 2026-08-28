@@ -43,7 +43,7 @@
 
         <activity
             android:name=".ui.client.loan.ApplyLoanActivity"
-            android:windowSoftInputMode="stateVisible"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false"
             />
         <activity
