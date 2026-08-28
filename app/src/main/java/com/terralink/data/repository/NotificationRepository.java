@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.terralink.data.api.NotificationApi;
 import com.terralink.data.model.NotificationResponse;
+import com.terralink.data.model.PaginatedResponse;
 import com.terralink.ui.common.Resource;
 
 import java.util.List;
@@ -27,24 +28,46 @@ public class NotificationRepository {
         MutableLiveData<Resource<List<NotificationResponse>>> result = new MutableLiveData<>();
         result.setValue(Resource.loading());
 
-        notificationApi.getNotifications(false, 1, 20).enqueue(
-                new Callback<List<NotificationResponse>>() {
+        // Pass null for isRead to fetch both read and unread notifications
+        notificationApi.getNotifications(null, 1, 50).enqueue(
+                new Callback<PaginatedResponse<NotificationResponse>>() {
                     @Override
-                    public void onResponse(Call<List<NotificationResponse>> call, Response<List<NotificationResponse>> response) {
+                    public void onResponse(Call<PaginatedResponse<NotificationResponse>> call, Response<PaginatedResponse<NotificationResponse>> response) {
                         if(response.isSuccessful() && response.body() != null){
-                            result.postValue(Resource.success(response.body()));
+                            result.postValue(Resource.success(response.body().getItems()));
                         }else{
                             result.postValue(Resource.error("Request Failed: "+response.code()));
                         }
                     }
 
                     @Override
-                    public void onFailure(Call<List<NotificationResponse>> call, Throwable t) {
+                    public void onFailure(Call<PaginatedResponse<NotificationResponse>> call, Throwable t) {
                         result.postValue(Resource.error("Network Error: "+t.getMessage()));
                     }
                 }
         );
 
+        return result;
+    }
+
+    public LiveData<Resource<Void>> markAsRead(long id) {
+        MutableLiveData<Resource<Void>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+        notificationApi.markAsRead(id).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    result.postValue(Resource.success(null));
+                } else {
+                    result.postValue(Resource.error("Failed to mark as read"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
         return result;
     }
 

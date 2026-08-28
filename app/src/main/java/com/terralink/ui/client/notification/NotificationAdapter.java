@@ -21,9 +21,11 @@ import java.util.Locale;
 public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapter.NotificationViewHolder> {
 
     private List<NotificationResponse> notifications;
+    private final java.util.function.Consumer<NotificationResponse> onNotificationClick;
 
-    public NotificationAdapter(List<NotificationResponse> notifications){
+    public NotificationAdapter(List<NotificationResponse> notifications, java.util.function.Consumer<NotificationResponse> onNotificationClick){
         this.notifications = notifications;
+        this.onNotificationClick = onNotificationClick;
     }
 
     public void setNotifications(List<NotificationResponse> notifications){
@@ -43,9 +45,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position){
         NotificationResponse notification = notifications.get(position);
         holder.tvTitle.setText(notification.getTitle() != null ? notification.getTitle() : "Notification");
-        holder.tvMessage.setText(notification.getMessage() != null ? notification.getMessage() : "");
+        holder.tvMessage.setText(notification.getBody() != null ? notification.getBody() : "");
         holder.tvDate.setText(formatDate(notification.getCreatedAt()));
         holder.indicatorDot.setVisibility(notification.isRead() ? View.GONE : View.VISIBLE);
+        holder.itemView.setOnClickListener(v -> onNotificationClick.accept(notification));
     }
 
     @Override

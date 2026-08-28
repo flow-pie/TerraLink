@@ -30,6 +30,10 @@ public class NotificationStatusViewModel extends ViewModel {
         return notificationRepository.getNotifications();
     }
 
+    public LiveData<Resource<Void>> markAsRead(long notificationId) {
+        return notificationRepository.markAsRead(notificationId);
+    }
+
     public LiveData<Resource<Void>> markAllAsRead(){
         return notificationRepository.markAllAsRead();
     }

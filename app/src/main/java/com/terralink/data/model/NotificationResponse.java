@@ -3,7 +3,8 @@ package com.terralink.data.model;
 public class NotificationResponse {
     private long id;
     private String title;
-    private String message;
+    private String body;
+    private String type;
     private String createdAt;
     private boolean isRead;
 
@@ -15,8 +16,12 @@ public class NotificationResponse {
         return title;
     }
 
-    public String getMessage() {
-        return message;
+    public String getBody() {
+        return body;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String getCreatedAt() {

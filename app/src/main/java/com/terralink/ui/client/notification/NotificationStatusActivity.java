@@ -3,7 +3,6 @@ package com.terralink.ui.client.notification;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -104,7 +103,15 @@ public class NotificationStatusActivity extends AppCompatActivity {
     }
 
     private void setupNotifications() {
-        notificationAdapter = new NotificationAdapter(new ArrayList<>());
+        notificationAdapter = new NotificationAdapter(new ArrayList<>(), notification -> {
+            if (!notification.isRead()) {
+                viewModel.markAsRead(notification.getId()).observe(this, result -> {
+                    if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS) {
+                        loadNotifications();
+                    }
+                });
+            }
+        });
         binding.rvNotifications.setLayoutManager(new LinearLayoutManager(this));
         binding.rvNotifications.setAdapter(notificationAdapter);
 
@@ -112,13 +119,20 @@ public class NotificationStatusActivity extends AppCompatActivity {
             viewModel.markAllAsRead().observe(this, result -> {
                 if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS) {
                     SnackbarUtils.showSuccess(binding.getRoot(), "All marked as read");
+                    loadNotifications();
                 }
             });
         });
 
+        loadNotifications();
+    }
+
+    private void loadNotifications() {
         viewModel.getNotifications().observe(this, result -> {
             if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS && result.getData() != null) {
                 notificationAdapter.setNotifications(result.getData());
+            } else if (result.getStatus() == com.terralink.ui.auth.LoginStatus.ERROR) {
+                SnackbarUtils.showError(binding.getRoot(), result.getMessage());
             }
         });
     }

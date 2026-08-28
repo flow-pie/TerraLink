@@ -1,6 +1,7 @@
 package com.terralink.data.api;
 
 import com.terralink.data.model.NotificationResponse;
+import com.terralink.data.model.PaginatedResponse;
 
 import java.util.List;
 
@@ -12,11 +13,14 @@ import retrofit2.http.Query;
 
 public interface NotificationApi {
     @GET("api/notifications")
-    Call<List<NotificationResponse>> getNotifications(
+    Call<PaginatedResponse<NotificationResponse>> getNotifications(
             @Query("isRead") Boolean isRead,
             @Query("page") int page,
             @Query("pageSize") int pageSize
     );
+
+    @PATCH("api/notifications/{id}/read")
+    Call<Void> markAsRead(@Path("id") long id);
 
     @PATCH("api/notifications/read-all")
     Call<Void> markAllAsRead();
