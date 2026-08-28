@@ -45,6 +45,11 @@ public class TransactionHistoryActivity extends AppCompatActivity {
         setupRecyclerView();
         setupFilters();
         observeUser();
+
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            loadTransactions();
+            binding.swipeRefresh.setRefreshing(false);
+        });
     }
 
     private void setupNavigation() {

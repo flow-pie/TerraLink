@@ -47,6 +47,11 @@ public class ProfileActivity extends AppCompatActivity {
             startActivity(new Intent(this, ApplyLoanActivity.class));
         });
 
+        profileBinding.swipeRefresh.setOnRefreshListener(() -> {
+            viewModel.refreshProfile();
+            profileBinding.swipeRefresh.setRefreshing(false);
+        });
+
         viewModel.getActiveUser().observe(this,
                 result -> {
                         switch (result.getStatus()){

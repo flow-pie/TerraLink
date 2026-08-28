@@ -50,6 +50,13 @@ public class ClientHomepageActivity extends AppCompatActivity {
         
         initView();
         observeViewModel();
+
+        binding.swipeRefresh.setOnRefreshListener(this::refreshData);
+    }
+
+    private void refreshData() {
+        viewModel.refreshProfile();
+        binding.swipeRefresh.setRefreshing(false);
     }
 
     private void initView() {
@@ -84,6 +91,9 @@ public class ClientHomepageActivity extends AppCompatActivity {
 
     private void observeViewModel() {
         viewModel.getActiveUser().observe(this, this::handleUserResult);
+        viewModel.getClientLoansStream().observe(this, this::handleLoansResult);
+        viewModel.getLoanDetailsStream().observe(this, this::handleLoanDetailsResult);
+        viewModel.getRepaymentInstallmentsStream().observe(this, this::handleRepaymentsResult);
     }
 
     private void handleUserResult(Resource<UserProfileResponse> result) {
@@ -95,7 +105,7 @@ public class ClientHomepageActivity extends AppCompatActivity {
                 UserProfileResponse client = result.getData();
                 if (client != null && client.getFullName() != null) {
                     binding.tvBorrowerName.setText(client.getFullName());
-                    fetchClientLoans(client.getClientId());
+                    viewModel.refreshLoans(client.getClientId());
                 }
                 break;
             case ERROR:
@@ -107,53 +117,83 @@ public class ClientHomepageActivity extends AppCompatActivity {
         }
     }
 
-    private void fetchClientLoans(String clientId) {
-        viewModel.getClientLoans(clientId).observe(this, result -> {
-            switch (result.getStatus()) {
-                case LOADING:
-                    binding.tvLoanBalance.setText("Loading...");
-                    break;
-                case SUCCESS:
-                    List<ClientLoansResponse> loans = result.getData();
-                    if (loans != null && !loans.isEmpty()) {
-                        binding.emptyStateContainer.setVisibility(View.GONE);
-                        
-                        // Check if we have any active loans to show details for
-                        ClientLoansResponse primaryLoan = null;
-                        for (ClientLoansResponse l : loans) {
-                            if ("Loan".equals(l.getType())) {
-                                primaryLoan = l;
-                                break;
-                            }
+    private void handleLoansResult(Resource<List<ClientLoansResponse>> result) {
+        switch (result.getStatus()) {
+            case LOADING:
+                binding.tvLoanBalance.setText("Loading...");
+                break;
+            case SUCCESS:
+                List<ClientLoansResponse> loans = result.getData();
+                if (loans != null && !loans.isEmpty()) {
+                    binding.emptyStateContainer.setVisibility(View.GONE);
+                    
+                    ClientLoansResponse primaryLoan = null;
+                    for (ClientLoansResponse l : loans) {
+                        if ("Loan".equals(l.getType())) {
+                            primaryLoan = l;
+                            break;
                         }
-
-                        if (primaryLoan != null) {
-                            binding.loanContentContainer.setVisibility(View.VISIBLE);
-                            fetchLoanDetails(primaryLoan.getLoanId());
-                        } else {
-                            // Only applications exist
-                            binding.loanContentContainer.setVisibility(View.GONE);
-                        }
-
-                        setupLoanSelector(loans);
-                    } else {
-                        binding.emptyStateContainer.setVisibility(View.VISIBLE);
-                        binding.loanContentContainer.setVisibility(View.GONE);
-                        binding.rvLoanSelector.setVisibility(View.GONE);
-                        
-                        binding.btnApplyFirstLoan.setOnClickListener(v -> {
-                            startActivity(new Intent(this, ApplyLoanActivity.class));
-                        });
                     }
-                    break;
-                case ERROR:
-                    binding.tvLoanBalance.setText("Unable to load");
-                    handleError("ClientLoans", result.getMessage());
-                    break;
-                default:
-                    break;
-            }
-        });
+
+                    if (primaryLoan != null) {
+                        binding.loanContentContainer.setVisibility(View.VISIBLE);
+                        viewModel.refreshLoanDetails(primaryLoan.getLoanId());
+                    } else {
+                        binding.loanContentContainer.setVisibility(View.GONE);
+                    }
+
+                    setupLoanSelector(loans);
+                } else {
+                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                    binding.loanContentContainer.setVisibility(View.GONE);
+                    binding.rvLoanSelector.setVisibility(View.GONE);
+                    
+                    binding.btnApplyFirstLoan.setOnClickListener(v -> {
+                        startActivity(new Intent(this, ApplyLoanActivity.class));
+                    });
+                }
+                break;
+            case ERROR:
+                binding.tvLoanBalance.setText("Unable to load");
+                handleError("ClientLoans", result.getMessage());
+                break;
+        }
+    }
+
+    private void handleLoanDetailsResult(Resource<LoanDetailsResponse> result) {
+        switch (result.getStatus()) {
+            case LOADING:
+                binding.tvLoanBalance.setText("Loading...");
+                repaymentScheduleAdapter.setSchedules(new ArrayList<>(), null);
+                break;
+            case SUCCESS:
+                LoanDetailsResponse loanDetails = result.getData();
+                if (loanDetails != null) {
+                    updateLoanDetailsUI(loanDetails);
+                    viewModel.refreshRepayments(loanDetails.getLoanId());
+                }
+                break;
+            case ERROR:
+                handleError("LoanDetails", result.getMessage());
+                break;
+        }
+    }
+
+    private void handleRepaymentsResult(Resource<List<RepaymentInstallments>> result) {
+        switch (result.getStatus()) {
+            case SUCCESS:
+                if (result.getData() != null) {
+                    repaymentScheduleAdapter.setSchedules(result.getData(), viewModel.getLoanDetailsStream().getValue() != null ? viewModel.getLoanDetailsStream().getValue().getData() : null);
+                }
+                break;
+            case ERROR:
+                Log.e("HomeActivity", "Failed to load repayment schedule: " + result.getMessage());
+                break;
+        }
+    }
+
+    private void fetchClientLoans(String clientId) {
+        viewModel.refreshLoans(clientId);
     }
 
     private void setupLoanSelector(List<ClientLoansResponse> loans) {
@@ -169,7 +209,7 @@ public class ClientHomepageActivity extends AppCompatActivity {
                 startActivity(intent);
             } else {
                 binding.loanContentContainer.setVisibility(View.VISIBLE);
-                fetchLoanDetails(loan.getLoanId());
+                viewModel.refreshLoanDetails(loan.getLoanId());
             }
         });
         binding.rvLoanSelector.setAdapter(loanSelectorAdapter);
@@ -177,26 +217,11 @@ public class ClientHomepageActivity extends AppCompatActivity {
     }
 
     private void fetchLoanDetails(String loanId) {
-        viewModel.getClientDetails(loanId).observe(this, result -> {
-            switch (result.getStatus()) {
-                case LOADING:
-                    binding.tvLoanBalance.setText("Loading...");
-                    repaymentScheduleAdapter.setSchedules(new ArrayList<>(), null);
-                    break;
-                case SUCCESS:
-                    LoanDetailsResponse loanDetails = result.getData();
-                    if (loanDetails != null) {
-                        updateLoanDetailsUI(loanDetails);
-                        fetchRepaymentInstallments(loanDetails.getLoanId(), loanDetails);
-                    }
-                    break;
-                case ERROR:
-                    handleError("LoanDetails", result.getMessage());
-                    break;
-                default:
-                    break;
-            }
-        });
+        viewModel.refreshLoanDetails(loanId);
+    }
+
+    private void fetchRepaymentInstallments(String loanId, LoanDetailsResponse loanDetails) {
+        viewModel.refreshRepayments(loanId);
     }
 
     private void updateLoanDetailsUI(LoanDetailsResponse details) {
@@ -255,23 +280,6 @@ public class ClientHomepageActivity extends AppCompatActivity {
         double totalAmountPaid = details.getTotalRepayment() - details.getOutStandingAmount();
         binding.tvTotalPaid.setText(String.format(Locale.getDefault(), "KES %,.2f", totalAmountPaid));
         binding.loanAmountTotal.setText(String.format(Locale.getDefault(), "KSH %,.2f", details.getTotalRepayment()));
-    }
-
-    private void fetchRepaymentInstallments(String loanId, LoanDetailsResponse loanDetails) {
-        viewModel.getRepaymentInstallments(loanId).observe(this, result -> {
-            switch (result.getStatus()) {
-                case SUCCESS:
-                    if (result.getData() != null) {
-                        repaymentScheduleAdapter.setSchedules(result.getData(), loanDetails);
-                    }
-                    break;
-                case ERROR:
-                    Log.e("HomeActivity", "Failed to load repayment schedule: " + result.getMessage());
-                    break;
-                default:
-                    break;
-            }
-        });
     }
 
     private void handleError(String tag, String message) {

@@ -59,6 +59,14 @@ public class NotificationStatusActivity extends AppCompatActivity {
         } else {
             binding.statusContainer.setVisibility(View.GONE);
         }
+
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            if (applicationId != -1) {
+                fetchApplicationStatus(applicationId, loanNo);
+            }
+            setupNotifications();
+            binding.swipeRefresh.setRefreshing(false);
+        });
     }
 
     private void setupNavigation() {

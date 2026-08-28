@@ -43,6 +43,15 @@ public class ClientLoansActivity extends AppCompatActivity {
             startActivity(new Intent(this, NotificationStatusActivity.class));
         });
 
+        binding.swipeRefresh.setOnRefreshListener(() -> {
+            loadData(binding);
+            binding.swipeRefresh.setRefreshing(false);
+        });
+
+        loadData(binding);
+    }
+
+    private void loadData(ActivityClientLoansBinding binding) {
         viewModel.getActiveUser().observe(this, userResult -> {
             switch (userResult.getStatus()) {
                 case LOADING:
@@ -67,6 +76,7 @@ public class ClientLoansActivity extends AppCompatActivity {
                                         } else {
                                             binding.loanCard2.setVisibility(View.GONE);
                                         }
+                                        binding.loanCard1.setVisibility(View.VISIBLE);
                                     } else {
                                         binding.loanCard1.setVisibility(View.GONE);
                                         binding.loanCard2.setVisibility(View.GONE);
