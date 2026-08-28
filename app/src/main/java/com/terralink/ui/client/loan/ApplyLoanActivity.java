@@ -23,6 +23,7 @@ import com.terralink.databinding.ActivityApplyLoanBinding;
 import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
 import com.terralink.ui.common.Resource;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -246,7 +247,7 @@ public class ApplyLoanActivity extends AppCompatActivity {
 
     private void submitApplication() {
         if (selectedProduct == null || currentClientId == null) {
-            Toast.makeText(this, "Missing application data", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Missing application data");
             return;
         }
 
@@ -279,13 +280,13 @@ public class ApplyLoanActivity extends AppCompatActivity {
         viewModel.submitApplication(request).observe(this, result -> {
             switch (result.getStatus()) {
                 case SUCCESS:
-                    Toast.makeText(this, "Application submitted successfully!", Toast.LENGTH_LONG).show();
-                    finish();
+                    SnackbarUtils.showSuccess(binding.getRoot(), "Application submitted successfully!");
+                    binding.submitApplicationButton.postDelayed(this::finish, 2000);
                     break;
                 case ERROR:
                     binding.submitApplicationButton.setEnabled(true);
                     binding.submitApplicationButton.setText("Submit Application");
-                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showError(binding.getRoot(), result.getMessage());
                     Log.d("submitApplication","Selected product ID: "+selectedProduct.getId());
                     break;
             }

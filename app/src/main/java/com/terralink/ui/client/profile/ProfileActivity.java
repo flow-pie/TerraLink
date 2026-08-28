@@ -19,6 +19,7 @@ import com.terralink.ui.client.loan.ApplyLoanActivity;
 import com.terralink.ui.client.loan.ClientLoansActivity;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
 import com.terralink.ui.client.transaction.TransactionHistoryActivity;
+import com.terralink.ui.common.SnackbarUtils;
 
 import javax.inject.Inject;
 
@@ -79,15 +80,15 @@ public class ProfileActivity extends AppCompatActivity {
                                     );
 
                                     binding.securityCard.setOnClickListener(v -> {
-                                        Toast.makeText(this, "Security settings coming soon", Toast.LENGTH_SHORT).show();
+                                        SnackbarUtils.showInfo(binding.getRoot(), "Security settings coming soon");
                                     });
 
                                     binding.dataSyncCard.setOnClickListener(v -> {
-                                        Toast.makeText(this, "Syncing data...", Toast.LENGTH_SHORT).show();
+                                        SnackbarUtils.showInfo(binding.getRoot(), "Syncing data...");
                                     });
 
                                     binding.helpSupportCard.setOnClickListener(v -> {
-                                        Toast.makeText(this, "Support line: +254 700 000 000", Toast.LENGTH_LONG).show();
+                                        SnackbarUtils.showInfo(binding.getRoot(), "Support line: +254 700 000 000");
                                     });
 
                                     binding.logoutCard.setOnClickListener(v -> {
@@ -106,11 +107,7 @@ public class ProfileActivity extends AppCompatActivity {
                                 binding.loadingView.getRoot().setVisibility(View.GONE);
                                 // Show an error message.
                                 String message = result.getMessage() != null ? result.getMessage() : "Unknown error occurred";
-                                Toast.makeText(
-                                        this,
-                                        message,
-                                        Toast.LENGTH_LONG
-                                ).show();
+                                SnackbarUtils.showError(binding.getRoot(), message);
 
                                 Log.e("ProfileActivity", "onCreate: "+ message);
 

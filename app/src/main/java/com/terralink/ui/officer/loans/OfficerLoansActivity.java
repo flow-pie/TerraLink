@@ -17,6 +17,7 @@ import com.terralink.R;
 import com.terralink.data.model.PortfolioSummaryResponse;
 import com.terralink.databinding.ActivityOfficerLoansBinding;
 import com.terralink.ui.auth.LoginStatus;
+import com.terralink.ui.common.SnackbarUtils;
 import com.terralink.ui.officer.products.AddProductBottomSheetFragment;
 
 import java.util.ArrayList;
@@ -58,14 +59,14 @@ public class OfficerLoansActivity extends AppCompatActivity {
         binding.swipeRefresh.setOnRefreshListener(this::loadData);
         
         binding.btnViewMap.setOnClickListener(v -> {
-            Toast.makeText(this, "Map view coming soon", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Map view coming soon");
         });
     }
 
     private void setupRecyclerViews() {
         // Loans Portfolio
         loansAdapter = new OfficerLoansAdapter(loan -> {
-            Toast.makeText(this, "Loan: " + loan.getLoanNo(), Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Loan: " + loan.getLoanNo());
         });
         binding.rvLoans.setLayoutManager(new LinearLayoutManager(this));
         binding.rvLoans.setAdapter(loansAdapter);
@@ -73,7 +74,7 @@ public class OfficerLoansActivity extends AppCompatActivity {
 
         // Loan Products
         productsAdapter = new LoanProductAdapter(product -> {
-            Toast.makeText(this, "Product: " + product.getName(), Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Product: " + product.getName());
         });
         binding.rvLoanProducts.setLayoutManager(new LinearLayoutManager(this));
         binding.rvLoanProducts.setAdapter(productsAdapter);
@@ -156,7 +157,7 @@ public class OfficerLoansActivity extends AppCompatActivity {
                 binding.tvActiveLoans.setText(String.valueOf(summary.getActiveLoansCount()));
                 binding.tvPar.setText("2.4%"); // Placeholder until backend provides real PAR
             } else if (result.getStatus() == LoginStatus.ERROR) {
-                Toast.makeText(this, "Failed to load summary", Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showError(binding.getRoot(), "Failed to load summary");
             }
         });
     }
@@ -180,7 +181,7 @@ public class OfficerLoansActivity extends AppCompatActivity {
                     break;
                 case ERROR:
                     android.util.Log.e("OfficerLoans", "Products: ERROR - " + result.getMessage());
-                    Toast.makeText(this, "Failed to load products: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showError(binding.getRoot(), "Failed to load products: " + result.getMessage());
                     break;
             }
         });
@@ -202,7 +203,7 @@ public class OfficerLoansActivity extends AppCompatActivity {
                     break;
                 case ERROR:
                     binding.swipeRefresh.setRefreshing(false);
-                    Toast.makeText(this, "Failed to load loans: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showError(binding.getRoot(), "Failed to load loans: " + result.getMessage());
                     break;
             }
         });

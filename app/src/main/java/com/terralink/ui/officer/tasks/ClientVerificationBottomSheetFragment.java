@@ -19,6 +19,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.terralink.data.model.KycDocumentResponse;
 import com.terralink.databinding.LayoutClientVerificationBottomSheetBinding;
 import com.terralink.ui.auth.LoginStatus;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.io.InputStream;
 import java.net.URL;
@@ -99,7 +100,7 @@ public class ClientVerificationBottomSheetFragment extends BottomSheetDialogFrag
                     }
                 }
             } else if (resource.getStatus() == LoginStatus.ERROR) {
-                Toast.makeText(requireContext(), "Failed to load KYC: " + resource.getMessage(), Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showError(binding.getRoot(), "Failed to load KYC: " + resource.getMessage());
             }
         });
     }
@@ -122,10 +123,10 @@ public class ClientVerificationBottomSheetFragment extends BottomSheetDialogFrag
         viewModel.verifyClient(clientId).observe(getViewLifecycleOwner(), resource -> {
             binding.progressBar.setVisibility(View.GONE);
             if (resource.getStatus() == LoginStatus.SUCCESS) {
-                Toast.makeText(requireContext(), "Client verified successfully", Toast.LENGTH_SHORT).show();
-                dismiss();
+                SnackbarUtils.showSuccess(binding.getRoot(), "Client verified successfully");
+                binding.progressBar.postDelayed(this::dismiss, 2000);
             } else if (resource.getStatus() == LoginStatus.ERROR) {
-                Toast.makeText(requireContext(), resource.getMessage(), Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showError(binding.getRoot(), resource.getMessage());
             }
         });
     }
@@ -148,10 +149,10 @@ public class ClientVerificationBottomSheetFragment extends BottomSheetDialogFrag
         viewModel.rejectClient(clientId, reason).observe(getViewLifecycleOwner(), resource -> {
             binding.progressBar.setVisibility(View.GONE);
             if (resource.getStatus() == LoginStatus.SUCCESS) {
-                Toast.makeText(requireContext(), "Client verification rejected", Toast.LENGTH_SHORT).show();
-                dismiss();
+                SnackbarUtils.showSuccess(binding.getRoot(), "Client verification rejected");
+                binding.progressBar.postDelayed(this::dismiss, 2000);
             } else if (resource.getStatus() == LoginStatus.ERROR) {
-                Toast.makeText(requireContext(), resource.getMessage(), Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showError(binding.getRoot(), resource.getMessage());
             }
         });
     }

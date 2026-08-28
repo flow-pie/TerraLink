@@ -22,6 +22,7 @@ import com.terralink.ui.officer.appraisal.LoanAppraisalBottomSheetFragment;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityDashboardBinding;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -71,7 +72,7 @@ public class DashboardActivity extends AppCompatActivity {
                 }
                 checkAllLoaded();
             } else if (result.getStatus() == LoginStatus.ERROR) {
-                Toast.makeText(this, "Error loading profile: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showError(binding.getRoot(), "Error loading profile: " + result.getMessage());
                 checkAllLoaded();
             }
         });
@@ -87,7 +88,7 @@ public class DashboardActivity extends AppCompatActivity {
                 }
                 checkAllLoaded();
             } else if (result.getStatus() == LoginStatus.ERROR) {
-                Toast.makeText(this, "Error loading summary: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showError(binding.getRoot(), "Error loading summary: " + result.getMessage());
                 checkAllLoaded();
             }
         });

@@ -15,6 +15,7 @@ import com.terralink.R;
 import com.terralink.data.model.InitiatePaymentRequest;
 import com.terralink.data.model.InitiatePaymentResponse;
 import com.terralink.databinding.DialogInstallmentPaymentBinding;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -126,8 +127,8 @@ public class PaymentBottomSheetFragment extends BottomSheetDialogFragment {
     private void checkPaymentStatus(long paymentId) {
         viewModel.getPaymentStatus(paymentId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS) {
-                Toast.makeText(requireContext(), "Payment successful", Toast.LENGTH_LONG).show();
-                dismiss();
+                SnackbarUtils.showSuccess(binding.getRoot(), "Payment successful");
+                binding.btnPayMpesa.postDelayed(this::dismiss, 2000);
             } else if (result.getStatus() == com.terralink.ui.auth.LoginStatus.ERROR) {
                 handleError(result.getMessage());
             }
@@ -137,7 +138,7 @@ public class PaymentBottomSheetFragment extends BottomSheetDialogFragment {
     private void handleError(String message) {
         binding.btnPayMpesa.setEnabled(true);
         binding.btnPayMpesa.setText("Pay Now");
-        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show();
+        SnackbarUtils.showError(binding.getRoot(), message);
     }
 
     private String formatCurrency(double amount) {

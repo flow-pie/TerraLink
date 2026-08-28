@@ -17,6 +17,7 @@ import com.terralink.data.model.LoanAppraisalDetailResponse;
 import com.terralink.databinding.FragmentLoanAppraisalBinding;
 import com.terralink.databinding.ItemPaymentHistoryBinding;
 import com.terralink.ui.auth.LoginStatus;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -77,7 +78,7 @@ public class LoanAppraisalBottomSheetFragment extends BottomSheetDialogFragment 
             if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
                 populateUI(result.getData());
             } else if (result.getStatus() == LoginStatus.ERROR) {
-                Toast.makeText(requireContext(), "Error: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showError(binding.getRoot(), "Error: " + result.getMessage());
             }
         });
     }
@@ -145,12 +146,12 @@ public class LoanAppraisalBottomSheetFragment extends BottomSheetDialogFragment 
                     binding.btnSubmitApproval.setEnabled(false);
                     break;
                 case SUCCESS:
-                    Toast.makeText(requireContext(), "Decision submitted successfully", Toast.LENGTH_SHORT).show();
-                    dismiss();
+                    SnackbarUtils.showSuccess(binding.getRoot(), "Decision submitted successfully");
+                    binding.btnSubmitApproval.postDelayed(this::dismiss, 2000);
                     break;
                 case ERROR:
                     binding.btnSubmitApproval.setEnabled(true);
-                    Toast.makeText(requireContext(), "Failed to submit decision: " + result.getMessage(), Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showError(binding.getRoot(), "Failed to submit decision: " + result.getMessage());
                     break;
             }
         });

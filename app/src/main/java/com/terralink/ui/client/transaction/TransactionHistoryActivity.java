@@ -18,6 +18,7 @@ import com.terralink.ui.client.loan.ApplyLoanActivity;
 import com.terralink.ui.client.loan.ClientLoansActivity;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
 import com.terralink.ui.client.profile.ProfileActivity;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +139,7 @@ public class TransactionHistoryActivity extends AppCompatActivity {
                     break;
                 case ERROR:
                     binding.loadingView.getRoot().setVisibility(View.GONE);
-                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showError(binding.getRoot(), result.getMessage());
                     break;
             }
         });

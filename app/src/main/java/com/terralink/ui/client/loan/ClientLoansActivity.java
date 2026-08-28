@@ -13,6 +13,7 @@ import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityClientLoansBinding;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.util.List;
 import java.util.Locale;
@@ -115,14 +116,14 @@ public class ClientLoansActivity extends AppCompatActivity {
                                         binding.tvEmptyState.setVisibility(View.VISIBLE);
                                     }
                                     
-                                    // Hide placeholders for history as they are not dynamic yet
+                                    // Hide placeholders for history
                                     binding.historyItem1.setVisibility(View.GONE);
                                     binding.historyItem2.setVisibility(View.GONE);
                                     break;
                                 case ERROR:
                                     binding.loadingView.getRoot().setVisibility(View.GONE);
                                     String message = result.getMessage() != null ? result.getMessage() : "Failed to load loans";
-                                    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                                    SnackbarUtils.showError(binding.getRoot(), message);
                                     break;
                             }
                         });
@@ -131,7 +132,7 @@ public class ClientLoansActivity extends AppCompatActivity {
                 case ERROR:
                     binding.loadingView.getRoot().setVisibility(View.GONE);
                     String message = userResult.getMessage() != null ? userResult.getMessage() : "Failed to load user profile";
-                    Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+                    SnackbarUtils.showError(binding.getRoot(), message);
                     break;
             }
         });
@@ -180,11 +181,11 @@ public class ClientLoansActivity extends AppCompatActivity {
             }
 
             binding.loan1PayButton.setOnClickListener(v -> {
-                Toast.makeText(this, "Please manage payments from the Home dashboard", Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showInfo(binding.getRoot(), "Please manage payments from the Home dashboard");
             });
 
             binding.loan1DetailsButton.setOnClickListener(v -> {
-                Toast.makeText(this, "Loan: " + loan.getReferenceNo() + "\nStatus: " + loan.getStatus(), Toast.LENGTH_LONG).show();
+                SnackbarUtils.showInfo(binding.getRoot(), "Loan: " + loan.getReferenceNo() + "\nStatus: " + loan.getStatus());
             });
 
         }else if(cardNumber == 2){
@@ -209,11 +210,11 @@ public class ClientLoansActivity extends AppCompatActivity {
             }
 
             binding.loan2PayButton.setOnClickListener(v -> {
-                Toast.makeText(this, "Please manage payments from the Home dashboard", Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showInfo(binding.getRoot(), "Please manage payments from the Home dashboard");
             });
 
             binding.loan2DetailsButton.setOnClickListener(v -> {
-                Toast.makeText(this, "Loan: " + loan.getReferenceNo() + "\nStatus: " + loan.getStatus(), Toast.LENGTH_LONG).show();
+                SnackbarUtils.showInfo(binding.getRoot(), "Loan: " + loan.getReferenceNo() + "\nStatus: " + loan.getStatus());
             });
         }
     }

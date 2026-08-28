@@ -23,6 +23,7 @@ import com.terralink.ui.client.payment.PaymentBottomSheetFragment;
 import com.terralink.ui.client.profile.ProfileActivity;
 import com.terralink.ui.client.transaction.TransactionHistoryActivity;
 import com.terralink.ui.common.Resource;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -249,7 +250,7 @@ public class ClientHomepageActivity extends AppCompatActivity {
         binding.btnMakePayment.setOnClickListener(v -> {
             RepaymentInstallments next = repaymentScheduleAdapter.getNextPendingInstallment();
             if (next == null) {
-                Toast.makeText(this, "No pending installments", Toast.LENGTH_SHORT).show();
+                SnackbarUtils.showInfo(binding.getRoot(), "No pending installments");
                 return;
             }
             PaymentBottomSheetFragment fragment = PaymentBottomSheetFragment.newInstance(
@@ -290,7 +291,7 @@ public class ClientHomepageActivity extends AppCompatActivity {
 
     private void handleError(String tag, String message) {
         String displayMessage = message != null ? message : "Unknown error occurred";
-        Toast.makeText(this, displayMessage, Toast.LENGTH_LONG).show();
+        SnackbarUtils.showError(binding.getRoot(), displayMessage);
         Log.e("HomeActivity", tag + ": " + displayMessage);
     }
 }

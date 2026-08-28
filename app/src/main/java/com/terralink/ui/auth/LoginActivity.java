@@ -14,6 +14,7 @@ import com.terralink.data.model.UserProfileResponse;
 import com.terralink.databinding.ActivityLoginBinding;
 import com.terralink.ui.client.home.ClientHomepageActivity;
 import com.terralink.ui.common.Resource;
+import com.terralink.ui.common.SnackbarUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -57,15 +58,15 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         binding.tvForgotPassword.setOnClickListener(v -> {
-            Toast.makeText(this, "Forgot password flow", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Forgot password flow");
         });
 
         binding.tvSupport.setOnClickListener(v -> {
-            Toast.makeText(this, "Contact support@terralink.com", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Contact support@terralink.com");
         });
 
         binding.tvRegionStatus.setOnClickListener(v -> {
-            Toast.makeText(this, "All systems operational", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "All systems operational");
         });
 
         binding.tvNoAccount.setOnClickListener(v -> {
@@ -99,11 +100,7 @@ public class LoginActivity extends AppCompatActivity {
                     binding.btnLogin.setEnabled(true);
 
                     String message = result.getMessage() != null ? result.getMessage() : "Unknown error occurred";
-                    Toast.makeText(
-                            this,
-                            message,
-                            Toast.LENGTH_LONG
-                    ).show();
+                    SnackbarUtils.showError(binding.getRoot(), message);
 
                     break;
 

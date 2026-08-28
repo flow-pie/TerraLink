@@ -1,235 +1,240 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg_cream"
-    android:fillViewport="true">
+    android:background="@color/bg_cream">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="@dimen/spacing_2xl">
-
-        <!-- TerraLink Shield Logo -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/logoCard"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginTop="48dp"
-            app:cardBackgroundColor="@color/terracotta_primary"
-            app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:strokeWidth="0dp">
-
-            <ImageView
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_shield_stars"
-                app:tint="@color/on_terracotta" />
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- App Title -->
-        <TextView
-            android:id="@+id/tvAppTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="TerraLink Finance"
-            android:textAppearance="?attr/textAppearanceHeadlineLarge"
-            android:textColor="@color/navy_text_primary"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/logoCard" />
-
-        <TextView
-            android:id="@+id/tvAppSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="Institutional Field Access Portal"
-            android:textAppearance="?attr/textAppearanceBodyMedium"
-            android:textColor="@color/text_secondary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvAppTitle" />
-
-        <!-- Login Card Form -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cardLoginForm"
-            style="@style/Widget.TerraLink.Card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_3xl"
-            app:layout_constraintTop_toBottomOf="@id/tvAppSubtitle">
+            android:padding="@dimen/spacing_2xl">
 
-            <LinearLayout
+            <!-- TerraLink Shield Logo -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/logoCard"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="48dp"
+                app:cardBackgroundColor="@color/terracotta_primary"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="6dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_shield_stars"
+                    app:tint="@color/on_terracotta" />
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- App Title -->
+            <TextView
+                android:id="@+id/tvAppTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="TerraLink Finance"
+                android:textAppearance="?attr/textAppearanceHeadlineLarge"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/logoCard" />
+
+            <TextView
+                android:id="@+id/tvAppSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Institutional Field Access Portal"
+                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:textColor="@color/text_secondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvAppTitle" />
+
+            <!-- Login Card Form -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardLoginForm"
+                style="@style/Widget.TerraLink.Card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="@dimen/card_padding">
+                android:layout_marginTop="@dimen/spacing_3xl"
+                app:layout_constraintTop_toBottomOf="@id/tvAppSubtitle">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Enter your credentials to access the field dashboard."
-                    android:textAppearance="?attr/textAppearanceBodyMedium"
-                    android:textColor="@color/text_secondary" />
-
-                <!-- Employee ID -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_lg"
-                    android:text="EMPLOYEE ID / EMAIL / PHONE"
-                    android:textAppearance="?attr/textAppearanceLabelSmall"
-                    android:textColor="@color/navy_text_primary"
-                    android:textStyle="bold"
-                    android:letterSpacing="0.05" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilIdentifierId"
-                    style="@style/Widget.TerraLink.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    app:startIconDrawable="@drawable/ic_badge_id"
-                    app:startIconContentDescription="Employee ID">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etIdentifierId"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Your login identifier"
-                        android:inputType="textCapCharacters"
-                        android:textColor="@color/navy_text_primary" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <!-- Password Header with Forgot? Link -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_lg"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    android:padding="@dimen/card_padding">
 
                     <TextView
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="PASSWORD"
+                        android:text="Enter your credentials to access the field dashboard."
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="@color/text_secondary" />
+
+                    <!-- Employee ID -->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:text="EMPLOYEE ID / EMAIL / PHONE"
                         android:textAppearance="?attr/textAppearanceLabelSmall"
                         android:textColor="@color/navy_text_primary"
                         android:textStyle="bold"
                         android:letterSpacing="0.05" />
 
-                    <TextView
-                        android:id="@+id/tvForgotPassword"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Forgot?"
-                        android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="@color/terracotta_primary"
-                        android:textStyle="bold" />
-
-                </LinearLayout>
-
-                <!-- Password Input -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilPassword"
-                    style="@style/Widget.TerraLink.TextInputLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_sm"
-                    app:endIconMode="password_toggle"
-                    app:startIconDrawable="@drawable/ic_lock"
-                    app:startIconContentDescription="Password">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/etPassword"
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilIdentifierId"
+                        style="@style/Widget.TerraLink.TextInputLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textPassword"
-                        android:textColor="@color/navy_text_primary" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        app:startIconDrawable="@drawable/ic_badge_id"
+                        app:startIconContentDescription="Employee ID">
 
-                <!-- Submit Button -->
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnLogin"
-                    style="@style/Widget.TerraLink.Button.Primary"
-                    android:layout_width="match_parent"
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etIdentifierId"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Your login identifier"
+                            android:inputType="textCapCharacters"
+                            android:textColor="@color/navy_text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Password Header with Forgot? Link -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="PASSWORD"
+                            android:textAppearance="?attr/textAppearanceLabelSmall"
+                            android:textColor="@color/navy_text_primary"
+                            android:textStyle="bold"
+                            android:letterSpacing="0.05" />
+
+                        <TextView
+                            android:id="@+id/tvForgotPassword"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Forgot?"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="@color/terracotta_primary"
+                            android:textStyle="bold" />
+
+                    </LinearLayout>
+
+                    <!-- Password Input -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilPassword"
+                        style="@style/Widget.TerraLink.TextInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_sm"
+                        app:endIconMode="password_toggle"
+                        app:startIconDrawable="@drawable/ic_lock"
+                        app:startIconContentDescription="Password">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etPassword"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPassword"
+                            android:textColor="@color/navy_text_primary" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Submit Button -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLogin"
+                        style="@style/Widget.TerraLink.Button.Primary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xl"
+                        android:text="Login to Dashboard" />
+
+                    <com.google.android.material.progressindicator.CircularProgressIndicator
+                        android:id="@+id/progressLogin"
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/spacing_lg"
+                        android:visibility="gone"
+                        app:indicatorColor="@color/terracotta_primary"
+                        app:trackColor="@color/terracotta_container"
+                        app:indicatorSize="36dp"
+                        app:trackThickness="3dp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Footer Links -->
+            <TextView
+                android:id="@+id/tvNoAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:text="Don't have an account yet?"
+                android:textAppearance="?attr/textAppearanceBodySmall"
+                android:textColor="@color/terracotta_primary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardLoginForm" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvNoAccount">
+
+                <TextView
+                    android:id="@+id/tvSupport"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/spacing_xl"
-                    android:text="Login to Dashboard" />
+                    android:drawableStart="@drawable/ic_help_circle"
+                    android:drawablePadding="6dp"
+                    android:text="Support"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/text_secondary" />
 
-                <com.google.android.material.progressindicator.CircularProgressIndicator
-                    android:id="@+id/progressLogin"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/spacing_lg"
-                    android:visibility="gone"
-                    app:indicatorColor="@color/terracotta_primary"
-                    app:trackColor="@color/terracotta_container"
-                    app:indicatorSize="36dp"
-                    app:trackThickness="3dp" />
+                <View
+                    android:layout_width="@dimen/spacing_md"
+                    android:layout_height="1dp" />
+
+                <TextView
+                    android:id="@+id/tvRegionStatus"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_globe"
+                    android:drawablePadding="6dp"
+                    android:text="Region Status"
+                    android:textAppearance="?attr/textAppearanceBodySmall"
+                    android:textColor="@color/text_secondary" />
+
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
 
-        <!-- Footer Links -->
-        <TextView
-            android:id="@+id/tvNoAccount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_xl"
-            android:text="Don't have an account yet?"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="@color/terracotta_primary"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardLoginForm" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/spacing_md"
-            android:gravity="center"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvNoAccount">
-
-            <TextView
-                android:id="@+id/tvSupport"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_help_circle"
-                android:drawablePadding="6dp"
-                android:text="Support"
-                android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="@color/text_secondary" />
-
-            <View
-                android:layout_width="@dimen/spacing_md"
-                android:layout_height="1dp" />
-
-            <TextView
-                android:id="@+id/tvRegionStatus"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_globe"
-                android:drawablePadding="6dp"
-                android:text="Region Status"
-                android:textAppearance="?attr/textAppearanceBodySmall"
-                android:textColor="@color/text_secondary" />
-
-        </LinearLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+</FrameLayout>

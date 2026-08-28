@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.terralink.databinding.FragmentKycDocumentsBinding;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -101,7 +102,7 @@ public class KycDocumentsFragment extends Fragment {
                 showImage(file, binding.ivPassport, binding.ivPassportPlaceholder);
             }
 
-            Toast.makeText(requireContext(), type + " captured", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showSuccess(binding.getRoot(), type + " captured");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -109,7 +110,7 @@ public class KycDocumentsFragment extends Fragment {
 
     public boolean validate() {
         if (viewModel.idFront == null || viewModel.idBack == null || viewModel.passportPhoto == null) {
-            Toast.makeText(requireContext(), "Please capture all required KYC documents", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Please capture all required KYC documents");
             return false;
         }
         return true;

@@ -20,6 +20,7 @@ import com.terralink.ui.client.loan.ApplyLoanActivity;
 import com.terralink.ui.client.loan.ClientLoansActivity;
 import com.terralink.ui.client.profile.ProfileActivity;
 import com.terralink.ui.client.transaction.TransactionHistoryActivity;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -110,7 +111,7 @@ public class NotificationStatusActivity extends AppCompatActivity {
         binding.btnMarkAllRead.setOnClickListener(v -> {
             viewModel.markAllAsRead().observe(this, result -> {
                 if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS) {
-                    Toast.makeText(this, "All marked as read", Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showSuccess(binding.getRoot(), "All marked as read");
                 }
             });
         });
@@ -138,7 +139,7 @@ public class NotificationStatusActivity extends AppCompatActivity {
                     break;
                 case ERROR:
                     binding.loadingView.getRoot().setVisibility(View.GONE);
-                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showError(binding.getRoot(), result.getMessage());
                     break;
             }
         });

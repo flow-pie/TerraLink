@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.terralink.R;
 import com.terralink.databinding.ActivityRegisterClientBinding;
 import com.terralink.ui.auth.LoginStatus;
+import com.terralink.ui.common.SnackbarUtils;
 
 import dagger.hilt.android.AndroidEntryPoint;
 
@@ -131,11 +132,11 @@ public class RegisterClientActivity extends AppCompatActivity {
                 binding.loadingView.getRoot().setVisibility(View.VISIBLE);
             } else if (result.getStatus() == LoginStatus.SUCCESS) {
                 binding.loadingView.getRoot().setVisibility(View.GONE);
-                Toast.makeText(this, "Client registered successfully!", Toast.LENGTH_LONG).show();
-                finish();
+                SnackbarUtils.showSuccess(binding.getRoot(), "Client registered successfully!");
+                binding.btnNextStep.postDelayed(this::finish, 2000);
             } else if (result.getStatus() == LoginStatus.ERROR) {
                 binding.loadingView.getRoot().setVisibility(View.GONE);
-                Toast.makeText(this, result.getMessage(), Toast.LENGTH_LONG).show();
+                SnackbarUtils.showError(binding.getRoot(), result.getMessage());
                 Log.d( "performRegistration: An error occured",result.getMessage());
             }
         });
@@ -146,11 +147,11 @@ public class RegisterClientActivity extends AppCompatActivity {
             isEmpty(viewModel.phone) || isEmpty(viewModel.dateOfBirth) || 
             isEmpty(viewModel.email) || isEmpty(viewModel.password) ||
             isEmpty(viewModel.address)) {
-            Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Please fill all required fields");
             return false;
         }
         if (viewModel.idFront == null || viewModel.idBack == null || viewModel.passportPhoto == null) {
-            Toast.makeText(this, "Please capture all required KYC documents", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Please capture all required KYC documents");
             return false;
         }
         return true;

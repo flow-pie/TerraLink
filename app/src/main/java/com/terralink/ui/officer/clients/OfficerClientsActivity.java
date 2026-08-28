@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.terralink.R;
 import com.terralink.databinding.ActivityOfficerClientsBinding;
+import com.terralink.ui.common.SnackbarUtils;
 import com.terralink.ui.auth.LoginStatus;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -113,7 +114,7 @@ public class OfficerClientsActivity extends AppCompatActivity {
                     break;
                 case ERROR:
                     binding.swipeRefresh.setRefreshing(false);
-                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showError(binding.getRoot(), result.getMessage());
                     break;
             }
         });

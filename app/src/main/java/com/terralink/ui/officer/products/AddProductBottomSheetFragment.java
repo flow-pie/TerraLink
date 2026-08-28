@@ -17,6 +17,7 @@ import com.terralink.R;
 import com.terralink.data.model.LoanProductRequest;
 import com.terralink.databinding.DialogAddNewProductBinding;
 import com.terralink.ui.auth.LoginStatus;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +69,7 @@ public class AddProductBottomSheetFragment extends BottomSheetDialogFragment {
         String interestRateStr = binding.etInterestRate.getText().toString().trim();
 
         if (name.isEmpty() || minAmountStr.isEmpty() || maxAmountStr.isEmpty() || interestRateStr.isEmpty()) {
-            Toast.makeText(requireContext(), "Please fill all required fields", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Please fill all required fields");
             return;
         }
 
@@ -82,7 +83,7 @@ public class AddProductBottomSheetFragment extends BottomSheetDialogFragment {
         int maxDuration = Integer.MIN_VALUE;
 
         if (selectedIds.isEmpty()) {
-            Toast.makeText(requireContext(), "Please select at least one tenure", Toast.LENGTH_SHORT).show();
+            SnackbarUtils.showInfo(binding.getRoot(), "Please select at least one tenure");
             return;
         }
 
@@ -112,13 +113,13 @@ public class AddProductBottomSheetFragment extends BottomSheetDialogFragment {
                     binding.btnSaveProduct.setText("Saving...");
                     break;
                 case SUCCESS:
-                    Toast.makeText(requireContext(), "Product saved successfully", Toast.LENGTH_SHORT).show();
-                    dismiss();
+                    SnackbarUtils.showSuccess(binding.getRoot(), "Product saved successfully");
+                    binding.btnSaveProduct.postDelayed(this::dismiss, 2000);
                     break;
                 case ERROR:
                     binding.btnSaveProduct.setEnabled(true);
                     binding.btnSaveProduct.setText("Save Product");
-                    Toast.makeText(requireContext(), "Error: " + result.getMessage(), Toast.LENGTH_LONG).show();
+                    SnackbarUtils.showError(binding.getRoot(), "Error: " + result.getMessage());
                     break;
             }
         });
