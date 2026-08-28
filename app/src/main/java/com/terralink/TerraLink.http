@@ -514,6 +514,48 @@ Authorization: Bearer {{accessToken}}
 # Notifications
 ###############################################################################
 
+# Notifications are generated SERVER-SIDE when the events below occur.
+# There is no "send" endpoint — borrowers receive rows in the notifications
+# table that they read with the endpoints further down. Each trigger maps to
+# a NotificationType:
+#
+#   Loan approved      -> POST .../loan-applications/{id}/appraise  (decision: APPROVED)   -> LOAN_APPROVED
+#   Loan rejected      -> POST .../loan-applications/{id}/appraise  (decision: REJECTED)   -> LOAN_REJECTED
+#   App status changed -> POST .../loan-applications/{id}/appraise  (decision: INFO_REQUESTED) -> APPLICATION_STATUS_CHANGED
+#   Loan disbursed     -> POST .../loans/{id}/disburse                                   -> DISBURSEMENT_COMPLETED
+#   Payment received   -> POST .../payments/initiate  (or mpesa/callback, or confirm)    -> PAYMENT_RECEIVED
+#   Loan completed     -> POST .../loans/{id}/close                                      -> LOAN_COMPLETED
+#   Payment due soon   -> background scanner (hourly): PENDING installment due in <=3 days -> PAYMENT_DUE
+#   Payment overdue    -> background scanner (hourly): PENDING installment past its due date -> PAYMENT_OVERDUE
+#
+# Example triggers (run these as a Loan Officer, then list the borrower's
+# notifications with the request at the bottom of this section):
+#
+# POST {{baseUrl}}/api/loan-applications/2/appraise
+# Authorization: Bearer {{accessToken}}
+# Content-Type: application/json
+#
+# {
+#   "decision": "APPROVED",
+#   "decisionNotes": "Strong repayment history; assets sufficient.",
+#   "creditScoreSnapshot": 820
+# }
+#
+# POST {{baseUrl}}/api/loans/1/disburse
+# Authorization: Bearer {{accessToken}}
+#
+# POST {{baseUrl}}/api/payments/initiate
+# Authorization: Bearer {{accessToken}}
+# Content-Type: application/json
+#
+# {
+#   "loanId": 1,
+#   "scheduleId": 1
+# }
+#
+# POST {{baseUrl}}/api/loans/1/close
+# Authorization: Bearer {{accessToken}}
+
 ### List notifications
 GET {{baseUrl}}/api/notifications?isRead=false&page=1&pageSize=20
 Authorization: Bearer {{accessToken}}

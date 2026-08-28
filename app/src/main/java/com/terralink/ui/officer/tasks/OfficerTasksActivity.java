@@ -18,6 +18,7 @@ import com.terralink.databinding.ActivityOfficerTasksBinding;
 import com.terralink.ui.auth.LoginActivity;
 import com.terralink.ui.auth.TokenManager;
 import com.terralink.ui.auth.LoginStatus;
+import com.terralink.ui.common.SnackbarUtils;
 import com.terralink.ui.officer.appraisal.LoanAppraisalBottomSheetFragment;
 
 import java.util.ArrayList;
@@ -125,7 +126,7 @@ public class OfficerTasksActivity extends AppCompatActivity {
                     break;
                 case ERROR:
                     binding.swipeRefresh.setRefreshing(false);
-                    Toast.makeText(this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                    SnackbarUtils.showError(binding.getRoot(), result.getMessage());
                     break;
             }
         });

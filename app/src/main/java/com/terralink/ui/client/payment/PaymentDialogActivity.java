@@ -2,7 +2,7 @@ package com.terralink.ui.client.payment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.widget.Toast;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -12,6 +12,7 @@ import com.terralink.R;
 import com.terralink.data.model.InitiatePaymentRequest;
 import com.terralink.data.model.InitiatePaymentResponse;
 import com.terralink.databinding.DialogInstallmentPaymentBinding;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.text.NumberFormat;
 import java.util.Locale;
@@ -107,14 +108,14 @@ public class PaymentDialogActivity extends AppCompatActivity {
                         viewModel.getPaymentStatus(resp.getPaymentId()).observe(this, statusRes -> {
                             switch (statusRes.getStatus()){
                                 case SUCCESS:
-                                    Toast.makeText(this, "Payment successful", Toast.LENGTH_LONG).show();
+                                    SnackbarUtils.showSuccess((ViewGroup) findViewById(android.R.id.content), "Payment successful");
                                     dialog.dismiss();
-                                    finish();
+                                    findViewById(android.R.id.content).postDelayed(this::finish, 2000);
                                     break;
                                 case ERROR:
                                     dialogBinding.btnPayMpesa.setEnabled(true);
                                     dialogBinding.btnPayMpesa.setText("Pay Now");
-                                    Toast.makeText(this, statusRes.getMessage(), Toast.LENGTH_LONG).show();
+                                    SnackbarUtils.showError((ViewGroup) findViewById(android.R.id.content), statusRes.getMessage());
                                     break;
                             }
                         });
@@ -122,7 +123,7 @@ public class PaymentDialogActivity extends AppCompatActivity {
                     case ERROR:
                         dialogBinding.btnPayMpesa.setEnabled(true);
                         dialogBinding.btnPayMpesa.setText("Pay Now");
-                        Toast.makeText(this, result.getMessage(), Toast.LENGTH_LONG).show();
+                        SnackbarUtils.showError((ViewGroup) findViewById(android.R.id.content), result.getMessage());
                         break;
                 }
             });
