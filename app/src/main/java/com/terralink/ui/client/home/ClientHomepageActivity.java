@@ -146,7 +146,8 @@ public class ClientHomepageActivity extends AppCompatActivity {
                     // Check for pending applications (not yet active or rejected)
                     boolean hasPendingApplication = allLoans.stream()
                             .anyMatch(l -> "Application".equals(l.getType()) && 
-                                    !"REJECTED".equals(l.getStatus()) && 
+                                    !"REJECTED".equals(l.getStatus()) &&
+                                    !"APPROVED".equals(l.getStatus()) &&
                                     !"ACTIVE".equals(l.getStatus()));
 
                     if (hasPendingApplication) {

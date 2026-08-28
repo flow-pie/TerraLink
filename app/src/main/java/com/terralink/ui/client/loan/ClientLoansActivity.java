@@ -113,7 +113,7 @@ public class ClientLoansActivity extends AppCompatActivity {
 
         for (ClientLoansResponse loan : loans) {
             String status = loan.getStatus();
-            if ("REJECTED".equals(status) || "CLOSED".equals(status)) {
+            if ("REJECTED".equals(status) || "CLOSED".equals(status) || "APPROVED".equals(status)) {
                 historyLoans.add(loan);
             } else {
                 portfolioLoans.add(loan);

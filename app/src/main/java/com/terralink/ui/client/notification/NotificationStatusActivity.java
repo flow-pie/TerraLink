@@ -44,7 +44,7 @@ public class NotificationStatusActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        binding.bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        // Don't force home selection as it triggers navigation back to home
         setupNavigation();
     }
 

@@ -30,7 +30,6 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
     private NotificationStatusViewModel applicationViewModel;
     private ClientLoansViewModel loanViewModel;
     private String loanId;
-    private String type;
     private String referenceNo;
 
     public static LoanDetailsBottomSheetFragment newInstance(ClientLoansResponse loan) {
@@ -59,7 +58,7 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
 
         if (getArguments() != null) {
             loanId = getArguments().getString("loanId");
-            type = getArguments().getString("type");
+            String typeStr = getArguments().getString("type");
             referenceNo = getArguments().getString("ref");
             String status = getArguments().getString("status");
 
@@ -83,7 +82,7 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
             binding.tvStatusBadge.setBackgroundResource(badgeBg);
             binding.tvStatusBadge.setTextColor(ContextCompat.getColor(requireContext(), badgeText));
             
-            if ("Application".equals(type)) {
+            if ("Application".equals(typeStr)) {
                 setupApplicationView(Integer.parseInt(loanId));
             } else {
                 setupLoanView(loanId);
@@ -140,10 +139,6 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
                     break;
                 case "APPROVAL":
                     updateStep(LayoutTimelineItemBinding.bind(binding.stepApproval.getRoot()), "Final Approval", stage.getCompletedAt(), data.getStatus());
-                    break;
-                case "DISBURSEMENT":
-                    updateStep(LayoutTimelineItemBinding.bind(binding.stepDisbursement.getRoot()), "Disbursement", stage.getCompletedAt(), data.getStatus());
-                    LayoutTimelineItemBinding.bind(binding.stepDisbursement.getRoot()).indicatorLine.setVisibility(View.GONE);
                     break;
             }
         }

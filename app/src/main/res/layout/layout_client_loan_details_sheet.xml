@@ -100,7 +100,6 @@
                 <include android:id="@+id/stepSubmitted" layout="@layout/layout_timeline_item" />
                 <include android:id="@+id/stepReview" layout="@layout/layout_timeline_item" />
                 <include android:id="@+id/stepApproval" layout="@layout/layout_timeline_item" />
-                <include android:id="@+id/stepDisbursement" layout="@layout/layout_timeline_item" />
 
             </LinearLayout>
 
