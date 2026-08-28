@@ -96,6 +96,7 @@ public class ClientLoansActivity extends AppCompatActivity {
                                     binding.loadingView.getRoot().setVisibility(View.GONE);
                                     List<ClientLoansResponse> loans = result.getData();
                                     if (loans != null && !loans.isEmpty()) {
+                                        updateSummary(binding, loans);
                                         bindLoanCard(binding, loans.get(0), 1);
                                         if (loans.size() > 1) {
                                             bindLoanCard(binding, loans.get(1), 2);
@@ -104,10 +105,19 @@ public class ClientLoansActivity extends AppCompatActivity {
                                             binding.loanCard2.setVisibility(View.GONE);
                                         }
                                         binding.loanCard1.setVisibility(View.VISIBLE);
+                                        binding.tvEmptyState.setVisibility(View.GONE);
                                     } else {
                                         binding.loanCard1.setVisibility(View.GONE);
                                         binding.loanCard2.setVisibility(View.GONE);
+                                        binding.activeBalanceValue.setText("KES 0.00");
+                                        binding.nextPaymentValue.setText("None");
+                                        binding.activeLoansCountBadge.setText("0 Active");
+                                        binding.tvEmptyState.setVisibility(View.VISIBLE);
                                     }
+                                    
+                                    // Hide placeholders for history as they are not dynamic yet
+                                    binding.historyItem1.setVisibility(View.GONE);
+                                    binding.historyItem2.setVisibility(View.GONE);
                                     break;
                                 case ERROR:
                                     binding.loadingView.getRoot().setVisibility(View.GONE);
@@ -125,6 +135,26 @@ public class ClientLoansActivity extends AppCompatActivity {
                     break;
             }
         });
+    }
+
+    private void updateSummary(ActivityClientLoansBinding binding, List<ClientLoansResponse> loans) {
+        double totalBalance = 0;
+        int activeCount = 0;
+        for (ClientLoansResponse loan : loans) {
+            if (!"Application".equals(loan.getType())) {
+                totalBalance += loan.getBalance();
+                activeCount++;
+            }
+        }
+        binding.activeBalanceValue.setText(String.format(Locale.US, "KES %,.2f", totalBalance));
+        binding.activeLoansCountBadge.setText(activeCount + " Active");
+        
+        // Find next payment date from the first active loan if any
+        if (activeCount > 0) {
+            binding.nextPaymentValue.setText("Pending"); // Placeholder until schedule is fetched per loan
+        } else {
+            binding.nextPaymentValue.setText("None");
+        }
     }
 
     private void bindLoanCard(ActivityClientLoansBinding binding, ClientLoansResponse loan, int cardNumber){

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_cream">
@@ -86,7 +87,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_sm"
-                            android:text="KES 1,240.00"
+                            tools:text="KES 1,240.00"
                             android:textAppearance="?attr/textAppearanceHeadlineSmall"
                             android:textColor="@color/status_green"
                             android:textStyle="bold" />
@@ -121,7 +122,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/spacing_sm"
-                            android:text="Oct 12"
+                            tools:text="Oct 12"
                             android:textAppearance="?attr/textAppearanceHeadlineSmall"
                             android:textColor="@color/navy_text_primary"
                             android:textStyle="bold" />
@@ -157,7 +158,7 @@
                     android:paddingTop="@dimen/spacing_xs"
                     android:paddingEnd="@dimen/spacing_sm"
                     android:paddingBottom="@dimen/spacing_xs"
-                    android:text="2 Active"
+                    tools:text="2 Active"
                     android:textAppearance="?attr/textAppearanceLabelSmall"
                     android:textColor="@color/status_blue"
                     android:textStyle="bold" />
@@ -415,6 +416,17 @@
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                android:id="@+id/tvEmptyState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:gravity="center"
+                android:text="You don't have any loans or applications at the moment."
+                android:textColor="@color/text_muted"
+                android:visibility="gone"
+                tools:visibility="visible" />
 
             <!-- Loan History -->
             <TextView

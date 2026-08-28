@@ -160,12 +160,12 @@ public class PersonalInfoFragment extends Fragment {
                 Calendar minAge = Calendar.getInstance();
                 minAge.add(Calendar.YEAR, -18);
                 
-                if (dob.after(minAge)) {
-                    binding.tilDob.setError("Client must be at least 18 years old");
-                    valid = false;
-                } else {
-                    binding.tilDob.setError(null);
-                }
+        if (dob.after(minAge)) {
+            binding.tilDob.setError("Client must be at least 18 years old");
+            valid = false;
+        } else {
+            binding.tilDob.setError(null);
+        }
             } catch (Exception e) {
                 binding.tilDob.setError("Invalid date");
                 valid = false;
