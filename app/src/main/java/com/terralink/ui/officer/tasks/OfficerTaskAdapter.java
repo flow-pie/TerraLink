@@ -57,8 +57,8 @@ public class OfficerTaskAdapter extends ListAdapter<OfficerTask, OfficerTaskAdap
             binding.tvLoanId.setText(item.getSubtitle());
             binding.tvPriority.setText(item.getStatus());
             
-            int badgeColor = R.drawable.bg_status_badge_red;
-            int textColor = R.color.terracotta_primary;
+            int badgeColor = R.color.status_red_bg;
+            int textColor = R.color.status_red;
             
             String status = item.getStatus();
             if ("UNDER_REVIEW".equals(status) || "ACTIVE".equals(status) || "VERIFIED".equals(status)) {
@@ -68,7 +68,7 @@ public class OfficerTaskAdapter extends ListAdapter<OfficerTask, OfficerTaskAdap
                 badgeColor = R.drawable.bg_status_badge_amber;
                 textColor = R.color.status_amber;
             } else if ("REJECTED".equals(status)) {
-                badgeColor = R.drawable.bg_status_badge_red;
+                badgeColor = R.color.status_red_bg;
                 textColor = R.color.status_red;
             }
             

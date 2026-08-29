@@ -63,10 +63,10 @@
                 android:layout_height="wrap_content"
                 tools:text="SUBMITTED"
                 android:textAllCaps="true"
-                android:textColor="@color/terracotta_primary"
+                android:textColor="@color/status_red"
                 android:textStyle="bold"
                 android:textSize="10sp"
-                android:background="@drawable/bg_status_badge_red"
+                android:background="@color/status_red_bg"
                 android:paddingHorizontal="9dp"
                 android:paddingVertical="5dp" />
 

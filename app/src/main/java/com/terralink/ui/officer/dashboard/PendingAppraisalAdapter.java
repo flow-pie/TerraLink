@@ -59,14 +59,14 @@ public class PendingAppraisalAdapter extends ListAdapter<LoanApplicationResponse
             binding.tvPriority.setText(item.getStatus());
             
             // Set priority color based on status
-            int badgeColor = R.drawable.bg_status_badge_red;
-            int textColor = R.color.terracotta_primary;
+            int badgeColor = R.color.status_red_bg;
+            int textColor = R.color.status_red;
             
             if ("UNDER_REVIEW".equals(item.getStatus())) {
                 badgeColor = R.drawable.bg_status_badge_green;
                 textColor = R.color.status_green;
             } else if ("INFO_REQUESTED".equals(item.getStatus())) {
-                badgeColor = R.drawable.bg_status_badge_green; // Should probably use an amber one if exists
+                badgeColor = R.drawable.bg_status_badge_amber;
                 textColor = R.color.status_amber;
             }
             
@@ -75,7 +75,7 @@ public class PendingAppraisalAdapter extends ListAdapter<LoanApplicationResponse
             
             binding.btnReview.setOnClickListener(v -> onClick.accept(item));
             binding.btnDismiss.setOnClickListener(v -> {
-                // TODO: Implement dismiss logic if needed
+                // TODO: Implement dismiss logic
             });
         }
     }
