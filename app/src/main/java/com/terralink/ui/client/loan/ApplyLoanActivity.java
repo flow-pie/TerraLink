@@ -47,12 +47,12 @@ public class ApplyLoanActivity extends AppCompatActivity {
 
         binding = ActivityApplyLoanBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, windowInsets) -> {
-            Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
-            return windowInsets;
-        });
+//
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, windowInsets) -> {
+//            Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+//            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
+//            return windowInsets;
+//        });
 
         viewModel = new ViewModelProvider(this).get(ApplyLoanViewModel.class);
 
