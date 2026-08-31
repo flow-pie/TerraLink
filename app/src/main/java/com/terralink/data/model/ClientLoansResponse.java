@@ -4,6 +4,7 @@ public class ClientLoansResponse {
 
     private String id;
     private String referenceNo;
+    private String loanProductName;
     private double approvedAmount;
     private double balance;
     private double repaymentAmount;
@@ -17,6 +18,10 @@ public class ClientLoansResponse {
 
     public String getReferenceNo() {
         return referenceNo;
+    }
+
+    public String getLoanProductName() {
+        return loanProductName;
     }
 
     public double getApprovedAmount() {

@@ -83,19 +83,28 @@ public class LoanListAdapter extends RecyclerView.Adapter<LoanListAdapter.ViewHo
             binding.viewStatusIndicator.setVisibility(View.VISIBLE);
 
             // Progress visibility
-            if ("Loan".equals(loan.getType()) && isActive) {
+            if ("Loan".equals(loan.getType()) && (isActive || isClosed)) {
                 binding.tvProgressLabel.setVisibility(View.VISIBLE);
                 binding.tvProgressPercent.setVisibility(View.VISIBLE);
                 binding.progressRepayment.setVisibility(View.VISIBLE);
-                binding.tvProgressPercent.setText("Active");
-                binding.progressRepayment.setProgress(100);
-            } else if (isClosed) {
-                binding.tvProgressLabel.setVisibility(View.VISIBLE);
-                binding.tvProgressPercent.setVisibility(View.VISIBLE);
-                binding.progressRepayment.setVisibility(View.VISIBLE);
-                binding.tvProgressLabel.setText("Loan Status");
-                binding.tvProgressPercent.setText("Fully Repaid");
-                binding.progressRepayment.setProgress(100);
+                
+                if (isClosed) {
+                    binding.tvProgressLabel.setText("Loan Status");
+                    binding.tvProgressPercent.setText("Fully Repaid");
+                    binding.progressRepayment.setProgress(100);
+                } else {
+                    double totalDue = loan.getRepaymentAmount();
+                    double balance = loan.getBalance();
+                    int progress = 0;
+                    if (totalDue > 0) {
+                        progress = (int) (((totalDue - balance) / totalDue) * 100);
+                    }
+                    progress = Math.max(0, Math.min(100, progress));
+                    
+                    binding.tvProgressLabel.setText("Repayment Progress");
+                    binding.tvProgressPercent.setText(progress + "%");
+                    binding.progressRepayment.setProgress(progress);
+                }
             } else {
                 binding.tvProgressLabel.setVisibility(View.GONE);
                 binding.tvProgressPercent.setVisibility(View.GONE);
