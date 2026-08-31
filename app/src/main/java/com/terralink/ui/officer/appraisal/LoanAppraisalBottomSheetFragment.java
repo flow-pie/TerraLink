@@ -1,5 +1,6 @@
 package com.terralink.ui.officer.appraisal;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,16 +9,21 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.terralink.R;
 import com.terralink.data.model.AssetResponse;
 import com.terralink.data.model.CreditHistoryResponse;
+import com.terralink.data.model.CreditScoreResponse;
+import com.terralink.data.model.IncomeAssessmentResponse;
 import com.terralink.data.model.LoanAppraisalDetailResponse;
 import com.terralink.databinding.FragmentLoanAppraisalBinding;
-import com.terralink.databinding.ItemPaymentHistoryBinding;
+import com.terralink.databinding.ItemLoanProgressCardBinding;
 import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.common.SnackbarUtils;
+import com.terralink.ui.officer.scoring.ClientScoringActivity;
 
 import java.util.List;
 import java.util.Locale;
@@ -76,7 +82,22 @@ public class LoanAppraisalBottomSheetFragment extends BottomSheetDialogFragment 
     private void fetchData() {
         viewModel.getApplicationDetail(applicationId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
-                populateUI(result.getData());
+                LoanAppraisalDetailResponse data = result.getData();
+                populateUI(data);
+                
+                // Recalculate credit score to ensure it's up to date with verified assets/income
+                viewModel.calculateCreditScore(String.valueOf(data.getClient().getId()), data.getApplication().getRequestedAmount()).observe(getViewLifecycleOwner(), scoreResult -> {
+                    if (scoreResult.getStatus() == LoginStatus.SUCCESS && scoreResult.getData() != null) {
+                        CreditScoreResponse newScore = scoreResult.getData();
+                        currentCreditScore = newScore.getCreditScore();
+                        binding.creditGaugeView.setScore(currentCreditScore);
+                        binding.clientStatus.setText(newScore.getRating());
+
+                        // Update breakdown from live score
+                        updateBreakdownFromLive(newScore);
+                    }
+                });
+
             } else if (result.getStatus() == LoginStatus.ERROR) {
                 SnackbarUtils.showError(binding.getRoot(), "Error: " + result.getMessage());
             }
@@ -97,38 +118,196 @@ public class LoanAppraisalBottomSheetFragment extends BottomSheetDialogFragment 
         LoanAppraisalDetailResponse.CreditScore score = data.getCreditScore();
         if (score != null) {
             currentCreditScore = score.getScore();
-            binding.creditGaugeView.setScore(currentCreditScore);
-            binding.clientStatus.setText(score.getRating());
+        } else {
+            currentCreditScore = 0;
         }
+        binding.creditGaugeView.setScore(currentCreditScore);
+        binding.clientStatus.setText(score != null ? score.getRating() : "N/A");
+        
+        if (score != null) {
+            populateBreakdown(score);
+        }
+
+        // Fetch full assets and income to check for PENDING verifications
+        String clientIdStr = String.valueOf(data.getClient().getId());
+        
+        viewModel.getClientAssets(clientIdStr).observe(getViewLifecycleOwner(), assetResource -> {
+            if (assetResource.getStatus() == LoginStatus.SUCCESS && assetResource.getData() != null) {
+                boolean pendingAssets = false;
+                for (AssetResponse asset : assetResource.getData()) {
+                    if ("PENDING".equalsIgnoreCase(asset.getVerificationStatus())) {
+                        pendingAssets = true;
+                        break;
+                    }
+                }
+                
+                final boolean finalHasPendingAssets = pendingAssets;
+                
+                viewModel.getIncomeAssessments(clientIdStr).observe(getViewLifecycleOwner(), incomeResource -> {
+                    boolean hasPendingIncome = false;
+                    if (incomeResource.getStatus() == LoginStatus.SUCCESS && incomeResource.getData() != null) {
+                        for (IncomeAssessmentResponse income : incomeResource.getData()) {
+                            if ("PENDING".equalsIgnoreCase(income.getVerificationStatus())) {
+                                hasPendingIncome = true;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    updateVerificationBanner(data, finalHasPendingAssets, hasPendingIncome);
+                });
+            }
+        });
 
         // 4. Asset Inventory
         populateAssets(data.getAssets());
 
-        // 5. Repayment History
-        populateCreditHistory(data.getCreditHistory());
+        // 5. Repayment History (Concise Loan List)
+        fetchAndPopulateLoans(String.valueOf(data.getClient().getId()));
 
        }
 
-    private void populateCreditHistory(List<CreditHistoryResponse> history) {
+    private void updateBreakdownFromLive(CreditScoreResponse score) {
+        binding.tvRepaymentHistoryScore.setText(score.getRepaymentHistoryScore() + " / 40");
+        binding.pbRepaymentHistory.setProgress(score.getRepaymentHistoryScore());
+
+        binding.tvRepaymentCapacityScore.setText(score.getRepaymentCapacityScore() + " / 30");
+        binding.pbRepaymentCapacity.setProgress(score.getRepaymentCapacityScore());
+
+        binding.tvFinancialStabilityScore.setText(score.getFinancialStabilityScore() + " / 20");
+        binding.pbFinancialStability.setProgress(score.getFinancialStabilityScore());
+
+        binding.tvVerifiedAssetsScore.setText(score.getVerifiedAssetsScore() + " / 10");
+        binding.pbVerifiedAssets.setProgress(score.getVerifiedAssetsScore());
+    }
+
+    private void populateBreakdown(LoanAppraisalDetailResponse.CreditScore score) {
+        binding.tvRepaymentHistoryScore.setText(score.getRepaymentHistoryScore() + " / 40");
+        binding.pbRepaymentHistory.setProgress(score.getRepaymentHistoryScore());
+
+        binding.tvRepaymentCapacityScore.setText(score.getRepaymentCapacityScore() + " / 30");
+        binding.pbRepaymentCapacity.setProgress(score.getRepaymentCapacityScore());
+
+        binding.tvFinancialStabilityScore.setText(score.getFinancialStabilityScore() + " / 20");
+        binding.pbFinancialStability.setProgress(score.getFinancialStabilityScore());
+
+        binding.tvVerifiedAssetsScore.setText(score.getVerifiedAssetsScore() + " / 10");
+        binding.pbVerifiedAssets.setProgress(score.getVerifiedAssetsScore());
+    }
+
+    private void fetchAndPopulateLoans(String clientId) {
+        viewModel.getClientLoans(clientId).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+                populateConciseLoanList(result.getData());
+            }
+        });
+    }
+
+    private void populateConciseLoanList(List<com.terralink.data.model.ClientLoansResponse> loans) {
         binding.repaymentHistoryContainer.removeAllViews();
-        if (history == null) return;
-        for (CreditHistoryResponse item : history) {
-            ItemPaymentHistoryBinding itemBinding = ItemPaymentHistoryBinding.inflate(LayoutInflater.from(requireContext()), binding.repaymentHistoryContainer, false);
-            itemBinding.tvInstallmentTitle.setText(item.getLoanType());
-            itemBinding.tvInstallmentDate.setText(String.format("COMPLETED %s", item.getCompletionDate()));
-            itemBinding.tvInstallmentAmount.setText(item.getStatus());
-            itemBinding.tvInstallmentStatus.setText(item.getStatus());
+        if (loans == null) return;
+        
+        int count = 0;
+        for (com.terralink.data.model.ClientLoansResponse loan : loans) {
+            // Only include actual loans in Repayment History, exclude applications
+            if (!"Loan".equalsIgnoreCase(loan.getType())) continue;
+            
+            if (count >= 5) break;
+            
+            ItemLoanProgressCardBinding itemBinding = ItemLoanProgressCardBinding.inflate(LayoutInflater.from(requireContext()), binding.repaymentHistoryContainer, false);
+            
+            itemBinding.tvApplicantName.setText(getArguments() != null ? getArguments().getString("name") : "Client");
+            itemBinding.tvLoanDetails.setText(String.format("%s • %s", loan.getReferenceNo(), loan.getLoanProductName()));
+            itemBinding.tvLoanAmount.setText(String.format(Locale.getDefault(), "KES %,.0f", loan.getRepaymentAmount()));
+            itemBinding.tvStatus.setText(loan.getStatus());
+            
+            // Calculate Progress
+            double totalRepayable = loan.getRepaymentAmount();
+            double balance = loan.getBalance();
+            int progress = 0;
+            if (totalRepayable > 0) {
+                progress = (int) (((totalRepayable - balance) / totalRepayable) * 100);
+            }
+            progress = Math.max(0, Math.min(100, progress));
+            
+            itemBinding.tvProgressPercent.setText(progress + "%");
+            itemBinding.progressRepayment.setProgress(progress);
+            
+            // Status Styling
+            int statusColor = R.color.status_green;
+            int statusBg = R.drawable.bg_status_badge_green;
+            
+            if ("ARREARS".equalsIgnoreCase(loan.getStatus())) {
+                statusColor = R.color.status_red;
+                statusBg = R.drawable.bg_status_badge_red;
+            } else if ("PENDING_DISBURSEMENT".equalsIgnoreCase(loan.getStatus())) {
+                statusColor = R.color.status_amber;
+                statusBg = R.drawable.bg_status_badge_amber;
+            }
+            
+            itemBinding.tvStatus.setTextColor(ContextCompat.getColor(requireContext(), statusColor));
+            itemBinding.tvStatus.setBackgroundResource(statusBg);
+            
             binding.repaymentHistoryContainer.addView(itemBinding.getRoot());
+            count++;
+        }
+        
+        if (count == 0) {
+            android.widget.TextView tv = new android.widget.TextView(requireContext());
+            tv.setText("No previous loan history found.");
+            tv.setPadding(0, 20, 0, 0);
+            tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_muted));
+            binding.repaymentHistoryContainer.addView(tv);
+        }
+    }
+
+    private void updateVerificationBanner(LoanAppraisalDetailResponse data, boolean hasPendingAssets, boolean hasPendingIncome) {
+        if (hasPendingAssets || hasPendingIncome) {
+            binding.cardPendingVerification.setVisibility(View.VISIBLE);
+            binding.btnGoToScoring.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), ClientScoringActivity.class);
+                intent.putExtra("clientId", (long) data.getClient().getId());
+                intent.putExtra("clientName", data.getClient().getFullName());
+                startActivity(intent);
+            });
+            
+            // Allow approval even if scoring is pending (User request)
+            binding.btnSubmitApproval.setEnabled(true);
+            binding.btnSubmitApproval.setAlpha(1.0f);
+            
+            String msg = "Verification pending for ";
+            if (hasPendingAssets && hasPendingIncome) msg += "assets & income.";
+            else if (hasPendingAssets) msg += "assets.";
+            else msg += "income.";
+            
+            binding.tvPendingVerificationMsg.setText(msg);
+        } else {
+            binding.cardPendingVerification.setVisibility(View.GONE);
+            binding.btnSubmitApproval.setEnabled(true);
+            binding.btnSubmitApproval.setAlpha(1.0f);
         }
     }
 
     private void populateAssets(List<AssetResponse> assets) {
         binding.assetFlexbox.removeAllViews();
         if (assets == null) return;
+        
+        boolean foundVerified = false;
         for (AssetResponse asset : assets) {
+            if ("VERIFIED".equalsIgnoreCase(asset.getVerificationStatus())) {
+                foundVerified = true;
+                android.widget.TextView tv = new android.widget.TextView(requireContext());
+                tv.setText(String.format("● %s (KES %,.0f)", asset.getAssetType(), asset.getEstimatedValue()));
+                tv.setPadding(20, 10, 20, 10);
+                tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.status_green));
+                binding.assetFlexbox.addView(tv);
+            }
+        }
+        
+        if (!foundVerified) {
             android.widget.TextView tv = new android.widget.TextView(requireContext());
-            tv.setText(String.format("● %s (%d)", asset.getAssetType(), asset.getQuantity()));
-            tv.setPadding(20, 10, 20, 10);
+            tv.setText("No verified assets");
+            tv.setTextColor(ContextCompat.getColor(requireContext(), R.color.text_muted));
             binding.assetFlexbox.addView(tv);
         }
     }

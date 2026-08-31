@@ -2,6 +2,7 @@ package com.terralink.data.model;
 
 public class LoanApplicationResponse {
     private int id;
+    private long clientId;
     private String applicationNo;
     private String clientFullName;
     private String loanProductName;
@@ -12,6 +13,10 @@ public class LoanApplicationResponse {
 
     public int getId() {
         return id;
+    }
+
+    public long getClientId() {
+        return clientId;
     }
 
     public String getApplicationNo() {

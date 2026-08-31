@@ -1,6 +1,8 @@
 package com.terralink.ui.officer.tasks;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.terralink.R;
 import com.terralink.databinding.ItemPendingAppraisalBinding;
+import com.terralink.ui.officer.scoring.ClientScoringActivity;
 
 import java.util.function.Consumer;
 
@@ -78,8 +81,24 @@ public class OfficerTaskAdapter extends ListAdapter<OfficerTask, OfficerTaskAdap
             binding.btnReview.setText(item.getType() == OfficerTask.Type.APPRAISAL ? "APPRAISE" : "VERIFY");
             binding.btnReview.setOnClickListener(v -> onClick.accept(item));
             
+            // Allow quick access to scoring from appraisal and verification tasks
+            binding.btnDismiss.setVisibility(View.VISIBLE);
+            binding.btnDismiss.setText("SCORING");
             binding.btnDismiss.setOnClickListener(v -> {
-                // Logic to dismiss task if needed
+                long clientId;
+                String clientName;
+                if (item instanceof OfficerTask.AppraisalTask) {
+                    clientId = ((OfficerTask.AppraisalTask) item).getLoanApp().getClientId();
+                    clientName = ((OfficerTask.AppraisalTask) item).getLoanApp().getClientFullName();
+                } else {
+                    clientId = (long) item.getId();
+                    clientName = item.getTitle();
+                }
+
+                Intent intent = new Intent(itemView.getContext(), ClientScoringActivity.class);
+                intent.putExtra("clientId", clientId);
+                intent.putExtra("clientName", clientName);
+                itemView.getContext().startActivity(intent);
             });
         }
     }

@@ -37,6 +37,12 @@ public interface LoanApi {
             @Path("clientId") String clientId
     );
 
+    @POST("api/clients/{clientId}/credit-score/calculate")
+    Call<CreditScoreResponse> calculateCreditScore(
+            @Path("clientId") String clientId,
+            @Body com.terralink.data.model.CalculateCreditScoreRequest request
+    );
+
     @GET("api/loans/{loanId}")
     Call<LoanDetailsResponse> getloanDetails(
             @Path("loanId") String loanId

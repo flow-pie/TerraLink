@@ -472,30 +472,19 @@ Authorization: Bearer {{accessToken}}
 ###############################################################################
 
 ### Get credit history
-GET {{baseUrl}}/api/clients/9/credit-history
+GET {{baseUrl}}/api/clients/1/credit-history
 Authorization: Bearer {{accessToken}}
 
 ### Get client assets
-GET {{baseUrl}}/api/clients/9/assets
+GET {{baseUrl}}/api/clients/1/assets
 Authorization: Bearer {{accessToken}}
-
-### Create asset
-POST {{baseUrl}}/api/clients/9/assets
-Content-Type: application/json
-Authorization: Bearer {{accessToken}}
-
-{
-  "assetType": "WATER_PUMP",
-  "description": "Petrol-powered irrigation pump",
-  "quantity": 1
-}
 
 ### Get income assessments
-GET {{baseUrl}}/api/clients/9/income-assessments
+GET {{baseUrl}}/api/clients/1/income-assessments
 Authorization: Bearer {{accessToken}}
 
 ### Create income assessment
-POST {{baseUrl}}/api/clients/loan-applications/2/income-assessment
+POST {{baseUrl}}/api/clients/1/income-assessments
 Content-Type: application/json
 Authorization: Bearer {{accessToken}}
 
@@ -505,8 +494,57 @@ Authorization: Bearer {{accessToken}}
   "householdExpenses": 28500
 }
 
+### Officer verifies an income assessment
+POST {{baseUrl}}/api/clients/1/income-assessments/1/verify
+Authorization: Bearer {{accessToken}}
+
 ### Get credit score
 GET {{baseUrl}}/api/clients/1/credit-score
+Authorization: Bearer {{accessToken}}
+
+### Calculate credit score (client/officer)
+POST {{baseUrl}}/api/clients/1/credit-score/calculate
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "proposedLoanAmount": 15000
+}
+
+### Client submits income assessment (for credit score)
+POST {{baseUrl}}/api/clients/1/income-assessments
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "businessRevenue": 55000,
+  "otherIncome": 12000,
+  "householdExpenses": 28500
+}
+
+### Client declares an asset (officer must verify before it counts)
+POST {{baseUrl}}/api/clients/1/assets
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "assetType": "MOTORBIKE",
+  "description": "Honda 125cc used for deliveries",
+  "quantity": 1,
+  "estimatedValue": 150000
+}
+
+### Officer verifies an asset and records its estimated value
+POST {{baseUrl}}/api/clients/1/assets/3/verify
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "estimatedValue": 100000
+}
+
+### Officer verifies an income assessment
+POST {{baseUrl}}/api/clients/1/income-assessments/1/verify
 Authorization: Bearer {{accessToken}}
 
 

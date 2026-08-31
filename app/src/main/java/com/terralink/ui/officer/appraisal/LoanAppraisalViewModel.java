@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.terralink.data.model.AssetResponse;
+import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.CreditHistoryResponse;
 import com.terralink.data.model.CreditScoreResponse;
 import com.terralink.data.model.IncomeAssessmentResponse;
@@ -40,12 +41,20 @@ public class LoanAppraisalViewModel extends ViewModel {
         return loanRepository.getCreditScore(clientId);
     }
 
+    public LiveData<Resource<CreditScoreResponse>> calculateCreditScore(String clientId, Double amount) {
+        return loanRepository.calculateCreditScore(clientId, amount);
+    }
+
     public LiveData<Resource<List<CreditHistoryResponse>>> getCreditHistory(String clientId) {
         return loanRepository.getCreditHistory(clientId);
     }
 
     public LiveData<Resource<List<AssetResponse>>> getClientAssets(String clientId) {
         return loanRepository.getClientAssets(clientId);
+    }
+
+    public LiveData<Resource<List<ClientLoansResponse>>> getClientLoans(String clientId) {
+        return loanRepository.getClientLoans(clientId);
     }
 
     public LiveData<Resource<List<IncomeAssessmentResponse>>> getIncomeAssessments(String clientId) {

@@ -1,6 +1,8 @@
 package com.terralink.ui.officer.dashboard;
 
+import android.content.Intent;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -12,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.terralink.R;
 import com.terralink.data.model.LoanApplicationResponse;
 import com.terralink.databinding.ItemPendingAppraisalBinding;
+import com.terralink.ui.officer.scoring.ClientScoringActivity;
 
 import java.util.function.Consumer;
 
@@ -74,8 +77,13 @@ public class PendingAppraisalAdapter extends ListAdapter<LoanApplicationResponse
             binding.tvPriority.setTextColor(ContextCompat.getColor(itemView.getContext(), textColor));
             
             binding.btnReview.setOnClickListener(v -> onClick.accept(item));
+            
+            binding.btnDismiss.setText("SCORING");
             binding.btnDismiss.setOnClickListener(v -> {
-                // TODO: Implement dismiss logic
+                Intent intent = new Intent(itemView.getContext(), ClientScoringActivity.class);
+                intent.putExtra("clientId", item.getClientId());
+                intent.putExtra("clientName", item.getClientFullName());
+                itemView.getContext().startActivity(intent);
             });
         }
     }

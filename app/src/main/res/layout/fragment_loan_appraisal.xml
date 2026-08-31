@@ -60,6 +60,55 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Pending Verification Banner -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardPendingVerification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:visibility="gone"
+                app:cardBackgroundColor="@color/status_amber_bg"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/status_amber"
+                app:strokeWidth="1dp"
+                tools:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="12dp">
+
+                    <ImageView
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/ic_warning"
+                        app:tint="@color/status_amber" />
+
+                    <TextView
+                        android:id="@+id/tvPendingVerificationMsg"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:text="This client has pending assets/income for verification. Recalculate score after verifying."
+                        android:textColor="@color/navy_text_primary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnGoToScoring"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="VERIFY"
+                        android:textColor="@color/status_amber"
+                        android:textSize="11sp" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
             <!-- LOAN APPLICATION SUMMARY CARD -->
             <com.google.android.material.card.MaterialCardView
                 style="@style/Widget.TerraLink.Card"
@@ -217,6 +266,148 @@
                         android:text="Score based on historical and group metrics."
                         android:textAppearance="?attr/textAppearanceBodySmall"
                         android:textColor="@color/text_muted" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="16dp"
+                        android:background="@color/surface_stroke" />
+
+                    <!-- Credit Score Breakdown -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical">
+
+                        <!-- Repayment History -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Repayment History"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/tvRepaymentHistoryScore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="7 / 40"
+                                android:textColor="@color/navy_text_primary"
+                                android:textStyle="bold"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                        <ProgressBar
+                            android:id="@+id/pbRepaymentHistory"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="12dp"
+                            android:max="40"
+                            android:progressTint="@color/terracotta_primary"
+                            tools:progress="7" />
+
+                        <!-- Repayment Capacity -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Repayment Capacity"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/tvRepaymentCapacityScore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="18 / 30"
+                                android:textColor="@color/navy_text_primary"
+                                android:textStyle="bold"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                        <ProgressBar
+                            android:id="@+id/pbRepaymentCapacity"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="12dp"
+                            android:max="30"
+                            android:progressTint="@color/status_blue"
+                            tools:progress="18" />
+
+                        <!-- Financial Stability -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Financial Stability"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/tvFinancialStabilityScore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="5 / 20"
+                                android:textColor="@color/navy_text_primary"
+                                android:textStyle="bold"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                        <ProgressBar
+                            android:id="@+id/pbFinancialStability"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:layout_marginTop="4dp"
+                            android:layout_marginBottom="12dp"
+                            android:max="20"
+                            android:progressTint="@color/status_amber"
+                            tools:progress="5" />
+
+                        <!-- Verified Assets -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Verified Assets"
+                                android:textColor="@color/text_secondary"
+                                android:textSize="12sp" />
+                            <TextView
+                                android:id="@+id/tvVerifiedAssetsScore"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                tools:text="4 / 10"
+                                android:textColor="@color/navy_text_primary"
+                                android:textStyle="bold"
+                                android:textSize="12sp" />
+                        </LinearLayout>
+                        <ProgressBar
+                            android:id="@+id/pbVerifiedAssets"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="4dp"
+                            android:layout_marginTop="4dp"
+                            android:max="10"
+                            android:progressTint="@color/status_green"
+                            tools:progress="4" />
+
+                    </LinearLayout>
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

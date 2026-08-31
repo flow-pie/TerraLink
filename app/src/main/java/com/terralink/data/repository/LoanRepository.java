@@ -92,6 +92,28 @@ public class LoanRepository {
         return result;
     }
 
+    public LiveData<Resource<CreditScoreResponse>> calculateCreditScore(String clientId, Double amount) {
+        MutableLiveData<Resource<CreditScoreResponse>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.calculateCreditScore(clientId, new com.terralink.data.model.CalculateCreditScoreRequest(amount)).enqueue(new Callback<CreditScoreResponse>() {
+            @Override
+            public void onResponse(Call<CreditScoreResponse> call, Response<CreditScoreResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Calculation failed: " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CreditScoreResponse> call, Throwable t) {
+                result.postValue(Resource.error("Network Error: " + t.getMessage()));
+            }
+        });
+        return result;
+    }
+
     public LiveData<Resource<LoanDetailsResponse>> getClientLoanDetails(String loanId){
 
         MutableLiveData< Resource<LoanDetailsResponse>> results = new MutableLiveData<>();
