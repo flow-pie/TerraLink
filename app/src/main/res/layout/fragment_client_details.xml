@@ -301,15 +301,34 @@
 
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnViewLoans"
-                style="@style/Widget.TerraLink.Button.Primary"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginTop="24dp"
-                android:text="View Full History"
-                app:icon="@drawable/ic_chart" />
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnViewLoans"
+                    style="@style/Widget.TerraLink.Button.Outlined"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    android:text="History"
+                    app:icon="@drawable/ic_chart" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnScoring"
+                    style="@style/Widget.TerraLink.Button.Primary"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Scoring"
+                    app:icon="@drawable/ic_shield_stars" />
+
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -1,5 +1,6 @@
 package com.terralink.ui.officer.clients;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -75,6 +76,14 @@ public class ClientDetailsBottomSheetFragment extends BottomSheetDialogFragment 
         fetchClientData();
 
         binding.btnViewLoans.setOnClickListener(v -> {
+            dismiss();
+        });
+
+        binding.btnScoring.setOnClickListener(v -> {
+            Intent intent = new Intent(requireContext(), com.terralink.ui.officer.scoring.ClientScoringActivity.class);
+            intent.putExtra("clientId", (long) clientId);
+            intent.putExtra("clientName", getArguments().getString("name"));
+            startActivity(intent);
             dismiss();
         });
     }
