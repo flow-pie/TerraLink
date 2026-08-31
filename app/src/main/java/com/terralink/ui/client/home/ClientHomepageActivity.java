@@ -75,6 +75,14 @@ public class ClientHomepageActivity extends AppCompatActivity {
             startActivity(new Intent(this, ApplyLoanActivity.class));
         });
 
+        binding.cardMyAssets.setOnClickListener(v -> {
+            startActivity(new Intent(this, com.terralink.ui.client.scoring.AssetListActivity.class));
+        });
+
+        binding.cardIncomeAssessment.setOnClickListener(v -> {
+            startActivity(new Intent(this, com.terralink.ui.client.scoring.IncomeAssessmentListActivity.class));
+        });
+
         repaymentScheduleAdapter = new RepaymentScheduleAdapter(new ArrayList<>());
         binding.rvRecentPayments.setLayoutManager(new LinearLayoutManager(this));
         binding.rvRecentPayments.setAdapter(repaymentScheduleAdapter);

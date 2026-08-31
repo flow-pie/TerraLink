@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/top_app_bar_height"
+    android:background="@color/terracotta_primary"
+    android:paddingStart="@dimen/spacing_lg"
+    android:paddingTop="32dp"
+    android:paddingEnd="@dimen/spacing_lg">
+
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerVertical="true"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Back"
+        android:src="@drawable/ic_chevron_right"
+        android:rotation="180"
+        app:tint="@color/on_terracotta" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="TerraLink"
+        android:textColor="@color/on_terracotta"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+</RelativeLayout>

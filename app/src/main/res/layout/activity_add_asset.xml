@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_cream">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <include
+            android:id="@+id/appBarContent"
+            layout="@layout/top_app_bar_back" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_2xl"
+            android:paddingTop="@dimen/spacing_2xl"
+            android:paddingBottom="40dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Asset"
+                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold" />
+
+            <!-- Asset Type -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="ASSET TYPE"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold" />
+
+            <Spinner
+                android:id="@+id/assetTypeSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:background="@drawable/bg_input_background"
+                android:paddingStart="@dimen/card_padding"
+                android:paddingEnd="@dimen/card_padding" />
+
+            <!-- Description -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="DESCRIPTION"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/descriptionInput"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:background="@drawable/bg_input_background"
+                android:gravity="top"
+                android:hint="e.g. Honda 125cc used for deliveries"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:padding="@dimen/card_padding"
+                android:textColor="@color/navy_text_primary"
+                android:textSize="14sp" />
+
+            <!-- Quantity -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="QUANTITY"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/quantityInput"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:background="@drawable/bg_input_background"
+                android:hint="Enter quantity"
+                android:inputType="number"
+                android:paddingStart="@dimen/card_padding"
+                android:paddingEnd="@dimen/card_padding"
+                android:textColor="@color/navy_text_primary"
+                android:textSize="14sp" />
+
+            <!-- Estimated Value -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_lg"
+                android:text="ESTIMATED VALUE (KES)"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/estimatedValueInput"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/input_height"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:background="@drawable/bg_input_background"
+                android:hint="Enter estimated value"
+                android:inputType="numberDecimal"
+                android:paddingStart="@dimen/card_padding"
+                android:paddingEnd="@dimen/card_padding"
+                android:textColor="@color/navy_text_primary"
+                android:textSize="14sp" />
+
+            <!-- Submit Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSubmitAsset"
+                style="@style/Widget.TerraLink.Button.Primary"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_min_height"
+                android:layout_marginTop="@dimen/spacing_xl"
+                android:text="Declare Asset" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

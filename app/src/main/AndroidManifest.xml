@@ -83,6 +83,26 @@
             android:name=".ui.client.notification.NotificationStatusActivity"
             android:exported="false"
             />
+
+        <activity
+            android:name=".ui.client.scoring.AssetListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.client.scoring.AddAssetActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.client.scoring.IncomeAssessmentListActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.client.scoring.AddIncomeAssessmentActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".ui.officer.scoring.ClientScoringActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
