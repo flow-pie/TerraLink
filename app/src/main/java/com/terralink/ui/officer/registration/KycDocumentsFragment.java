@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -71,19 +70,25 @@ public class KycDocumentsFragment extends Fragment {
 
     private void showImage(File file, ImageView imageView, ImageView placeholder) {
         if (file == null || !file.exists()) return;
-        Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
-        if (bitmap != null) {
-            imageView.setImageBitmap(bitmap);
-            imageView.setVisibility(View.VISIBLE);
-            placeholder.setVisibility(View.GONE);
+        try {
+            Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath());
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap);
+                imageView.setVisibility(View.VISIBLE);
+                if (placeholder != null) placeholder.setVisibility(View.GONE);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
     private void handleImageResult(Uri uri, String type) {
         if (uri == null) return;
         try {
+            if (getContext() == null) return;
             File file = new File(requireContext().getCacheDir(), type + "_" + System.currentTimeMillis() + ".jpg");
             InputStream is = requireContext().getContentResolver().openInputStream(uri);
+            if (is == null) return;
             FileOutputStream fos = new FileOutputStream(file);
             byte[] buf = new byte[4096];
             int len;
@@ -105,12 +110,21 @@ public class KycDocumentsFragment extends Fragment {
             SnackbarUtils.showSuccess(binding.getRoot(), type + " captured");
         } catch (Exception e) {
             e.printStackTrace();
+            SnackbarUtils.showError(binding.getRoot(), "Error capturing image");
         }
     }
 
     public boolean validate() {
-        if (viewModel.idFront == null || viewModel.idBack == null || viewModel.passportPhoto == null) {
-            SnackbarUtils.showInfo(binding.getRoot(), "Please capture all required KYC documents");
+        if (viewModel.idFront == null) {
+            SnackbarUtils.showInfo(binding.getRoot(), "ID Front is required");
+            return false;
+        }
+        if (viewModel.idBack == null) {
+            SnackbarUtils.showInfo(binding.getRoot(), "ID Back is required");
+            return false;
+        }
+        if (viewModel.passportPhoto == null) {
+            SnackbarUtils.showInfo(binding.getRoot(), "Passport photo is required");
             return false;
         }
         return true;

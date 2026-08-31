@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.terralink.data.model.ClientListItemResponse;
+import com.terralink.data.model.PaginatedResponse;
 import com.terralink.data.repository.ClientRepository;
 import com.terralink.ui.common.Resource;
 
@@ -41,5 +43,9 @@ public class RegisterClientViewModel extends ViewModel {
                 email, password,
                 idFront, idBack, passportPhoto
         );
+    }
+
+    public LiveData<Resource<PaginatedResponse<ClientListItemResponse>>> checkClientExists(String search) {
+        return clientRepository.getClients(1, 1, search);
     }
 }

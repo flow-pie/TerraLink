@@ -39,6 +39,7 @@ public class PersonalInfoFragment extends Fragment {
 
         setupGenderSpinner();
         setupTextWatchers();
+        setupExistenceChecks();
 
         // Populate existing data if any
         binding.etFullName.setText(viewModel.fullName);
@@ -47,6 +48,7 @@ public class PersonalInfoFragment extends Fragment {
         binding.etDob.setText(viewModel.dateOfBirth);
         binding.etEmail.setText(viewModel.email);
         binding.etPassword.setText(viewModel.password);
+        binding.etConfirmPassword.setText(viewModel.password);
 
         binding.etDob.setFocusable(false);
         binding.etDob.setClickable(true);
@@ -105,6 +107,38 @@ public class PersonalInfoFragment extends Fragment {
         binding.etPassword.addTextChangedListener(new SimpleTextWatcher(s -> viewModel.password = s));
     }
 
+    private void setupExistenceChecks() {
+        binding.etGovId.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus && viewModel.nationalId != null && viewModel.nationalId.length() == 8) {
+                checkExists(viewModel.nationalId, "National ID already exists", binding.tilGovId);
+            }
+        });
+
+        binding.etPhone.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus && viewModel.phone != null && viewModel.phone.length() == 10) {
+                checkExists(viewModel.phone, "Phone number already exists", binding.tilPhone);
+            }
+        });
+
+        binding.etEmail.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus && viewModel.email != null && viewModel.email.contains("@")) {
+                checkExists(viewModel.email, "Email already exists", binding.tilEmail);
+            }
+        });
+    }
+
+    private void checkExists(String query, String errorMessage, com.google.android.material.textfield.TextInputLayout layout) {
+        viewModel.checkClientExists(query).observe(getViewLifecycleOwner(), resource -> {
+            if (resource.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS && resource.getData() != null) {
+                if (resource.getData().getTotalCount() > 0) {
+                    layout.setError(errorMessage);
+                } else {
+                    layout.setError(null);
+                }
+            }
+        });
+    }
+
     public boolean validate() {
         boolean valid = true;
         if (isEmpty(viewModel.fullName)) {
@@ -124,7 +158,11 @@ public class PersonalInfoFragment extends Fragment {
             binding.tilGovId.setError("ID must be numeric");
             valid = false;
         } else {
-            binding.tilGovId.setError(null);
+            // Keep existing error if it's "already exists"
+            if (binding.tilGovId.getError() == null || !binding.tilGovId.getError().toString().contains("exists")) {
+                binding.tilGovId.setError(null);
+            }
+            if (binding.tilGovId.getError() != null) valid = false;
         }
 
         if (isEmpty(viewModel.phone)) {
@@ -137,13 +175,16 @@ public class PersonalInfoFragment extends Fragment {
             binding.tilPhone.setError("Phone must be numeric");
             valid = false;
         } else {
-            binding.tilPhone.setError(null);
+            if (binding.tilPhone.getError() == null || !binding.tilPhone.getError().toString().contains("exists")) {
+                binding.tilPhone.setError(null);
+            }
+            if (binding.tilPhone.getError() != null) valid = false;
         }
 
         if (isEmpty(viewModel.dateOfBirth)) {
             binding.tilDob.setError("DOB is required");
             valid = false;
-        } else if (!viewModel.dateOfBirth.matches("\\d{4}-\\d{2}-\\d{2}")) {
+        } else if (viewModel.dateOfBirth.length() != 10) {
             binding.tilDob.setError("Use format YYYY-MM-DD");
             valid = false;
         } else {
@@ -160,12 +201,12 @@ public class PersonalInfoFragment extends Fragment {
                 Calendar minAge = Calendar.getInstance();
                 minAge.add(Calendar.YEAR, -18);
                 
-        if (dob.after(minAge)) {
-            binding.tilDob.setError("Client must be at least 18 years old");
-            valid = false;
-        } else {
-            binding.tilDob.setError(null);
-        }
+                if (dob.after(minAge)) {
+                    binding.tilDob.setError("Client must be at least 18 years old");
+                    valid = false;
+                } else {
+                    binding.tilDob.setError(null);
+                }
             } catch (Exception e) {
                 binding.tilDob.setError("Invalid date");
                 valid = false;
@@ -179,7 +220,10 @@ public class PersonalInfoFragment extends Fragment {
             binding.tilEmail.setError("Invalid email format");
             valid = false;
         } else {
-            binding.tilEmail.setError(null);
+            if (binding.tilEmail.getError() == null || !binding.tilEmail.getError().toString().contains("exists")) {
+                binding.tilEmail.setError(null);
+            }
+            if (binding.tilEmail.getError() != null) valid = false;
         }
 
         if (isEmpty(viewModel.password)) {
@@ -190,6 +234,17 @@ public class PersonalInfoFragment extends Fragment {
             valid = false;
         } else {
             binding.tilPassword.setError(null);
+        }
+
+        String confirmPass = binding.etConfirmPassword.getText() != null ? binding.etConfirmPassword.getText().toString() : "";
+        if (isEmpty(confirmPass)) {
+            binding.tilConfirmPassword.setError("Please confirm password");
+            valid = false;
+        } else if (!confirmPass.equals(viewModel.password)) {
+            binding.tilConfirmPassword.setError("Passwords do not match");
+            valid = false;
+        } else {
+            binding.tilConfirmPassword.setError(null);
         }
 
         return valid;

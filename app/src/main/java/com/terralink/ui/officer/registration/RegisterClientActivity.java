@@ -147,7 +147,7 @@ public class RegisterClientActivity extends AppCompatActivity {
             isEmpty(viewModel.phone) || isEmpty(viewModel.dateOfBirth) || 
             isEmpty(viewModel.email) || isEmpty(viewModel.password) ||
             isEmpty(viewModel.address)) {
-            SnackbarUtils.showInfo(binding.getRoot(), "Please fill all required fields");
+            SnackbarUtils.showInfo(binding.getRoot(), "Please fill all required fields in the previous steps");
             return false;
         }
         if (viewModel.idFront == null || viewModel.idBack == null || viewModel.passportPhoto == null) {

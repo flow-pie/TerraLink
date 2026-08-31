@@ -29,21 +29,21 @@ public class ReviewFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         viewModel = new ViewModelProvider(requireActivity()).get(RegisterClientViewModel.class);
 
-        binding.tvFullName.setText(viewModel.fullName);
-        binding.tvGovernmentId.setText(viewModel.nationalId);
-        binding.tvPhone.setText(viewModel.phone);
-        binding.tvDateOfBirth.setText(viewModel.dateOfBirth);
-        binding.tvEmail.setText(viewModel.email);
-        binding.tvAddressNote.setText(viewModel.address);
+        binding.tvFullName.setText(viewModel.fullName != null ? viewModel.fullName : "N/A");
+        binding.tvGovernmentId.setText(viewModel.nationalId != null ? viewModel.nationalId : "N/A");
+        binding.tvPhone.setText(viewModel.phone != null ? viewModel.phone : "N/A");
+        binding.tvDateOfBirth.setText(viewModel.dateOfBirth != null ? viewModel.dateOfBirth : "N/A");
+        binding.tvEmail.setText(viewModel.email != null ? viewModel.email : "N/A");
+        binding.tvAddressNote.setText(viewModel.address != null ? viewModel.address : "N/A");
 
         // Previews for images
-        if (viewModel.idFront != null) {
+        if (viewModel.idFront != null && viewModel.idFront.exists()) {
             binding.imgIdFront.setImageURI(android.net.Uri.fromFile(viewModel.idFront));
         }
-        if (viewModel.idBack != null) {
+        if (viewModel.idBack != null && viewModel.idBack.exists()) {
             binding.imgIdBack.setImageURI(android.net.Uri.fromFile(viewModel.idBack));
         }
-        if (viewModel.passportPhoto != null) {
+        if (viewModel.passportPhoto != null && viewModel.passportPhoto.exists()) {
             binding.imgFace.setImageURI(android.net.Uri.fromFile(viewModel.passportPhoto));
         }
     }

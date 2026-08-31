@@ -250,6 +250,32 @@
                     android:inputType="textPassword" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <!-- CONFIRM PASSWORD -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="CONFIRM PASSWORD"
+                android:textColor="@color/navy_text_primary"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textStyle="bold" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilConfirmPassword"
+                style="@style/Widget.TerraLink.TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                app:passwordToggleEnabled="true">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="••••••••"
+                    android:inputType="textPassword" />
+            </com.google.android.material.textfield.TextInputLayout>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </ScrollView>
