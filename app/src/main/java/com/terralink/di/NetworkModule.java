@@ -3,6 +3,8 @@ package com.terralink.di;
 import android.content.Context;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializer;
 import com.terralink.data.api.AuthApi;
 import com.terralink.data.api.LoanApi;
 import com.terralink.data.api.RefreshApi;
@@ -10,6 +12,11 @@ import com.terralink.data.api.UserApi;
 import com.terralink.data.auth.TokenAuthenticator;
 import com.terralink.ui.auth.AuthInterceptor;
 import com.terralink.ui.auth.TokenManager;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.inject.Singleton;
 
@@ -67,12 +74,13 @@ public class NetworkModule {
     @Provides
     @Singleton
     public Retrofit provideRetrofit(
-            OkHttpClient okHttpClient
+            OkHttpClient okHttpClient,
+            Gson gson
     ){
         return new Retrofit.Builder()
                 .baseUrl("http://192.168.0.104:5031/")
                 .client(okHttpClient)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
     }
 
@@ -95,7 +103,34 @@ public class NetworkModule {
     @Provides
     @Singleton
     public Gson provideGson() {
-        return new Gson();
+        return new GsonBuilder()
+                .registerTypeAdapter(Date.class, (JsonDeserializer<Date>) (json, typeOfT, context) -> {
+                    String dateStr = json.getAsString();
+                    if (dateStr.contains(".")) {
+                        // Handle ISO 8601 with fractional seconds
+                        // SimpleDateFormat's S is milliseconds, so we truncate to 3 digits
+                        int dotIndex = dateStr.lastIndexOf(".");
+                        String base = dateStr.substring(0, dotIndex);
+                        String frac = dateStr.substring(dotIndex + 1);
+                        if (frac.length() > 3) frac = frac.substring(0, 3);
+                        String formattedDate = base + "." + frac;
+                        try {
+                            return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.US).parse(formattedDate);
+                        } catch (ParseException e) {
+                            // Fallback
+                        }
+                    }
+                    try {
+                        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.US).parse(dateStr);
+                    } catch (ParseException e) {
+                        try {
+                            return new SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(dateStr);
+                        } catch (ParseException e2) {
+                            return null;
+                        }
+                    }
+                })
+                .create();
     }
 
     //provide AuthAPi
