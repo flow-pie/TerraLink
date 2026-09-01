@@ -69,8 +69,11 @@ public class SnackbarUtils {
             return;
         }
 
-        View notification = LayoutInflater.from(root.getContext())
-                .inflate(R.layout.snackbar, root, false);
+        ViewGroup parent = findSuitableParent(root);
+        if (parent == null) return;
+
+        View notification = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.snackbar, parent, false);
 
         TextView messageView =
                 notification.findViewById(R.id.snackbar_message);
@@ -85,14 +88,14 @@ public class SnackbarUtils {
         iconView.setImageResource(icon);
 
         int color = ContextCompat.getColor(
-                root.getContext(),
+                parent.getContext(),
                 backgroundColor
         );
 
         GradientDrawable background = new GradientDrawable();
         background.setColor(color);
         background.setCornerRadius(
-                16 * root.getResources()
+                16 * parent.getResources()
                         .getDisplayMetrics()
                         .density
         );
@@ -100,10 +103,10 @@ public class SnackbarUtils {
         notification.setBackground(background);
 
         closeButton.setOnClickListener(v ->
-                removeNotification(root, notification)
+                removeNotification(parent, notification)
         );
 
-        root.addView(notification);
+        parent.addView(notification);
 
         notification.setTranslationY(-notification.getHeight());
 
@@ -118,25 +121,45 @@ public class SnackbarUtils {
 
         if(autoDismiss){
             notification.postDelayed(
-                    () -> removeNotification(root, notification),
+                    () -> removeNotification(parent, notification),
                     4000
             );
         }
     }
 
+    private static ViewGroup findSuitableParent(ViewGroup root) {
+        ViewGroup view = root;
+        do {
+            if (view instanceof androidx.coordinatorlayout.widget.CoordinatorLayout) {
+                return view;
+            } else if (view instanceof android.widget.FrameLayout) {
+                if (view.getId() == android.R.id.content) {
+                    return view;
+                } else if (!(view instanceof android.widget.ScrollView) && !(view instanceof androidx.core.widget.NestedScrollView)) {
+                    return view;
+                }
+            }
+            if (view != null) {
+                final android.view.ViewParent parent = view.getParent();
+                view = parent instanceof ViewGroup ? (ViewGroup) parent : null;
+            }
+        } while (view != null);
+        return root;
+    }
+
     private static void removeNotification(
-            ViewGroup root,
+            ViewGroup parent,
             View notification
     ) {
 
-        if (notification.getParent() != root) {
+        if (notification == null || parent == null || notification.getParent() != parent) {
             return;
         }
 
         notification.animate()
                 .translationY(-notification.getHeight())
                 .setDuration(250)
-                .withEndAction(() -> root.removeView(notification))
+                .withEndAction(() -> parent.removeView(notification))
                 .start();
     }
 }
