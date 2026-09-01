@@ -2,7 +2,6 @@ package com.terralink.ui.officer.clients;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.terralink.data.model.ClientListItemResponse;
 import com.terralink.data.model.ClientLoansResponse;
+import com.terralink.data.model.KycDocumentResponse;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.databinding.FragmentClientDetailsBinding;
@@ -31,17 +31,22 @@ public class ClientDetailsBottomSheetFragment extends BottomSheetDialogFragment 
 
     private FragmentClientDetailsBinding binding;
     private OfficerClientsViewModel viewModel;
+    private KycGalleryAdapter kycAdapter;
     private int clientId;
 
     public static ClientDetailsBottomSheetFragment newInstance(ClientListItemResponse client) {
+        return newInstance(client.getId(), client.getFullName(), client.getClientNo(), client.getPhone(), client.getCreatedAt(), client.getStatus());
+    }
+
+    public static ClientDetailsBottomSheetFragment newInstance(int id, String name, String no, String phone, String date, String status) {
         ClientDetailsBottomSheetFragment fragment = new ClientDetailsBottomSheetFragment();
         Bundle args = new Bundle();
-        args.putInt("id", client.getId());
-        args.putString("name", client.getFullName());
-        args.putString("no", client.getClientNo());
-        args.putString("phone", client.getPhone());
-        args.putString("date", client.getCreatedAt());
-        args.putString("status", client.getStatus());
+        args.putInt("id", id);
+        args.putString("name", name);
+        args.putString("no", no);
+        args.putString("phone", phone);
+        args.putString("date", date);
+        args.putString("status", status);
         fragment.setArguments(args);
         return fragment;
     }
@@ -64,20 +69,16 @@ public class ClientDetailsBottomSheetFragment extends BottomSheetDialogFragment 
             
             binding.tvClientName.setText(getArguments().getString("name"));
             binding.tvGridClientName.setText(getArguments().getString("name"));
-            
-            // Set client number with prefix to ensure visibility
             binding.tvClientNo.setText("Account: " + (clientNo != null ? clientNo : "N/A"));
-            
             binding.tvPhone.setText(getArguments().getString("phone"));
             binding.tvCreatedAt.setText(getArguments().getString("date"));
             binding.tvStatus.setText(getArguments().getString("status"));
         }
 
+        setupKycGallery();
         fetchClientData();
 
-        binding.btnViewLoans.setOnClickListener(v -> {
-            dismiss();
-        });
+        binding.btnViewLoans.setOnClickListener(v -> dismiss());
 
         binding.btnScoring.setOnClickListener(v -> {
             Intent intent = new Intent(requireContext(), com.terralink.ui.officer.scoring.ClientScoringActivity.class);
@@ -88,25 +89,33 @@ public class ClientDetailsBottomSheetFragment extends BottomSheetDialogFragment 
         });
     }
 
+    private void setupKycGallery() {
+        kycAdapter = new KycGalleryAdapter(item -> {
+            Toast.makeText(requireContext(), "Opening " + item.getDocType(), Toast.LENGTH_SHORT).show();
+        });
+        binding.rvKycGallery.setAdapter(kycAdapter);
+        
+        viewModel.getKycDocuments(clientId).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+                kycAdapter.submitList(result.getData());
+            }
+        });
+    }
+
     private void fetchClientData() {
         String idToUse = String.valueOf(clientId);
         String clientNo = getArguments() != null ? getArguments().getString("no") : null;
-        
-        Log.d("ClientDetails", "Fetching loans. Numeric ID: " + idToUse + ", ClientNo: " + clientNo);
         
         viewModel.getClientLoans(idToUse).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == LoginStatus.SUCCESS) {
                 List<ClientLoansResponse> loans = result.getData();
                 if (loans != null && !loans.isEmpty()) {
-                    Log.d("ClientDetails", "Loans found: " + loans.size());
                     fetchLoanDetails(loans.get(0).getLoanId());
-                } else {
-                    Log.d("ClientDetails", "No loans found with Numeric ID. Trying ClientNo...");
-                    if (clientNo != null) fetchLoansWithId(clientNo);
+                } else if (clientNo != null) {
+                    fetchLoansWithId(clientNo);
                 }
-            } else if (result.getStatus() == LoginStatus.ERROR) {
-                Log.e("ClientDetails", "Error: " + result.getMessage());
-                if (clientNo != null) fetchLoansWithId(clientNo);
+            } else if (result.getStatus() == LoginStatus.ERROR && clientNo != null) {
+                fetchLoansWithId(clientNo);
             }
         });
     }
@@ -120,7 +129,6 @@ public class ClientDetailsBottomSheetFragment extends BottomSheetDialogFragment 
     }
 
     private void fetchLoanDetails(String loanId) {
-        Log.d("ClientDetails", "Fetching details for loanId: " + loanId);
         viewModel.getLoanDetails(loanId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
                 populateLoanUI(result.getData());

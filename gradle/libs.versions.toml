@@ -13,6 +13,7 @@ hilt = "2.60.1"
 flexbox = "3.0.0"
 swiperefreshlayout = "1.2.0-alpha01"
 recyclerview = "1.4.0"
+glide = "4.16.0"
 
 [libraries]
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofit" }
@@ -30,6 +31,8 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 flexbox = { group = "com.google.android.flexbox", name = "flexbox", version.ref = "flexbox" }
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "glide" }
 
 
 [plugins]

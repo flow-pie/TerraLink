@@ -206,7 +206,7 @@ public class ApplyLoanActivity extends AppCompatActivity {
                 selectedProduct.getId(),
                 Double.parseDouble(binding.etRequestedAmount.getText().toString()),
                 binding.sbTenure.getProgress(),
-                "Mobile redo app"
+                "Mobile application"
         );
 
         viewModel.submitApplication(request).observe(this, result -> {

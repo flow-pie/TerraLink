@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.Toast;
+import android.widget.PopupMenu;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.terralink.R;
+import com.terralink.data.model.LoanListItemResponse;
 import com.terralink.data.model.PortfolioSummaryResponse;
 import com.terralink.databinding.ActivityOfficerLoansBinding;
 import com.terralink.ui.auth.LoginStatus;
@@ -21,6 +22,9 @@ import com.terralink.ui.common.SnackbarUtils;
 import com.terralink.ui.officer.products.AddProductBottomSheetFragment;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Locale;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -33,6 +37,7 @@ public class OfficerLoansActivity extends AppCompatActivity {
     private OfficerLoansAdapter loansAdapter;
     private LoanProductAdapter productsAdapter;
     private String currentStatus = null;
+    private List<LoanListItemResponse> currentLoansList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,7 @@ public class OfficerLoansActivity extends AppCompatActivity {
         setupFilters();
         setupBottomNavigation();
         setupAddProduct();
+        setupSorting();
 
         loadData();
 
@@ -64,15 +70,14 @@ public class OfficerLoansActivity extends AppCompatActivity {
     }
 
     private void setupRecyclerViews() {
-        // Loans Portfolio
         loansAdapter = new OfficerLoansAdapter(loan -> {
-            SnackbarUtils.showInfo(binding.getRoot(), "Loan: " + loan.getLoanNo());
+            // Open loan details if we had a sheet for it, for now just show info
+            SnackbarUtils.showInfo(binding.getRoot(), "LID: " + loan.getLoanNo() + " | Client: " + loan.getClientFullName());
         });
         binding.rvLoans.setLayoutManager(new LinearLayoutManager(this));
         binding.rvLoans.setAdapter(loansAdapter);
         binding.rvLoans.setNestedScrollingEnabled(false);
 
-        // Loan Products
         productsAdapter = new LoanProductAdapter(product -> {
             SnackbarUtils.showInfo(binding.getRoot(), "Product: " + product.getName());
         });
@@ -100,16 +105,42 @@ public class OfficerLoansActivity extends AppCompatActivity {
 
     private void setupFilters() {
         binding.chipGroupStatus.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            if (checkedIds.isEmpty()) {
+            if (checkedIds.isEmpty() || checkedIds.contains(R.id.chipAll)) {
                 currentStatus = null;
             } else {
                 int id = checkedIds.get(0);
                 if (id == R.id.chipActive) currentStatus = "ACTIVE";
-                else if (id == R.id.chipArrears) currentStatus = "ARREARS";
+                else if (id == R.id.chipArrears) currentStatus = "IN_ARREARS";
                 else if (id == R.id.chipPending) currentStatus = "PENDING_DISBURSEMENT";
                 else currentStatus = null;
             }
             loadLoans(binding.etSearchLoan.getText().toString());
+        });
+    }
+
+    private void setupSorting() {
+        binding.btnSort.setOnClickListener(v -> {
+            PopupMenu popup = new PopupMenu(this, v);
+            popup.getMenu().add("Client Name (A-Z)");
+            popup.getMenu().add("Client Name (Z-A)");
+            popup.getMenu().add("Outstanding Amount (High-Low)");
+            popup.getMenu().add("Outstanding Amount (Low-High)");
+            
+            popup.setOnMenuItemClickListener(item -> {
+                String title = item.getTitle().toString();
+                if (title.contains("Name (A-Z)")) {
+                    Collections.sort(currentLoansList, Comparator.comparing(LoanListItemResponse::getClientFullName));
+                } else if (title.contains("Name (Z-A)")) {
+                    Collections.sort(currentLoansList, (l1, l2) -> l2.getClientFullName().compareTo(l1.getClientFullName()));
+                } else if (title.contains("Amount (High-Low)")) {
+                    Collections.sort(currentLoansList, (l1, l2) -> Double.compare(l2.getOutstandingAmount(), l1.getOutstandingAmount()));
+                } else if (title.contains("Amount (Low-High)")) {
+                    Collections.sort(currentLoansList, Comparator.comparingDouble(LoanListItemResponse::getOutstandingAmount));
+                }
+                loansAdapter.submitList(new ArrayList<>(currentLoansList));
+                return true;
+            });
+            popup.show();
         });
     }
 
@@ -155,7 +186,17 @@ public class OfficerLoansActivity extends AppCompatActivity {
                     binding.tvPortfolioValue.setText(String.format(Locale.getDefault(), "KES %,.0f", value));
                 }
                 binding.tvActiveLoans.setText(String.valueOf(summary.getActiveLoansCount()));
-                binding.tvPar.setText("2.4%"); // Placeholder until backend provides real PAR
+                
+                // Real PAR calculation if available
+                double total = summary.getOutstandingPortfolio();
+                double arrears = summary.getArrearsAmount();
+                if (total > 0) {
+                    double par = (arrears / total) * 100;
+                    binding.tvPar.setText(String.format(Locale.getDefault(), "%.1f%%", par));
+                } else {
+                    binding.tvPar.setText("0.0%");
+                }
+
             } else if (result.getStatus() == LoginStatus.ERROR) {
                 SnackbarUtils.showError(binding.getRoot(), "Failed to load summary");
             }
@@ -163,26 +204,10 @@ public class OfficerLoansActivity extends AppCompatActivity {
     }
 
     private void loadProducts() {
-        android.util.Log.d("OfficerLoans", "Loading loan products...");
         viewModel.getLoanProducts().observe(this, result -> {
-            switch (result.getStatus()) {
-                case LOADING:
-                    android.util.Log.d("OfficerLoans", "Products: LOADING");
-                    break;
-                case SUCCESS:
-                    if (result.getData() != null) {
-                        android.util.Log.d("OfficerLoans", "Products: SUCCESS, count=" + result.getData().size());
-                        productsAdapter.submitList(new ArrayList<>(result.getData())); // Force update with new list
-                        binding.tvProductCount.setText(String.format(Locale.getDefault(), "%d Available products", result.getData().size()));
-                    } else {
-                        android.util.Log.d("OfficerLoans", "Products: SUCCESS, but data is null");
-                        productsAdapter.submitList(new ArrayList<>());
-                    }
-                    break;
-                case ERROR:
-                    android.util.Log.e("OfficerLoans", "Products: ERROR - " + result.getMessage());
-                    SnackbarUtils.showError(binding.getRoot(), "Failed to load products: " + result.getMessage());
-                    break;
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+                productsAdapter.submitList(new ArrayList<>(result.getData()));
+                binding.tvProductCount.setText(String.format(Locale.getDefault(), "%d Available products", result.getData().size()));
             }
         });
     }
@@ -196,14 +221,16 @@ public class OfficerLoansActivity extends AppCompatActivity {
                 case SUCCESS:
                     binding.swipeRefresh.setRefreshing(false);
                     if (result.getData() != null && result.getData().getItems() != null) {
-                        loansAdapter.submitList(result.getData().getItems());
+                        currentLoansList = result.getData().getItems();
+                        loansAdapter.submitList(new ArrayList<>(currentLoansList));
                     } else {
-                        loansAdapter.submitList(new ArrayList<>());
+                        currentLoansList = new ArrayList<>();
+                        loansAdapter.submitList(currentLoansList);
                     }
                     break;
                 case ERROR:
                     binding.swipeRefresh.setRefreshing(false);
-                    SnackbarUtils.showError(binding.getRoot(), "Failed to load loans: " + result.getMessage());
+                    SnackbarUtils.showError(binding.getRoot(), "Failed to load loans");
                     break;
             }
         });

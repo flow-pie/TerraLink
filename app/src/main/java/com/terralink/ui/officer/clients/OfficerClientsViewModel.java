@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.terralink.data.model.ClientListItemResponse;
 import com.terralink.data.model.ClientLoansResponse;
+import com.terralink.data.model.KycDocumentResponse;
 import com.terralink.data.model.LoanDetailsResponse;
 import com.terralink.data.model.PaginatedResponse;
 import com.terralink.data.model.RepaymentInstallments;
@@ -43,5 +44,9 @@ public class OfficerClientsViewModel extends ViewModel {
 
     public LiveData<Resource<List<RepaymentInstallments>>> getRepaymentSchedule(String loanId) {
         return loanRepository.getRepaymentSchedule(loanId);
+    }
+
+    public LiveData<Resource<List<KycDocumentResponse>>> getKycDocuments(int clientId) {
+        return clientRepository.getKycDocuments(clientId);
     }
 }

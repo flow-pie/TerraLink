@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,6 +23,7 @@ import com.terralink.databinding.ActivityDashboardBinding;
 import com.terralink.ui.client.notification.NotificationStatusActivity;
 import com.terralink.ui.common.SnackbarUtils;
 
+import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
 
@@ -35,6 +35,7 @@ public class DashboardActivity extends AppCompatActivity {
     private DashboardViewModel viewModel;
     private ActivityDashboardBinding binding;
     private PendingAppraisalAdapter appraisalAdapter;
+    private final NumberFormat ksh = NumberFormat.getCurrencyInstance(new Locale("en", "KE"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +52,21 @@ public class DashboardActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
+        setupMetricLabels();
         setupRecyclerView();
         setupClickListeners();
         
         binding.swipeRefresh.setOnRefreshListener(this::loadData);
         loadData();
+    }
+
+    private void setupMetricLabels() {
+        binding.metricClients.tvMetricTitle.setText("TOTAL CLIENTS");
+        binding.metricPending.tvMetricTitle.setText("PENDING APPS");
+        binding.metricActive.tvMetricTitle.setText("ACTIVE LOANS");
+        binding.metricOverdue.tvMetricTitle.setText("OVERDUE LOANS");
+        
+        binding.metricOverdue.tvMetricValue.setTextColor(getResources().getColor(R.color.status_red, getTheme()));
     }
 
     private void loadData() {
@@ -67,12 +78,12 @@ public class DashboardActivity extends AppCompatActivity {
                 UserProfileResponse profile = result.getData();
                 if (profile != null) {
                     binding.tvWelcome.setText(String.format("Welcome, %s", profile.getFullName().split(" ")[0]));
-                    binding.tvRegionId.setText(String.format("Employee ID: %s | Role: %s", 
+                    binding.tvRegionId.setText(String.format("Officer ID: %s | %s", 
                             profile.getEmployeeNo(), profile.getRoleName()));
                 }
                 checkAllLoaded();
             } else if (result.getStatus() == LoginStatus.ERROR) {
-                SnackbarUtils.showError(binding.getRoot(), "Error loading profile: " + result.getMessage());
+                SnackbarUtils.showError(binding.getRoot(), "Error loading profile");
                 checkAllLoaded();
             }
         });
@@ -82,13 +93,18 @@ public class DashboardActivity extends AppCompatActivity {
             if (result.getStatus() == LoginStatus.SUCCESS) {
                 PortfolioSummaryResponse summary = result.getData();
                 if (summary != null) {
-                    binding.tvActiveLoans.setText(String.format(Locale.getDefault(), "%d ", summary.getActiveLoansCount()));
-                    binding.tvDisbursed.setText(String.format(Locale.getDefault(), "KES %,.0f", summary.getDisbursedAmountMtd()));
-                    binding.tvTotalClients.setText(String.format(Locale.getDefault(), "%d ", summary.getTotalClients()));
+                    binding.tvOutstandingPortfolio.setText(ksh.format(summary.getOutstandingPortfolio()));
+                    binding.tvDisbursed.setText(ksh.format(summary.getDisbursedAmountMtd()));
+                    binding.tvArrearsAmount.setText(ksh.format(summary.getArrearsAmount()));
+                    
+                    binding.metricClients.tvMetricValue.setText(String.valueOf(summary.getTotalClients()));
+                    binding.metricActive.tvMetricValue.setText(String.valueOf(summary.getActiveLoansCount()));
+                    binding.metricPending.tvMetricValue.setText(String.valueOf(summary.getPendingApplications()));
+                    binding.metricOverdue.tvMetricValue.setText(String.valueOf(summary.getOverdueLoans()));
                 }
                 checkAllLoaded();
             } else if (result.getStatus() == LoginStatus.ERROR) {
-                SnackbarUtils.showError(binding.getRoot(), "Error loading summary: " + result.getMessage());
+                SnackbarUtils.showError(binding.getRoot(), "Error loading summary");
                 checkAllLoaded();
             }
         });
@@ -107,7 +123,6 @@ public class DashboardActivity extends AppCompatActivity {
                         }
                     }
                 }
-                binding.tvPendingAppraisalsCount.setText(String.format(Locale.getDefault(), "%02d", pendingApps.size()));
                 binding.tvNoPendingAppraisals.setVisibility(pendingApps.isEmpty() ? View.VISIBLE : View.GONE);
                 binding.rvPendingAppraisals.setVisibility(pendingApps.isEmpty() ? View.GONE : View.VISIBLE);
                 appraisalAdapter.submitList(pendingApps);
@@ -119,8 +134,6 @@ public class DashboardActivity extends AppCompatActivity {
     }
 
     private void checkAllLoaded() {
-        // Simple logic to hide refreshing when data comes back. 
-        // In a more robust app, we'd count the successful/failed requests.
         binding.swipeRefresh.setRefreshing(false);
     }
 

@@ -23,6 +23,7 @@ import com.terralink.databinding.FragmentLoanAppraisalBinding;
 import com.terralink.databinding.ItemLoanProgressCardBinding;
 import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.common.SnackbarUtils;
+import com.terralink.ui.officer.clients.ClientDetailsBottomSheetFragment;
 import com.terralink.ui.officer.scoring.ClientScoringActivity;
 
 import java.util.List;
@@ -110,6 +111,20 @@ public class LoanAppraisalBottomSheetFragment extends BottomSheetDialogFragment 
         binding.tvAppId.setText(String.format("APP ID: #%s", app.getApplicationNo()));
         binding.tvAppStatus.setText(app.getStatus());
         binding.tvClientName.setText(data.getClient().getFullName());
+        
+        // Add click listener to name to view full profile
+        binding.tvClientName.setOnClickListener(v -> {
+            ClientDetailsBottomSheetFragment fragment = ClientDetailsBottomSheetFragment.newInstance(
+                    data.getClient().getId(), 
+                    data.getClient().getFullName(), 
+                    data.getClient().getClientNo(), 
+                    "N/A", // Phone not in appraisal detail yet
+                    "N/A", 
+                    "ACTIVE"
+            );
+            fragment.show(getParentFragmentManager(), fragment.getTag());
+        });
+
         binding.tvLoanAmount.setText(String.format(Locale.getDefault(), "KES %,.2f", app.getRequestedAmount()));
         binding.tvLoanDuration.setText(String.format(Locale.getDefault(), "%d Months", app.getDurationMonths()));
         binding.tvLoanPurpose.setText(app.getPurpose());
