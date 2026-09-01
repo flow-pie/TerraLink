@@ -15,8 +15,11 @@ import com.terralink.data.model.LoanApplicationStatusResponse;
 import com.terralink.data.model.RepaymentInstallments;
 import com.terralink.databinding.LayoutClientLoanDetailsSheetBinding;
 import com.terralink.databinding.LayoutTimelineItemBinding;
+import com.terralink.databinding.ItemLoanScheduleRowBinding;
 import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.client.notification.NotificationStatusViewModel;
+
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -65,7 +68,6 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
             binding.tvLoanTitle.setText(referenceNo);
             binding.tvStatusBadge.setText(status);
             
-            // Set badge color based on status
             int badgeBg;
             int badgeText;
 
@@ -91,8 +93,8 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void setupApplicationView(int id) {
-        binding.layoutApplicationTimeline.setVisibility(View.VISIBLE);
         binding.layoutActiveLoanDetails.setVisibility(View.GONE);
+        binding.layoutApplicationTimeline.setVisibility(View.VISIBLE);
         binding.btnMainAction.setVisibility(View.GONE);
         
         applicationViewModel.getLoanStatus(id).observe(getViewLifecycleOwner(), result -> {
@@ -103,26 +105,83 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     private void setupLoanView(String id) {
-        binding.layoutApplicationTimeline.setVisibility(View.GONE);
         binding.layoutActiveLoanDetails.setVisibility(View.VISIBLE);
+        binding.layoutApplicationTimeline.setVisibility(View.GONE);
         binding.btnMainAction.setVisibility(View.VISIBLE);
         binding.btnMainAction.setText("Make Payment");
 
         loanViewModel.getClientLoans(loanId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
-                // Find this specific loan
                 for (ClientLoansResponse loan : result.getData()) {
                     if (loan.getLoanId().equals(loanId)) {
-                        binding.tvBalanceValue.setText(String.format(Locale.getDefault(), "KES %,.2f", loan.getBalance()));
-                        binding.tvLoanSubtitle.setText(String.format(Locale.getDefault(), "Approved: KES %,.0f", loan.getApprovedAmount()));
+                        updateOverview(loan);
                         break;
                     }
                 }
             }
         });
 
-        // We can add logic to fetch repayment schedule if needed
-        // applicationViewModel.getRepaymentSchedule(id)...
+        loanViewModel.getRepaymentSchedule(loanId).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+                populateSchedule(result.getData());
+            }
+        });
+    }
+
+    private void updateOverview(ClientLoansResponse loan) {
+        double total = loan.getRepaymentAmount();
+        double balance = loan.getBalance();
+        double repaid = total - balance;
+        
+        int progress = 0;
+        if (total > 0) {
+            progress = (int) ((repaid / total) * 100);
+        }
+        progress = Math.max(0, Math.min(100, progress));
+
+        binding.cpProgress.setProgress(progress);
+        binding.tvProgressText.setText(String.format(Locale.getDefault(), "%d%%", progress));
+        
+        NumberFormat ksh = NumberFormat.getCurrencyInstance(new Locale("en", "KE"));
+        binding.tvRepaidValue.setText(ksh.format(repaid));
+        binding.tvTotalValue.setText("out of " + ksh.format(total));
+        binding.tvBalanceValue.setText(ksh.format(balance));
+        
+        binding.tvLoanSubtitle.setText(loan.getLoanProductName());
+    }
+
+    private void populateSchedule(List<RepaymentInstallments> schedule) {
+        binding.repaymentScheduleContainer.removeAllViews();
+        NumberFormat ksh = NumberFormat.getCurrencyInstance(new Locale("en", "KE"));
+        
+        for (RepaymentInstallments item : schedule) {
+            ItemLoanScheduleRowBinding row = ItemLoanScheduleRowBinding.inflate(
+                    LayoutInflater.from(requireContext()), binding.repaymentScheduleContainer, false);
+            
+            row.tvDueDate.setText(item.getDueDate());
+            row.tvInstallmentLabel.setText("Installment #" + item.getInstallmentNumber());
+            row.tvAmount.setText(ksh.format(item.getTotalDue()));
+            row.tvStatus.setText(item.getStatus());
+            
+            int color;
+            int icon;
+            if ("PAID".equalsIgnoreCase(item.getStatus())) {
+                color = R.color.status_green;
+                icon = R.drawable.ic_check_circle;
+            } else if ("OVERDUE".equalsIgnoreCase(item.getStatus())) {
+                color = R.color.status_red;
+                icon = R.drawable.ic_warning;
+            } else {
+                color = R.color.status_amber;
+                icon = R.drawable.ic_help_circle;
+            }
+            
+            row.tvStatus.setTextColor(ContextCompat.getColor(requireContext(), color));
+            row.ivStatusIcon.setImageResource(icon);
+            row.ivStatusIcon.setColorFilter(ContextCompat.getColor(requireContext(), color));
+            
+            binding.repaymentScheduleContainer.addView(row.getRoot());
+        }
     }
 
     private void populateTimeline(LoanApplicationStatusResponse data) {

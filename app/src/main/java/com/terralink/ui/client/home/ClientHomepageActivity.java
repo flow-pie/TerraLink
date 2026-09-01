@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -25,10 +26,10 @@ import com.terralink.ui.client.transaction.TransactionHistoryActivity;
 import com.terralink.ui.common.Resource;
 import com.terralink.ui.common.SnackbarUtils;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import dagger.hilt.android.AndroidEntryPoint;
@@ -40,6 +41,7 @@ public class ClientHomepageActivity extends AppCompatActivity {
     private RepaymentScheduleAdapter repaymentScheduleAdapter;
     private LoanSelectorAdapter loanSelectorAdapter;
     private ActivityClientHomepageBinding binding;
+    private final NumberFormat ksh = NumberFormat.getCurrencyInstance(new Locale("en", "KE"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +71,10 @@ public class ClientHomepageActivity extends AppCompatActivity {
     private void initView() {
         binding.appBarContent.btnNotifications.setOnClickListener(v -> {
             startActivity(new Intent(this, NotificationStatusActivity.class));
+        });
+
+        binding.appBarContent.btnSupport.setOnClickListener(v -> {
+            SnackbarUtils.showInfo(binding.getRoot(), "Support feature coming soon");
         });
 
         binding.btnApplyFirstLoan.setOnClickListener(v -> {
@@ -106,6 +112,10 @@ public class ClientHomepageActivity extends AppCompatActivity {
         binding.fabNewAction.setOnClickListener(v -> {
             startActivity(new Intent(this, ApplyLoanActivity.class));
         });
+        
+        binding.tvViewAllPayments.setOnClickListener(v -> {
+            startActivity(new Intent(this, TransactionHistoryActivity.class));
+        });
     }
 
     private void observeViewModel() {
@@ -116,162 +126,94 @@ public class ClientHomepageActivity extends AppCompatActivity {
     }
 
     private void handleUserResult(Resource<UserProfileResponse> result) {
-        switch (result.getStatus()) {
-            case LOADING:
-                binding.tvBorrowerName.setText("Loading...");
-                break;
-            case SUCCESS:
-                UserProfileResponse client = result.getData();
-                if (client != null && client.getFullName() != null) {
-                    binding.tvBorrowerName.setText(client.getFullName());
-                    viewModel.refreshLoans(client.getClientId());
-                }
-                break;
-            case ERROR:
-                binding.tvBorrowerName.setText("Error loading profile");
-                handleError("UserProfile", result.getMessage());
-                break;
-            default:
-                break;
+        if (result.getStatus() == LoginStatus.SUCCESS) {
+            UserProfileResponse client = result.getData();
+            if (client != null) {
+                binding.tvBorrowerName.setText(client.getFullName());
+                viewModel.refreshLoans(client.getClientId());
+            }
         }
     }
 
     private void handleLoansResult(Resource<List<ClientLoansResponse>> result) {
-        switch (result.getStatus()) {
-            case LOADING:
-                binding.tvLoanBalance.setText("Loading...");
-                break;
-            case SUCCESS:
-                List<ClientLoansResponse> allLoans = result.getData();
-                if (allLoans != null && !allLoans.isEmpty()) {
-                    binding.emptyStateContainer.setVisibility(View.GONE);
+        if (result.getStatus() == LoginStatus.SUCCESS) {
+            List<ClientLoansResponse> allLoans = result.getData();
+            if (allLoans != null && !allLoans.isEmpty()) {
+                binding.emptyStateContainer.setVisibility(View.GONE);
+                
+                List<ClientLoansResponse> activeLoans = allLoans.stream()
+                        .filter(l -> "Loan".equals(l.getType()))
+                        .collect(Collectors.toList());
+
+                boolean hasPending = allLoans.stream()
+                        .anyMatch(l -> "Application".equals(l.getType()) && 
+                                !"REJECTED".equals(l.getStatus()) &&
+                                !"APPROVED".equals(l.getStatus()));
+
+                binding.cardPendingApplication.setVisibility(hasPending ? View.VISIBLE : View.GONE);
+                binding.cardPendingApplication.setOnClickListener(v -> {
+                    startActivity(new Intent(this, ClientLoansActivity.class));
+                });
+
+                if (!activeLoans.isEmpty()) {
+                    binding.loanContentContainer.setVisibility(View.VISIBLE);
+                    binding.rvLoanSelector.setVisibility(View.VISIBLE);
                     
-                    // Filter for active loans only for the carousel
-                    List<ClientLoansResponse> activeLoans = allLoans.stream()
-                            .filter(l -> "Loan".equals(l.getType()))
-                            .collect(Collectors.toList());
-
-                    // Check for pending applications (not yet active or rejected)
-                    boolean hasPendingApplication = allLoans.stream()
-                            .anyMatch(l -> "Application".equals(l.getType()) && 
-                                    !"REJECTED".equals(l.getStatus()) &&
-                                    !"APPROVED".equals(l.getStatus()) &&
-                                    !"ACTIVE".equals(l.getStatus()));
-
-                    if (hasPendingApplication) {
-                        binding.cardPendingApplication.setVisibility(View.VISIBLE);
-                        binding.cardPendingApplication.setOnClickListener(v -> {
-                            startActivity(new Intent(this, ClientLoansActivity.class).addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT));
-                        });
-                    } else {
-                        binding.cardPendingApplication.setVisibility(View.GONE);
-                    }
-
-                    if (!activeLoans.isEmpty()) {
-                        binding.loanContentContainer.setVisibility(View.VISIBLE);
-                        binding.rvLoanSelector.setVisibility(View.VISIBLE);
-                        
-                        ClientLoansResponse primaryLoan = activeLoans.get(0);
-                        viewModel.refreshLoanDetails(primaryLoan.getLoanId());
-                        setupLoanSelector(activeLoans);
-                    } else {
-                        binding.loanContentContainer.setVisibility(View.GONE);
-                        binding.rvLoanSelector.setVisibility(View.GONE);
-                        
-                        if (!hasPendingApplication) {
-                            binding.emptyStateContainer.setVisibility(View.VISIBLE);
-                            binding.btnApplyFirstLoan.setOnClickListener(v -> {
-                                startActivity(new Intent(this, ApplyLoanActivity.class));
-                            });
-                        }
-                    }
+                    ClientLoansResponse primaryLoan = activeLoans.get(0);
+                    viewModel.refreshLoanDetails(primaryLoan.getLoanId());
+                    setupLoanSelector(activeLoans);
                 } else {
-                    binding.emptyStateContainer.setVisibility(View.VISIBLE);
                     binding.loanContentContainer.setVisibility(View.GONE);
                     binding.rvLoanSelector.setVisibility(View.GONE);
-                    binding.cardPendingApplication.setVisibility(View.GONE);
-                    
-                    binding.btnApplyFirstLoan.setOnClickListener(v -> {
-                        startActivity(new Intent(this, ApplyLoanActivity.class));
-                    });
+                    if (!hasPending) binding.emptyStateContainer.setVisibility(View.VISIBLE);
                 }
-                break;
-            case ERROR:
-                binding.tvLoanBalance.setText("Unable to load");
-                handleError("ClientLoans", result.getMessage());
-                break;
+            } else {
+                binding.emptyStateContainer.setVisibility(View.VISIBLE);
+                binding.loanContentContainer.setVisibility(View.GONE);
+            }
         }
     }
 
     private void handleLoanDetailsResult(Resource<LoanDetailsResponse> result) {
-        switch (result.getStatus()) {
-            case LOADING:
-                binding.tvLoanBalance.setText("Loading...");
-                repaymentScheduleAdapter.setSchedules(new ArrayList<>(), null);
-                break;
-            case SUCCESS:
-                LoanDetailsResponse loanDetails = result.getData();
-                if (loanDetails != null) {
-                    updateLoanDetailsUI(loanDetails);
-                    viewModel.refreshRepayments(loanDetails.getLoanId());
-                }
-                break;
-            case ERROR:
-                handleError("LoanDetails", result.getMessage());
-                break;
+        if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+            updateLoanDetailsUI(result.getData());
+            viewModel.refreshRepayments(result.getData().getLoanId());
         }
     }
 
     private void handleRepaymentsResult(Resource<List<RepaymentInstallments>> result) {
-        switch (result.getStatus()) {
-            case SUCCESS:
-                if (result.getData() != null) {
-                    repaymentScheduleAdapter.setSchedules(result.getData(), viewModel.getLoanDetailsStream().getValue() != null ? viewModel.getLoanDetailsStream().getValue().getData() : null);
-                }
-                break;
-            case ERROR:
-                Log.e("HomeActivity", "Failed to load repayment schedule: " + result.getMessage());
-                break;
+        if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+            repaymentScheduleAdapter.setSchedules(result.getData(), viewModel.getLoanDetailsStream().getValue() != null ? viewModel.getLoanDetailsStream().getValue().getData() : null);
         }
-    }
-
-    private void fetchClientLoans(String clientId) {
-        viewModel.refreshLoans(clientId);
     }
 
     private void setupLoanSelector(List<ClientLoansResponse> loans) {
         loanSelectorAdapter = new LoanSelectorAdapter(loans, loan -> {
-            binding.loanContentContainer.setVisibility(View.VISIBLE);
             viewModel.refreshLoanDetails(loan.getLoanId());
         });
         binding.rvLoanSelector.setAdapter(loanSelectorAdapter);
-        binding.rvLoanSelector.setVisibility(loans.isEmpty() ? View.GONE : View.VISIBLE);
-    }
-
-    private void fetchLoanDetails(String loanId) {
-        viewModel.refreshLoanDetails(loanId);
-    }
-
-    private void fetchRepaymentInstallments(String loanId, LoanDetailsResponse loanDetails) {
-        viewModel.refreshRepayments(loanId);
     }
 
     private void updateLoanDetailsUI(LoanDetailsResponse details) {
-        binding.tvLoanBalance.setText(String.format(Locale.getDefault(), "KES %,.2f", details.getOutStandingAmount()));
-        binding.nextInstallment.setText(String.format(Locale.getDefault(), "KES %,.2f", details.getNextInstallmentAmount()));
-        binding.nextInstallmentDueDate.setText("Due by " + details.getNextDueDate());
-        binding.intrestRate.setText(details.getInterestRate());
+        binding.tvLoanBalance.setText(ksh.format(details.getOutStandingAmount()));
+        binding.nextInstallment.setText(ksh.format(details.getNextInstallmentAmount()));
+        binding.nextInstallmentDueDate.setText("Due " + details.getNextDueDate());
+
+        // Update Progress
+        int progress = (details.getInstallmentsTotal() > 0) 
+            ? (int) ((details.getInstallmentsPaid() / (double) details.getInstallmentsTotal()) * 100) : 0;
+        
+        binding.progressRepayment.setProgress(progress);
+        binding.tvInstallmentsProgress.setText(details.getInstallmentsPaid() + " of " + details.getInstallmentsTotal());
+
+        double repaid = details.getTotalRepayment() - details.getOutStandingAmount();
+        binding.tvTotalPaid.setText(ksh.format(repaid));
+        binding.loanAmountTotal.setText(ksh.format(details.getTotalRepayment()));
 
         setupLoanActions(details);
-        updateDueDateCycle(details);
-        updateRepaymentProgress(details);
     }
 
     private void setupLoanActions(LoanDetailsResponse details) {
-        binding.cardNewLoanApp.setOnClickListener(v -> {
-            startActivity(new Intent(this, ApplyLoanActivity.class));
-        });
-
         binding.btnMakePayment.setOnClickListener(v -> {
             RepaymentInstallments next = repaymentScheduleAdapter.getNextPendingInstallment();
             if (next == null) {
@@ -287,36 +229,5 @@ public class ClientHomepageActivity extends AppCompatActivity {
             );
             fragment.show(getSupportFragmentManager(), fragment.getTag());
         });
-    }
-
-    private void updateDueDateCycle(LoanDetailsResponse details) {
-        long days = details.getDaysUntilNextDueDate();
-        if (days > 0) {
-            binding.nextCycle.setText(days + " days remaining");
-        } else if (days == 0) {
-            binding.nextCycle.setText("Due today");
-        } else {
-            binding.nextCycle.setText("Overdue by " + Math.abs(days) + " days");
-        }
-    }
-
-    private void updateRepaymentProgress(LoanDetailsResponse details) {
-        int paid = details.getInstallmentsPaid();
-        int total = details.getInstallmentsTotal();
-        int progress = (total > 0) ? (int) ((paid / (double) total) * 100) : 0;
-
-        binding.progressRepayment.setMax(total);
-        binding.progressRepayment.setProgress(progress);
-        binding.tvInstallmentsProgress.setText(String.format(Locale.getDefault(), "%d of %d installments paid", paid, total));
-
-        double totalAmountPaid = details.getTotalRepayment() - details.getOutStandingAmount();
-        binding.tvTotalPaid.setText(String.format(Locale.getDefault(), "KES %,.2f", totalAmountPaid));
-        binding.loanAmountTotal.setText(String.format(Locale.getDefault(), "KSH %,.2f", details.getTotalRepayment()));
-    }
-
-    private void handleError(String tag, String message) {
-        String displayMessage = message != null ? message : "Unknown error occurred";
-        SnackbarUtils.showError(binding.getRoot(), displayMessage);
-        Log.e("HomeActivity", tag + ": " + displayMessage);
     }
 }

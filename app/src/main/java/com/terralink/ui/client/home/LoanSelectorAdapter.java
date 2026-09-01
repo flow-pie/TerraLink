@@ -1,6 +1,7 @@
 package com.terralink.ui.client.home;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -40,10 +41,13 @@ public class LoanSelectorAdapter extends RecyclerView.Adapter<LoanSelectorAdapte
         holder.bind(loans.get(position), position == selectedPosition);
         holder.itemView.setOnClickListener(v -> {
             int oldPos = selectedPosition;
-            selectedPosition = holder.getAdapterPosition();
-            notifyItemChanged(oldPos);
-            notifyItemChanged(selectedPosition);
-            listener.onLoanSelected(loans.get(selectedPosition));
+            int newPos = holder.getBindingAdapterPosition();
+            if (newPos != RecyclerView.NO_POSITION) {
+                selectedPosition = newPos;
+                notifyItemChanged(oldPos);
+                notifyItemChanged(selectedPosition);
+                listener.onLoanSelected(loans.get(selectedPosition));
+            }
         });
     }
 
@@ -64,24 +68,49 @@ public class LoanSelectorAdapter extends RecyclerView.Adapter<LoanSelectorAdapte
             binding.tvLoanNo.setText("#" + loan.getReferenceNo());
             
             if ("Application".equals(loan.getType())) {
-                binding.tvLoanAmount.setText("Applied for KES");
-                binding.tvStatus.setText("SUBMITTED");
-                binding.indicatorStatus.getBackground().setTint(ContextCompat.getColor(itemView.getContext(), R.color.status_amber));
-            } else {
                 binding.tvLoanAmount.setText(String.format(Locale.getDefault(), "KES %,.0f", loan.getApprovedAmount()));
+                binding.tvStatus.setText("SUBMITTED");
+                binding.tvStatus.setBackgroundResource(R.drawable.bg_status_badge_amber);
+                binding.tvStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.status_amber));
+                
+                binding.progressRepayment.setVisibility(View.GONE);
+                binding.tvProgressPercent.setText("0%");
+                binding.progressRepayment.setProgress(0);
+            } else {
+                binding.tvLoanAmount.setText(String.format(Locale.getDefault(), "KES %,.0f", loan.getRepaymentAmount()));
                 binding.tvStatus.setText(loan.getStatus().replace("_", " "));
                 
-                // Status dot color
-                int dotColor = R.color.status_green;
+                int color = R.color.status_green;
+                int bg = R.drawable.bg_status_badge_green;
+                
                 String status = loan.getStatus();
                 if ("PENDING_DISBURSEMENT".equals(status)) {
-                    dotColor = R.color.status_amber;
-                } else if ("OVERDUE".equals(status)) {
-                    dotColor = R.color.status_red;
+                    color = R.color.status_amber;
+                    bg = R.drawable.bg_status_badge_amber;
+                } else if ("ARREARS".equals(status)) {
+                    color = R.color.status_red;
+                    bg = R.drawable.bg_status_badge_red;
                 } else if ("COMPLETED".equals(status)) {
-                    dotColor = R.color.status_blue;
+                    color = R.color.status_blue;
+                    bg = R.drawable.bg_status_badge_blue;
                 }
-                binding.indicatorStatus.getBackground().setTint(ContextCompat.getColor(itemView.getContext(), dotColor));
+                
+                binding.tvStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), color));
+                binding.tvStatus.setBackgroundResource(bg);
+                
+                binding.progressRepayment.setVisibility(View.VISIBLE);
+                
+                // Calculate Progress
+                double total = loan.getRepaymentAmount();
+                double balance = loan.getBalance();
+                int progress = 0;
+                if (total > 0) {
+                    progress = (int) (((total - balance) / total) * 100);
+                }
+                progress = Math.max(0, Math.min(100, progress));
+                
+                binding.tvProgressPercent.setText(progress + "%");
+                binding.progressRepayment.setProgress(progress);
             }
 
             int strokeColor = isSelected 
@@ -89,6 +118,7 @@ public class LoanSelectorAdapter extends RecyclerView.Adapter<LoanSelectorAdapte
                 : ContextCompat.getColor(itemView.getContext(), R.color.surface_stroke);
             
             binding.loanCard.setStrokeColor(strokeColor);
+            binding.loanCard.setStrokeWidth(isSelected ? 6 : 2);
         }
     }
 }

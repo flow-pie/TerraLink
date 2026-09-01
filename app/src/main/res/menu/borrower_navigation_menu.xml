@@ -6,7 +6,7 @@
         android:title="@string/nav_home" />
     <item
         android:id="@+id/nav_loans"
-        android:icon="@drawable/ic_users"
+        android:icon="@drawable/ic_banknote"
         android:title="@string/nav_loans" />
     <item
         android:id="@+id/placeHolder"
@@ -17,6 +17,6 @@
         android:title="@string/nav_history" />
     <item
         android:id="@+id/nav_profile"
-        android:icon="@drawable/ic_chart"
+        android:icon="@drawable/ic_users"
         android:title="@string/nav_profile" />
 </menu>

@@ -44,15 +44,31 @@
 
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/btnNotifications"
-        android:layout_width="@dimen/notification_icon_size"
-        android:layout_height="43dp"
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
-        android:background="@color/terracotta_primary"
-        android:contentDescription="Notifications"
-        android:src="@drawable/ic_bell"
-        app:tint="@color/on_terracotta" />
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/btnSupport"
+            android:layout_width="40dp"
+            android:layout_height="43dp"
+            android:background="@color/terracotta_primary"
+            android:contentDescription="Support"
+            android:src="@drawable/ic_help_circle"
+            app:tint="@color/on_terracotta" />
+
+        <ImageButton
+            android:id="@+id/btnNotifications"
+            android:layout_width="@dimen/notification_icon_size"
+            android:layout_height="43dp"
+            android:background="@color/terracotta_primary"
+            android:contentDescription="Notifications"
+            android:src="@drawable/ic_bell"
+            app:tint="@color/on_terracotta" />
+
+    </LinearLayout>
 
 </RelativeLayout>

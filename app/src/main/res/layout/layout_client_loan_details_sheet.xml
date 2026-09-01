@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/bg_bottom_sheet"
-    android:paddingBottom="32dp">
+    android:paddingBottom="24dp">
 
     <!-- Drag handle -->
     <View
@@ -35,8 +35,8 @@
                 android:id="@+id/tvLoanTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Loan #ML-88294"
-                android:textAppearance="?attr/textAppearanceHeadlineSmall"
+                tools:text="Emergency Loan #ML-82"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
                 android:textColor="@color/navy_text_primary"
                 android:textStyle="bold" />
 
@@ -44,8 +44,9 @@
                 android:id="@+id/tvLoanSubtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                tools:text="Active • KES 45,000"
-                android:textAppearance="?attr/textAppearanceBodyMedium"
+                android:layout_marginTop="2dp"
+                tools:text="Approved Apr 12 • 6 Months"
+                android:textAppearance="?attr/textAppearanceBodySmall"
                 android:textColor="@color/text_secondary" />
         </LinearLayout>
 
@@ -53,25 +54,20 @@
             android:id="@+id/tvStatusBadge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="12dp"
-            android:paddingVertical="4dp"
+            android:paddingHorizontal="10dp"
+            android:paddingVertical="3dp"
             tools:text="ACTIVE"
             android:background="@drawable/bg_status_badge_green"
             android:textColor="@color/status_green"
             android:textStyle="bold"
-            android:textSize="12sp" />
+            android:textSize="11sp" />
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginVertical="16dp"
-        android:background="@color/surface_stroke" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxHeight="600dp">
+        android:layout_marginTop="16dp"
+        android:maxHeight="650dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -79,7 +75,7 @@
             android:orientation="vertical"
             android:paddingHorizontal="24dp">
 
-            <!-- APPLICATION TIMELINE (Visible if Application) -->
+            <!-- APPLICATION TIMELINE -->
             <LinearLayout
                 android:id="@+id/layoutApplicationTimeline"
                 android:layout_width="match_parent"
@@ -91,7 +87,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Application Progress"
+                    android:text="Application Status"
                     android:textAppearance="?attr/textAppearanceTitleMedium"
                     android:textColor="@color/navy_text_primary"
                     android:textStyle="bold"
@@ -103,89 +99,125 @@
 
             </LinearLayout>
 
-            <!-- ACTIVE LOAN DETAILS (Visible if Active Loan) -->
+            <!-- ACTIVE LOAN DETAILS -->
             <LinearLayout
                 android:id="@+id/layoutActiveLoanDetails"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:orientation="vertical">
 
-                <!-- Repayment Progress -->
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Repayment Overview Card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Repayment Details"
-                    android:textAppearance="?attr/textAppearanceTitleMedium"
-                    android:textColor="@color/navy_text_primary"
-                    android:textStyle="bold" />
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="@color/bg_cream"
+                    app:strokeColor="@color/surface_stroke"
+                    app:strokeWidth="1dp"
+                    app:cardCornerRadius="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:padding="20dp"
+                        android:gravity="center_vertical">
+
+                        <FrameLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+                            <com.google.android.material.progressindicator.CircularProgressIndicator
+                                android:id="@+id/cpProgress"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:indicatorSize="80dp"
+                                app:trackThickness="8dp"
+                                app:trackColor="@color/surface_stroke"
+                                app:indicatorColor="@color/status_green"
+                                tools:progress="65" />
+                            <TextView
+                                android:id="@+id/tvProgressText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                tools:text="65%"
+                                android:textColor="@color/navy_text_primary"
+                                android:textStyle="bold"
+                                android:textSize="16sp" />
+                        </FrameLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="24dp"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="TOTAL REPAID"
+                                android:textAppearance="?attr/textAppearanceLabelSmall"
+                                android:textColor="@color/text_secondary"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvRepaidValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                tools:text="KES 24,000"
+                                android:textAppearance="?attr/textAppearanceTitleMedium"
+                                android:textColor="@color/status_green"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/tvTotalValue"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                tools:text="out of KES 45,000"
+                                android:textAppearance="?attr/textAppearanceBodySmall"
+                                android:textColor="@color/text_muted" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <GridLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:columnCount="2"
-                    android:rowCount="2"
-                    android:layout_marginTop="16dp">
+                    android:layout_marginTop="20dp">
 
                     <LinearLayout android:orientation="vertical" android:layout_columnWeight="1">
-                        <TextView style="@style/TerraLink.Table.Label" android:text="Balance" />
-                        <TextView android:id="@+id/tvBalanceValue" style="@style/TerraLink.Table.Value" tools:text="KES 24,000" />
+                        <TextView style="@style/TerraLink.Table.Label" android:text="Current Balance" />
+                        <TextView android:id="@+id/tvBalanceValue" style="@style/TerraLink.Table.Value" tools:text="KES 21,000" />
                     </LinearLayout>
 
-                    <LinearLayout android:orientation="vertical" android:layout_columnWeight="1">
-                        <TextView style="@style/TerraLink.Table.Label" android:text="Next Payment" />
-                        <TextView android:id="@+id/tvNextPaymentValue" style="@style/TerraLink.Table.Value" tools:text="Oct 12" />
+                    <LinearLayout android:orientation="vertical" android:layout_columnWeight="1" android:gravity="end">
+                        <TextView style="@style/TerraLink.Table.Label" android:text="Interest Rate" />
+                        <TextView android:id="@+id/tvInterestRate" style="@style/TerraLink.Table.Value" tools:text="12.5%" />
                     </LinearLayout>
 
                 </GridLayout>
 
-                <!-- Schedule Table -->
+                <!-- Repayment Schedule -->
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Upcoming Schedule"
-                    android:textAppearance="?attr/textAppearanceTitleSmall"
-                    android:textColor="@color/terracotta_primary"
-                    android:layout_marginTop="24dp"
-                    android:layout_marginBottom="8dp" />
+                    android:text="Repayment Schedule"
+                    android:textAppearance="?attr/textAppearanceTitleMedium"
+                    android:textColor="@color/navy_text_primary"
+                    android:textStyle="bold"
+                    android:layout_marginTop="28dp" />
 
-                <com.google.android.material.card.MaterialCardView
+                <LinearLayout
+                    android:id="@+id/repaymentScheduleContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="0dp"
-                    app:strokeColor="@color/surface_stroke"
-                    app:strokeWidth="1dp">
-
-                    <HorizontalScrollView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <LinearLayout
-                            android:id="@+id/repaymentScheduleContainer"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <!-- Header -->
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:background="@color/terracotta_container"
-                                android:padding="12dp"
-                                android:orientation="horizontal">
-                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="40dp" android:text="ID" />
-                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="80dp" android:text="DATE" />
-                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="100dp" android:text="AMOUNT" />
-                                <TextView style="@style/TerraLink.Table.Header" android:layout_width="80dp" android:text="STATUS" />
-                            </LinearLayout>
-
-                            <!-- Rows will be added here -->
-
-                        </LinearLayout>
-                    </HorizontalScrollView>
-                </com.google.android.material.card.MaterialCardView>
+                    android:layout_marginTop="12dp"
+                    android:orientation="vertical" />
 
             </LinearLayout>
 
@@ -194,8 +226,8 @@
                 style="@style/Widget.TerraLink.Button.Primary"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:text="Make Payment"
+                android:layout_marginTop="32dp"
+                android:text="Make a Payment"
                 app:icon="@drawable/ic_wallet" />
 
         </LinearLayout>

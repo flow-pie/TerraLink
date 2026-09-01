@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/loanCard"
-    android:layout_width="220dp"
+    android:layout_width="240dp"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="12dp"
-    app:cardCornerRadius="16dp"
-    android:layout_gravity="center_horizontal"
-    app:cardElevation="2dp"
-    app:strokeWidth="2dp"
+    android:layout_marginEnd="16dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="4dp"
+    app:strokeWidth="1.5dp"
     app:strokeColor="@color/surface_stroke">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp">
+        android:padding="20dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,34 +31,67 @@
                 android:text="#MLF-0000"
                 android:textAppearance="?attr/textAppearanceLabelSmall"
                 android:textColor="@color/terracotta_primary"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:letterSpacing="0.05" />
 
-            <View
-                android:id="@+id/indicatorStatus"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:background="@drawable/bg_notification_dot" />
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_status_badge_green"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:text="ACTIVE"
+                android:textAppearance="?attr/textAppearanceLabelSmall"
+                android:textColor="@color/status_green"
+                android:textStyle="bold"
+                tools:text="ACTIVE" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/tvLoanAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:text="KES 250,000"
             android:textAppearance="?attr/textAppearanceTitleLarge"
             android:textColor="@color/navy_text_primary"
             android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="ACTIVE"
-            android:textAppearance="?attr/textAppearanceBodySmall"
-            android:textColor="@color/text_secondary"
-            android:textAllCaps="true" />
+            android:layout_marginTop="16dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Progress"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tvProgressPercent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/navy_text_primary"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                tools:text="65%" />
+        </LinearLayout>
+
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/progressRepayment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            app:indicatorColor="@color/terracotta_primary"
+            app:trackColor="@color/surface_stroke"
+            app:trackThickness="6dp"
+            app:trackCornerRadius="3dp"
+            tools:progress="65" />
 
     </LinearLayout>
 

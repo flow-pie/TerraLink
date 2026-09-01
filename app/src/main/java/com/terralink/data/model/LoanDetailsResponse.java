@@ -16,7 +16,10 @@ public class LoanDetailsResponse {
     private int installmentsTotal;
     private String nextDueDate;
     private double nextInstallmentAmount;
-    private String interestRate;
+    private double interestRate;
+    private double interestPaid;
+    private double principalPaid;
+    private double penaltiesAccrued;
     private String status;
 
     public String getLoanId() {
@@ -66,6 +69,18 @@ public class LoanDetailsResponse {
         return nextDueDate;
     }
 
+    public double getInterestPaid() {
+        return interestPaid;
+    }
+
+    public double getPrincipalPaid() {
+        return principalPaid;
+    }
+
+    public double getPenaltiesAccrued() {
+        return penaltiesAccrued;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -76,11 +91,11 @@ public class LoanDetailsResponse {
             return 0;
         }
 
-        LocalDate dueDate = LocalDate.parse(nextDueDate);
-
-        return ChronoUnit.DAYS.between(
-                LocalDate.now(),
-                dueDate
-        );
+        try {
+            LocalDate dueDate = LocalDate.parse(nextDueDate);
+            return ChronoUnit.DAYS.between(LocalDate.now(), dueDate);
+        } catch (Exception e) {
+            return 0;
+        }
     }
 }
