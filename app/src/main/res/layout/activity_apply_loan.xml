@@ -242,8 +242,7 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="12dp"
                             android:contentDescription="Eligibility Success"
-                            android:src="@drawable/ic_check_circle"
-                            app:tint="@color/terracotta_primary" />
+                            android:src="@drawable/sucess" />
 
                         <!-- Small message -->
                         <TextView
@@ -381,8 +380,7 @@
                             android:layout_width="100dp"
                             android:layout_height="100dp"
                             android:layout_gravity="center_horizontal"
-                            android:src="@drawable/ic_warning"
-                            app:tint="@android:color/white"
+                            android:src="@drawable/reject"
                             android:contentDescription="Not Eligible" />
 
                         <TextView
