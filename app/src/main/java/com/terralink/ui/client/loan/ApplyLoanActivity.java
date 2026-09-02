@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -18,10 +17,12 @@ import com.terralink.R;
 import com.terralink.data.model.LoanApplicationRequest;
 import com.terralink.data.model.LoanProductResponse;
 import com.terralink.databinding.ActivityApplyLoanBinding;
+import com.terralink.databinding.LayoutSummaryRowBinding;
 import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.common.SnackbarUtils;
 import com.terralink.ui.officer.loans.LoanProductAdapter;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,8 @@ public class ApplyLoanActivity extends AppCompatActivity {
     private List<LoanProductResponse> loanProducts = new ArrayList<>();
     private LoanProductResponse selectedProduct;
     private int currentStep = 1;
+    private boolean isEligible = false;
+    private final NumberFormat ksh = NumberFormat.getCurrencyInstance(new Locale("en", "KE"));
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,11 +78,11 @@ public class ApplyLoanActivity extends AppCompatActivity {
         binding.sbTenure.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                int months = progress;
+                int months = Math.max(1, progress);
                 if (selectedProduct != null) {
                     months = Math.max(selectedProduct.getMinimumDuration(), progress);
                 }
-                binding.tvTenureDisplay.setText(months + " Months");
+                binding.tvTenureDisplay.setText(String.format(Locale.getDefault(), "%d Months", months));
                 calculateRepayment();
             }
             @Override public void onStartTrackingTouch(SeekBar seekBar) {}
@@ -103,15 +106,19 @@ public class ApplyLoanActivity extends AppCompatActivity {
         binding.layoutStep3.setVisibility(step == 3 ? View.VISIBLE : View.GONE);
 
         binding.btnActionBack.setVisibility(step > 1 ? View.VISIBLE : View.GONE);
-        binding.btnNext.setText(step == 3 ? "SUBMIT APPLICATION" : "CONTINUE");
+        
+        if (step == 3) {
+            binding.btnNext.setText(isEligible ? "ACCEPT & SUBMIT" : "BACK TO HOME");
+        } else {
+            binding.btnNext.setText("CONTINUE");
+        }
+        
         binding.btnNext.setVisibility(step == 1 ? View.GONE : View.VISIBLE);
 
         updateStepperUI(step);
 
         if (step == 2 && selectedProduct != null) {
             updateUIConstraints();
-        } else if (step == 3) {
-            populateSummary();
         }
     }
 
@@ -134,9 +141,59 @@ public class ApplyLoanActivity extends AppCompatActivity {
         if (currentStep == 1 && selectedProduct != null) {
             showStep(2);
         } else if (currentStep == 2) {
-            if (validateStep2()) showStep(3);
+            if (validateStep2()) {
+                checkEligibility();
+            }
         } else if (currentStep == 3) {
-            submitApplication();
+            if (isEligible) {
+                if (binding.checkTerms.isChecked()) {
+                    submitApplication();
+                } else {
+                    SnackbarUtils.showInfo(binding.getRoot(), "Please accept terms and conditions");
+                }
+            } else {
+                finish();
+            }
+        }
+    }
+
+    private void checkEligibility() {
+        binding.loadingView.getRoot().setVisibility(View.VISIBLE);
+        
+        viewModel.getActiveUser().observe(this, userResult -> {
+            if (userResult.getStatus() == LoginStatus.SUCCESS && userResult.getData() != null) {
+                String clientId = String.valueOf(userResult.getData().getClientId());
+                double amount = Double.parseDouble(binding.etRequestedAmount.getText().toString());
+                
+                viewModel.calculateCreditScore(clientId, amount).observe(this, scoreResult -> {
+                    binding.loadingView.getRoot().setVisibility(View.GONE);
+                    if (scoreResult.getStatus() == LoginStatus.SUCCESS && scoreResult.getData() != null) {
+                        int score = scoreResult.getData().getCreditScore();
+                        // Self-eligibility threshold
+                        isEligible = score >= 60;
+                        
+                        showResult(isEligible, scoreResult.getData().getRating());
+                        showStep(3);
+                    } else if (scoreResult.getStatus() == LoginStatus.ERROR) {
+                        SnackbarUtils.showError(binding.getRoot(), "Error checking eligibility");
+                    }
+                });
+            } else if (userResult.getStatus() == LoginStatus.ERROR) {
+                binding.loadingView.getRoot().setVisibility(View.GONE);
+                SnackbarUtils.showError(binding.getRoot(), "User session error");
+            }
+        });
+    }
+
+    private void showResult(boolean eligible, String rating) {
+        binding.layoutEligible.setVisibility(eligible ? View.VISIBLE : View.GONE);
+        binding.layoutNotEligible.setVisibility(eligible ? View.GONE : View.VISIBLE);
+        
+        if (eligible) {
+            populateSummary();
+            binding.tvEligibleMsg.setText("Congrats! You are eligible with a " + rating + " rating.");
+        } else {
+            binding.tvNotEligibleReason.setText("Based on our assessment, your current credit rating (" + rating + ") does not meet the criteria for this loan. Enhance your profile by providing more financial data.");
         }
     }
 
@@ -173,8 +230,8 @@ public class ApplyLoanActivity extends AppCompatActivity {
             double totalRepayable = amount + totalInterest;
             double monthly = totalRepayable / tenure;
 
-            binding.tvMonthlyInstallment.setText(String.format(Locale.getDefault(), "KES %,.2f", monthly));
-            binding.tvTotalInterest.setText(String.format(Locale.getDefault(), "KES %,.2f", totalInterest));
+            binding.tvMonthlyInstallment.setText(ksh.format(monthly));
+            binding.tvTotalInterest.setText(ksh.format(totalInterest));
         } catch (Exception ignored) {}
     }
 
@@ -193,9 +250,23 @@ public class ApplyLoanActivity extends AppCompatActivity {
     }
 
     private void populateSummary() {
-        binding.tvSummaryProduct.setText(selectedProduct.getName());
-        binding.tvSummaryAmount.setText(String.format(Locale.getDefault(), "KES %,.2f", Double.parseDouble(binding.etRequestedAmount.getText().toString())));
-        binding.tvSummaryTenure.setText(binding.sbTenure.getProgress() + " Months");
+        setSummaryRow(binding.summaryProduct, "Purpose of Loan", selectedProduct.getName());
+        setSummaryRow(binding.summaryAmount, "Requested Amount", ksh.format(Double.parseDouble(binding.etRequestedAmount.getText().toString())));
+        setSummaryRow(binding.summaryTenure, "No of Payments", binding.sbTenure.getProgress() + " Months");
+        
+        double amount = Double.parseDouble(binding.etRequestedAmount.getText().toString());
+        double rate = selectedProduct.getInterestRate();
+        double totalRepayable = amount + (amount * (rate / 100.0));
+        double monthly = totalRepayable / binding.sbTenure.getProgress();
+
+        setSummaryRow(binding.summaryMonthly, "Monthly Payment", ksh.format(monthly));
+        setSummaryRow(binding.summaryRate, "Interest Rate", rate + "%");
+        setSummaryRow(binding.summaryTotal, "Total Payback Amount", ksh.format(totalRepayable));
+    }
+
+    private void setSummaryRow(LayoutSummaryRowBinding row, String label, String value) {
+        row.tvLabel.setText(label);
+        row.tvValue.setText(value);
     }
 
     private void submitApplication() {
@@ -215,7 +286,7 @@ public class ApplyLoanActivity extends AppCompatActivity {
                 binding.btnNext.postDelayed(this::finish, 2000);
             } else if (result.getStatus() == LoginStatus.ERROR) {
                 binding.btnNext.setEnabled(true);
-                binding.btnNext.setText("SUBMIT APPLICATION");
+                binding.btnNext.setText("ACCEPT & SUBMIT");
                 SnackbarUtils.showError(binding.getRoot(), result.getMessage());
             }
         });

@@ -36,6 +36,10 @@ public class ApplyLoanViewModel extends ViewModel {
         return loanRepository.getCreditScore(clientId);
     }
 
+    public LiveData<Resource<CreditScoreResponse>> calculateCreditScore(String clientId, Double amount) {
+        return loanRepository.calculateCreditScore(clientId, amount);
+    }
+
     public LiveData<Resource<Void>> submitApplication(LoanApplicationRequest request){
         return loanRepository.createLoanApplication(request);
     }
