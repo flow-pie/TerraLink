@@ -18,6 +18,8 @@ import com.terralink.databinding.LayoutTimelineItemBinding;
 import com.terralink.databinding.ItemLoanScheduleRowBinding;
 import com.terralink.ui.auth.LoginStatus;
 import com.terralink.ui.client.notification.NotificationStatusViewModel;
+import com.terralink.ui.common.FileUtils;
+import com.terralink.ui.common.SnackbarUtils;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -74,7 +76,7 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
             if ("REJECTED".equals(status)) {
                 badgeBg = R.drawable.bg_status_badge_red;
                 badgeText = R.color.status_red;
-            } else if ("ACTIVE".equals(status) || "CLOSED".equals(status)) {
+            } else if ("ACTIVE".equals(status) || "CLOSED".equals(status) || "COMPLETED".equals(status)) {
                 badgeBg = R.drawable.bg_status_badge_green;
                 badgeText = R.color.status_green;
             } else {
@@ -87,7 +89,7 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
             if ("Application".equals(typeStr)) {
                 setupApplicationView(Integer.parseInt(loanId));
             } else {
-                setupLoanView(loanId);
+                setupLoanView(loanId, status);
             }
         }
     }
@@ -96,6 +98,7 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
         binding.layoutActiveLoanDetails.setVisibility(View.GONE);
         binding.layoutApplicationTimeline.setVisibility(View.VISIBLE);
         binding.btnMainAction.setVisibility(View.GONE);
+        binding.btnDownloadCertificate.setVisibility(View.GONE);
         
         applicationViewModel.getLoanStatus(id).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
@@ -104,11 +107,19 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
         });
     }
 
-    private void setupLoanView(String id) {
+    private void setupLoanView(String id, String status) {
         binding.layoutActiveLoanDetails.setVisibility(View.VISIBLE);
         binding.layoutApplicationTimeline.setVisibility(View.GONE);
-        binding.btnMainAction.setVisibility(View.VISIBLE);
-        binding.btnMainAction.setText("Make Payment");
+        
+        if ("CLOSED".equalsIgnoreCase(status) || "COMPLETED".equalsIgnoreCase(status)) {
+            binding.btnMainAction.setVisibility(View.GONE);
+            binding.btnDownloadCertificate.setVisibility(View.VISIBLE);
+            binding.btnDownloadCertificate.setOnClickListener(v -> downloadCertificate());
+        } else {
+            binding.btnMainAction.setVisibility(View.VISIBLE);
+            binding.btnMainAction.setText("Make Payment");
+            binding.btnDownloadCertificate.setVisibility(View.GONE);
+        }
 
         loanViewModel.getClientLoans(loanId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
@@ -124,6 +135,16 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
         loanViewModel.getRepaymentSchedule(loanId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
                 populateSchedule(result.getData());
+            }
+        });
+    }
+
+    private void downloadCertificate() {
+        loanViewModel.getClosureCertificate(loanId).observe(getViewLifecycleOwner(), result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+                FileUtils.saveAndOpenPdf(requireContext(), result.getData(), "Completion_Certificate_" + referenceNo);
+            } else if (result.getStatus() == LoginStatus.ERROR) {
+                SnackbarUtils.showError(binding.getRoot(), "Failed to download certificate");
             }
         });
     }

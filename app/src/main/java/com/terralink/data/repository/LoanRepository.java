@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.terralink.data.api.LoanApi;
 import com.terralink.data.model.AssetResponse;
+import com.terralink.data.model.CloseLoanResponse;
 import com.terralink.data.model.ClientLoansResponse;
 import com.terralink.data.model.CreditHistoryResponse;
 import com.terralink.data.model.CreditScoreResponse;
@@ -25,6 +26,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -442,6 +444,49 @@ public class LoanRepository {
         return result;
     }
 
+    public LiveData<Resource<CloseLoanResponse>> closeLoan(String loanId) {
+        MutableLiveData<Resource<CloseLoanResponse>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.closeLoan(loanId).enqueue(new Callback<CloseLoanResponse>() {
+            @Override
+            public void onResponse(Call<CloseLoanResponse> call, Response<CloseLoanResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Closure failed: " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<CloseLoanResponse> call, Throwable t) {
+                result.postValue(Resource.error("Network error: " + t.getMessage()));
+            }
+        });
+        return result;
+    }
+
+    public LiveData<Resource<ResponseBody>> getClosureCertificate(long closureId) {
+        MutableLiveData<Resource<ResponseBody>> result = new MutableLiveData<>();
+        result.setValue(Resource.loading());
+
+        loanApi.getClosureCertificate(closureId).enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    result.postValue(Resource.success(response.body()));
+                } else {
+                    result.postValue(Resource.error("Failed to fetch certificate: " + response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                result.postValue(Resource.error("Network error: " + t.getMessage()));
+            }
+        });
+        return result;
+    }
 
 }
 

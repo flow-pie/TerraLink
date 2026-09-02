@@ -11,6 +11,8 @@ import com.terralink.data.repository.LoanRepository;
 import com.terralink.data.repository.UserRepository;
 import com.terralink.ui.common.Resource;
 
+import okhttp3.ResponseBody;
+
 import java.util.List;
 
 import javax.inject.Inject;
@@ -42,5 +44,12 @@ public class ClientLoansViewModel extends ViewModel {
 
     public LiveData<Resource<List<RepaymentInstallments>>> getRepaymentSchedule(String loanId) {
         return loanRepository.getRepaymentSchedule(loanId);
+    }
+
+    public LiveData<Resource<ResponseBody>> getClosureCertificate(String loanId) {
+        // Backend endpoint expects closure ID, but for simplicity, 
+        // the closure service uses loanId as the closure ID in many places.
+        // I will use long conversion.
+        return loanRepository.getClosureCertificate(Long.parseLong(loanId));
     }
 }

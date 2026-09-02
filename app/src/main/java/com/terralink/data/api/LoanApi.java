@@ -2,6 +2,7 @@ package com.terralink.data.api;
 
 import com.terralink.data.model.AssetResponse;
 import com.terralink.data.model.ClientLoansResponse;
+import com.terralink.data.model.CloseLoanResponse;
 import com.terralink.data.model.CreditHistoryResponse;
 import com.terralink.data.model.CreditScoreResponse;
 import com.terralink.data.model.IncomeAssessmentResponse;
@@ -19,6 +20,7 @@ import com.terralink.data.model.RepaymentInstallments;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -112,5 +114,15 @@ public interface LoanApi {
             @Query("search") String search,
             @Query("page") int page,
             @Query("pageSize") int pageSize
+    );
+
+    @POST("api/loans/{loanId}/close")
+    Call<CloseLoanResponse> closeLoan(
+            @Path("loanId") String loanId
+    );
+
+    @GET("api/loans/loan-closures/{id}/certificate")
+    Call<ResponseBody> getClosureCertificate(
+            @Path("id") long closureId
     );
 }

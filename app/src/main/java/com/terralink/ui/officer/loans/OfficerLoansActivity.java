@@ -6,6 +6,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.PopupMenu;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,10 +15,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.terralink.R;
+import com.terralink.data.model.CloseLoanResponse;
 import com.terralink.data.model.LoanListItemResponse;
 import com.terralink.data.model.PortfolioSummaryResponse;
 import com.terralink.databinding.ActivityOfficerLoansBinding;
 import com.terralink.ui.auth.LoginStatus;
+import com.terralink.ui.common.FileUtils;
 import com.terralink.ui.common.SnackbarUtils;
 import com.terralink.ui.officer.products.AddProductBottomSheetFragment;
 
@@ -71,9 +74,9 @@ public class OfficerLoansActivity extends AppCompatActivity {
 
     private void setupRecyclerViews() {
         loansAdapter = new OfficerLoansAdapter(loan -> {
-            // Open loan details if we had a sheet for it, for now just show info
             SnackbarUtils.showInfo(binding.getRoot(), "LID: " + loan.getLoanNo() + " | Client: " + loan.getClientFullName());
-        });
+        }, this::confirmLoanClosure);
+        
         binding.rvLoans.setLayoutManager(new LinearLayoutManager(this));
         binding.rvLoans.setAdapter(loansAdapter);
         binding.rvLoans.setNestedScrollingEnabled(false);
@@ -84,6 +87,46 @@ public class OfficerLoansActivity extends AppCompatActivity {
         binding.rvLoanProducts.setLayoutManager(new LinearLayoutManager(this));
         binding.rvLoanProducts.setAdapter(productsAdapter);
         binding.rvLoanProducts.setNestedScrollingEnabled(false);
+    }
+
+    private void confirmLoanClosure(LoanListItemResponse loan) {
+        new AlertDialog.Builder(this)
+                .setTitle("Close Loan")
+                .setMessage("Are you sure you want to close loan #" + loan.getLoanNo() + "? This will generate a closure certificate.")
+                .setPositiveButton("CLOSE", (dialog, which) -> executeLoanClosure(loan))
+                .setNegativeButton("CANCEL", null)
+                .show();
+    }
+
+    private void executeLoanClosure(LoanListItemResponse loan) {
+        viewModel.closeLoan(loan.getId()).observe(this, result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+                SnackbarUtils.showSuccess(binding.getRoot(), "Loan Closed Successfully");
+                showDownloadCertificateOption(result.getData());
+                loadData(); // Refresh list
+            } else if (result.getStatus() == LoginStatus.ERROR) {
+                SnackbarUtils.showError(binding.getRoot(), "Closure failed: " + result.getMessage());
+            }
+        });
+    }
+
+    private void showDownloadCertificateOption(CloseLoanResponse closure) {
+        new AlertDialog.Builder(this)
+                .setTitle("Closure Complete")
+                .setMessage("Certificate #" + closure.getCertificateNumber() + " generated. Would you like to view it?")
+                .setPositiveButton("VIEW PDF", (dialog, which) -> downloadAndOpenCertificate(closure))
+                .setNegativeButton("NOT NOW", null)
+                .show();
+    }
+
+    private void downloadAndOpenCertificate(CloseLoanResponse closure) {
+        viewModel.getClosureCertificate(closure.getId()).observe(this, result -> {
+            if (result.getStatus() == LoginStatus.SUCCESS && result.getData() != null) {
+                FileUtils.saveAndOpenPdf(this, result.getData(), "Completion_Certificate_" + closure.getCertificateNumber());
+            } else if (result.getStatus() == LoginStatus.ERROR) {
+                SnackbarUtils.showError(binding.getRoot(), "Failed to download certificate");
+            }
+        });
     }
 
     private void setupSearch() {
@@ -187,7 +230,6 @@ public class OfficerLoansActivity extends AppCompatActivity {
                 }
                 binding.tvActiveLoans.setText(String.valueOf(summary.getActiveLoansCount()));
                 
-                // Real PAR calculation if available
                 double total = summary.getOutstandingPortfolio();
                 double arrears = summary.getArrearsAmount();
                 if (total > 0) {

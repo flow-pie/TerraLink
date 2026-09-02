@@ -3,6 +3,7 @@ package com.terralink.ui.officer.loans;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.terralink.data.model.CloseLoanResponse;
 import com.terralink.data.model.LoanListItemResponse;
 import com.terralink.data.model.LoanProductResponse;
 import com.terralink.data.model.PaginatedResponse;
@@ -10,6 +11,8 @@ import com.terralink.data.model.PortfolioSummaryResponse;
 import com.terralink.data.repository.LoanRepository;
 import com.terralink.data.repository.ReportRepository;
 import com.terralink.ui.common.Resource;
+
+import okhttp3.ResponseBody;
 
 import java.util.List;
 
@@ -38,5 +41,13 @@ public class OfficerLoansViewModel extends ViewModel {
 
     public LiveData<Resource<PortfolioSummaryResponse>> getPortfolioSummary() {
         return reportRepository.getPortfolioSummary();
+    }
+
+    public LiveData<Resource<CloseLoanResponse>> closeLoan(String loanId) {
+        return loanRepository.closeLoan(loanId);
+    }
+
+    public LiveData<Resource<ResponseBody>> getClosureCertificate(long closureId) {
+        return loanRepository.getClosureCertificate(closureId);
     }
 }

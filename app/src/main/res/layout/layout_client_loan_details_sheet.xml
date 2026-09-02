@@ -230,6 +230,17 @@
                 android:text="Make a Payment"
                 app:icon="@drawable/ic_wallet" />
 
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDownloadCertificate"
+                style="@style/Widget.TerraLink.Button.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="DOWNLOAD CERTIFICATE"
+                android:visibility="gone"
+                app:icon="@android:drawable/stat_sys_download"
+                tools:visibility="visible" />
+
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
