@@ -39,6 +39,11 @@ public class LauncherActivity extends AppCompatActivity {
                     String role = result.getData().getRoleName();
                     if ("Client".equalsIgnoreCase(role)) {
                         startActivity(new Intent(this, ClientHomepageActivity.class));
+                    } else if ("Admin".equalsIgnoreCase(role)) {
+                        // Admins manage the system via the web portal. Sign them
+                        // out of the mobile session and send them to login.
+                        tokenManager.clearTokens();
+                        startActivity(new Intent(this, LoginActivity.class));
                     } else {
                         startActivity(new Intent(this, DashboardActivity.class));
                     }
