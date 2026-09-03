@@ -225,6 +225,13 @@
             android:layout_height="wrap_content"
             android:checked="true"
             android:text="Installment" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipCustom"
+            style="@style/Widget.Material3.Chip.Filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Custom" />
     </com.google.android.material.chip.ChipGroup>
 
     <!-- Pay Now Button -->

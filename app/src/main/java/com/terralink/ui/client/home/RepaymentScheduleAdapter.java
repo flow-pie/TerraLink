@@ -22,11 +22,17 @@ import java.util.Locale;
 
 public class RepaymentScheduleAdapter extends RecyclerView.Adapter<RepaymentScheduleAdapter.ViewHolder> {
 
+    public interface OnInstallmentClickListener {
+        void onInstallmentClick(RepaymentInstallments schedule);
+    }
+
     private final List<RepaymentInstallments> schedules = new ArrayList<>();
+    private final OnInstallmentClickListener listener;
     private LoanDetailsResponse loanDetails;
 
-    public RepaymentScheduleAdapter(List<RepaymentInstallments> schedules) {
+    public RepaymentScheduleAdapter(List<RepaymentInstallments> schedules, OnInstallmentClickListener listener) {
         this.schedules.addAll(schedules);
+        this.listener = listener;
     }
 
     @NonNull
@@ -75,14 +81,39 @@ public class RepaymentScheduleAdapter extends RecyclerView.Adapter<RepaymentSche
         void bind(RepaymentInstallments schedule) {
             binding.tvInstallmentTitle.setText(String.format(Locale.getDefault(), "Installment %d", schedule.getInstallmentNumber()));
             binding.tvInstallmentDate.setText(schedule.getDueDate());
-            binding.tvInstallmentAmount.setText(String.format(Locale.getDefault(), "KES %,.0f", schedule.getTotalDue()));
-            binding.tvInstallmentStatus.setText(schedule.getStatus());
+            
+            double balance = schedule.getTotalDue() - schedule.getPaidAmount();
+            binding.tvInstallmentAmount.setText(String.format(Locale.getDefault(), "KES %,.0f", balance > 0 ? balance : schedule.getTotalDue()));
+            
+            if (schedule.getPaidAmount() > 0 && !"PAID".equalsIgnoreCase(schedule.getStatus())) {
+                binding.installmentProgress.setVisibility(View.VISIBLE);
+                int progress = (int) ((schedule.getPaidAmount() / schedule.getTotalDue()) * 100);
+                binding.installmentProgress.setProgress(progress);
+            } else {
+                binding.installmentProgress.setVisibility(View.GONE);
+            }
 
             if ("PENDING".equalsIgnoreCase(schedule.getStatus())) {
+                if (schedule.getPaidAmount() > 0) {
+                    binding.tvInstallmentStatus.setText(String.format(Locale.getDefault(), "PARTIAL (Paid KES %,.0f)", schedule.getPaidAmount()));
+                } else {
+                    binding.tvInstallmentStatus.setText(schedule.getStatus());
+                }
                 binding.tvInstallmentStatus.setBackgroundResource(R.drawable.bg_quick_action1_background);
                 binding.tvInstallmentStatus.setTextColor(ContextCompat.getColor(binding.getRoot().getContext(), R.color.on_terracotta));
                 binding.paymentImage.setColorFilter(ContextCompat.getColor(binding.paymentImage.getContext(), R.color.terracotta_primary));
+            } else {
+                binding.tvInstallmentStatus.setText(schedule.getStatus());
+                binding.tvInstallmentStatus.setBackgroundResource(R.drawable.bg_pill_success);
+                binding.tvInstallmentStatus.setTextColor(ContextCompat.getColor(binding.getRoot().getContext(), R.color.status_green));
+                binding.paymentImage.setColorFilter(ContextCompat.getColor(binding.paymentImage.getContext(), R.color.status_green));
             }
+
+            binding.getRoot().setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onInstallmentClick(schedule);
+                }
+            });
         }
     }
 }

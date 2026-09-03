@@ -9,6 +9,7 @@ public class RepaymentInstallments {
     private double principal;
     private double interest;
     private double totalDue;
+    private double paidAmount;
     private String status;
 
     public long getRepaymentScheduleId() {
@@ -35,6 +36,10 @@ public class RepaymentInstallments {
 
     public double getTotalDue() {
         return totalDue;
+    }
+
+    public double getPaidAmount() {
+        return paidAmount;
     }
 
     public String getStatus() {

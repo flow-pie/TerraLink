@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     style="@style/Widget.TerraLink.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -61,6 +62,19 @@
                     android:text="Sept 24, 2023"
                     android:textAppearance="?attr/textAppearanceBodySmall"
                     android:textColor="@color/text_secondary" />
+
+                <ProgressBar
+                    android:id="@+id/installmentProgress"
+                    style="@android:style/Widget.ProgressBar.Horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="4dp"
+                    android:layout_marginTop="6dp"
+                    android:max="100"
+                    android:progress="0"
+                    android:visibility="gone"
+                    android:progressDrawable="@drawable/progress_repayment"
+                    tools:visibility="visible"
+                    tools:progress="40"/>
 
             </LinearLayout>
 

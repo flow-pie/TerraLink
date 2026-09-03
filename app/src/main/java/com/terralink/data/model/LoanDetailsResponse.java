@@ -16,9 +16,11 @@ public class LoanDetailsResponse {
     private int installmentsTotal;
     private String nextDueDate;
     private double nextInstallmentAmount;
+    private double nextInstallmentPaid;
     private double interestRate;
     private double interestPaid;
     private double principalPaid;
+    private double actualAmountPaid;
     private double penaltiesAccrued;
     private String status;
 
@@ -49,12 +51,20 @@ public class LoanDetailsResponse {
         return nextInstallmentAmount;
     }
 
+    public double getNextInstallmentPaid() {
+        return nextInstallmentPaid;
+    }
+
     public String getInterestRate() {
         return interestRate+"%";
     }
 
     public double getTotalRepayment() {
         return totalRepayment;
+    }
+
+    public double getActualAmountPaid() {
+        return actualAmountPaid;
     }
 
     public int getInstallmentsPaid() {

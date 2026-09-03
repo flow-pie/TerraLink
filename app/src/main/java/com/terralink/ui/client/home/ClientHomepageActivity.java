@@ -59,7 +59,38 @@ public class ClientHomepageActivity extends AppCompatActivity {
 
     private void refreshData() {
         viewModel.refreshProfile();
+        Resource<UserProfileResponse> userRes = viewModel.getActiveUser().getValue();
+        if (userRes != null && userRes.getData() != null) {
+            viewModel.refreshLoans(userRes.getData().getClientId());
+        }
+        
+        Resource<LoanDetailsResponse> loanRes = viewModel.getLoanDetailsStream().getValue();
+        if (loanRes != null && loanRes.getData() != null) {
+            viewModel.refreshLoanDetails(loanRes.getData().getLoanId());
+        }
+        
         binding.swipeRefresh.setRefreshing(false);
+    }
+
+    private void handleInstallmentClick(RepaymentInstallments schedule) {
+        if (!"PENDING".equalsIgnoreCase(schedule.getStatus())) {
+            SnackbarUtils.showInfo(binding.getRoot(), "This installment is already paid");
+            return;
+        }
+
+        Resource<LoanDetailsResponse> detailsRes = viewModel.getLoanDetailsStream().getValue();
+        if (detailsRes == null || detailsRes.getData() == null) return;
+
+        LoanDetailsResponse details = detailsRes.getData();
+
+        PaymentBottomSheetFragment fragment = PaymentBottomSheetFragment.newInstance(
+                Long.parseLong(details.getLoanId()),
+                schedule.getRepaymentScheduleId(),
+                details.getOutStandingAmount(),
+                schedule.getTotalDue(),
+                schedule.getDueDate()
+        );
+        fragment.show(getSupportFragmentManager(), fragment.getTag());
     }
 
     @Override
@@ -89,9 +120,13 @@ public class ClientHomepageActivity extends AppCompatActivity {
             startActivity(new Intent(this, com.terralink.ui.client.scoring.IncomeAssessmentListActivity.class));
         });
 
-        repaymentScheduleAdapter = new RepaymentScheduleAdapter(new ArrayList<>());
+        repaymentScheduleAdapter = new RepaymentScheduleAdapter(new ArrayList<>(), this::handleInstallmentClick);
         binding.rvRecentPayments.setLayoutManager(new LinearLayoutManager(this));
         binding.rvRecentPayments.setAdapter(repaymentScheduleAdapter);
+
+        getSupportFragmentManager().setFragmentResultListener("payment_success", this, (requestKey, bundle) -> {
+            refreshData();
+        });
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -196,18 +231,38 @@ public class ClientHomepageActivity extends AppCompatActivity {
 
     private void updateLoanDetailsUI(LoanDetailsResponse details) {
         binding.tvLoanBalance.setText(ksh.format(details.getOutStandingAmount()));
-        binding.nextInstallment.setText(ksh.format(details.getNextInstallmentAmount()));
-        binding.nextInstallmentDueDate.setText("Due " + details.getNextDueDate());
+        
+        double nextDueAmount = details.getNextInstallmentAmount() - details.getNextInstallmentPaid();
+        if (nextDueAmount < 0) nextDueAmount = 0;
+        
+        binding.nextInstallment.setText(ksh.format(nextDueAmount));
+        
+        if (details.getNextInstallmentPaid() > 0 && nextDueAmount > 0) {
+            binding.nextInstallmentDueDate.setText(String.format("Due %s (Paid %s)", 
+                details.getNextDueDate(), ksh.format(details.getNextInstallmentPaid())));
+        } else {
+            binding.nextInstallmentDueDate.setText("Due " + details.getNextDueDate());
+        }
 
         // Update Progress
+        double paidWeight = details.getInstallmentsPaid();
+        if (details.getNextInstallmentAmount() > 0) {
+            paidWeight += (details.getNextInstallmentPaid() / details.getNextInstallmentAmount());
+        }
+        
         int progress = (details.getInstallmentsTotal() > 0) 
-            ? (int) ((details.getInstallmentsPaid() / (double) details.getInstallmentsTotal()) * 100) : 0;
+            ? (int) ((paidWeight / details.getInstallmentsTotal()) * 100) : 0;
         
         binding.progressRepayment.setProgress(progress);
-        binding.tvInstallmentsProgress.setText(details.getInstallmentsPaid() + " of " + details.getInstallmentsTotal());
+        
+        if (details.getNextInstallmentPaid() > 0) {
+            binding.tvInstallmentsProgress.setText(String.format(Locale.getDefault(), "%.1f of %d paid", 
+                paidWeight, details.getInstallmentsTotal()));
+        } else {
+            binding.tvInstallmentsProgress.setText(details.getInstallmentsPaid() + " of " + details.getInstallmentsTotal() + " paid");
+        }
 
-        double repaid = details.getTotalRepayment() - details.getOutStandingAmount();
-        binding.tvTotalPaid.setText(ksh.format(repaid));
+        binding.tvTotalPaid.setText(ksh.format(details.getActualAmountPaid()));
         binding.loanAmountTotal.setText(ksh.format(details.getTotalRepayment()));
 
         setupLoanActions(details);
@@ -220,11 +275,15 @@ public class ClientHomepageActivity extends AppCompatActivity {
                 SnackbarUtils.showInfo(binding.getRoot(), "No pending installments");
                 return;
             }
+            
+            double nextDue = details.getNextInstallmentAmount() - details.getNextInstallmentPaid();
+            if (nextDue < 0) nextDue = 0;
+
             PaymentBottomSheetFragment fragment = PaymentBottomSheetFragment.newInstance(
                     Long.parseLong(details.getLoanId()),
                     next.getRepaymentScheduleId(),
                     details.getOutStandingAmount(),
-                    details.getNextInstallmentAmount(),
+                    nextDue > 0 ? nextDue : details.getNextInstallmentAmount(),
                     details.getNextDueDate()
             );
             fragment.show(getSupportFragmentManager(), fragment.getTag());

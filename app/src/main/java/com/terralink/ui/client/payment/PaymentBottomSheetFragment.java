@@ -81,7 +81,7 @@ public class PaymentBottomSheetFragment extends BottomSheetDialogFragment {
 
     private void setupUI() {
         binding.tvRemainingBalance.setText(formatCurrency(balance));
-        binding.etPaymentAmount.setText(formatCurrency(balance));
+        binding.etPaymentAmount.setText(String.format(Locale.US, "%.2f", installment));
         binding.tvInstallment.setText(formatCurrency(installment));
         binding.tvInstallmentDate.setText(dueDate);
         binding.etMpesaPhone.setText("0712 345 678");
@@ -92,16 +92,38 @@ public class PaymentBottomSheetFragment extends BottomSheetDialogFragment {
             if (checkedIds.isEmpty()) return;
             int id = checkedIds.get(0);
             if (id == R.id.chipFullBalance) {
-                binding.etPaymentAmount.setText(formatCurrency(balance));
+                binding.etPaymentAmount.setText(String.format(Locale.US, "%.2f", balance));
+                binding.etPaymentAmount.setEnabled(false);
             } else if (id == R.id.chipInstallment) {
-                binding.etPaymentAmount.setText(formatCurrency(installment));
+                binding.etPaymentAmount.setText(String.format(Locale.US, "%.2f", installment));
+                binding.etPaymentAmount.setEnabled(false);
+            } else if (id == R.id.chipCustom) {
+                binding.etPaymentAmount.setEnabled(true);
+                binding.etPaymentAmount.requestFocus();
             }
         });
+
+        // Initialize state
+        binding.etPaymentAmount.setEnabled(false);
 
         binding.btnPayMpesa.setOnClickListener(v -> initiatePayment());
     }
 
     private void initiatePayment() {
+        String amountStr = binding.etPaymentAmount.getText().toString().trim();
+        double amount;
+        try {
+            amount = Double.parseDouble(amountStr);
+        } catch (NumberFormatException e) {
+            binding.etPaymentAmount.setError("Invalid amount");
+            return;
+        }
+
+        if (amount <= 0) {
+            binding.etPaymentAmount.setError("Amount must be greater than 0");
+            return;
+        }
+
         String phone = binding.etMpesaPhone.getText().toString().replaceAll("\\s", "");
         if (phone.isEmpty() || phone.length() < 10) {
             binding.etMpesaPhone.setError("Valid phone number required");
@@ -111,8 +133,12 @@ public class PaymentBottomSheetFragment extends BottomSheetDialogFragment {
         binding.btnPayMpesa.setEnabled(false);
         binding.btnPayMpesa.setText("Processing...");
 
-        InitiatePaymentRequest req = new InitiatePaymentRequest(loanId, scheduleId, phone);
+        int checkedId = binding.chipGroupAmount.getCheckedChipId();
+        long targetScheduleId = (checkedId == R.id.chipInstallment) ? scheduleId : 0;
+
+        InitiatePaymentRequest req = new InitiatePaymentRequest(loanId, targetScheduleId, amount, phone);
         viewModel.initiatePayment(req).observe(getViewLifecycleOwner(), result -> {
+
             switch (result.getStatus()) {
                 case SUCCESS:
                     checkPaymentStatus(result.getData().getPaymentId());
@@ -128,6 +154,7 @@ public class PaymentBottomSheetFragment extends BottomSheetDialogFragment {
         viewModel.getPaymentStatus(paymentId).observe(getViewLifecycleOwner(), result -> {
             if (result.getStatus() == com.terralink.ui.auth.LoginStatus.SUCCESS) {
                 SnackbarUtils.showSuccess(binding.getRoot(), "Payment successful");
+                getParentFragmentManager().setFragmentResult("payment_success", new Bundle());
                 binding.btnPayMpesa.postDelayed(this::dismiss, 2000);
             } else if (result.getStatus() == com.terralink.ui.auth.LoginStatus.ERROR) {
                 handleError(result.getMessage());
@@ -142,7 +169,8 @@ public class PaymentBottomSheetFragment extends BottomSheetDialogFragment {
     }
 
     private String formatCurrency(double amount) {
-        return String.format(Locale.getDefault(), "KES %,.2f", amount);
+        NumberFormat ksh = NumberFormat.getCurrencyInstance(new Locale("en", "KE"));
+        return ksh.format(amount);
     }
 
     @Override

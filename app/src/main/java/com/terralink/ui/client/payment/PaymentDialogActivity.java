@@ -58,22 +58,30 @@ public class PaymentDialogActivity extends AppCompatActivity {
         dialog.setContentView(dialogBinding.getRoot());
 
         dialogBinding.tvRemainingBalance.setText(formatCurrency(outstandingBalance));
-        dialogBinding.etPaymentAmount.setText(formatCurrency(outstandingBalance));
+        dialogBinding.etPaymentAmount.setText(String.format(Locale.US, "%.2f", installmentAmount));
         dialogBinding.tvInstallment.setText(formatCurrency(installmentAmount));
         dialogBinding.tvInstallmentDate.setText(installmentDueDate);
 
         dialogBinding.etMpesaPhone.setText("0712 345 678");
+        dialogBinding.etPaymentAmount.setEnabled(false);
 
-        dialogBinding.chipGroupAmount.setOnCheckedChangeListener((group, checkedId) -> {
+        dialogBinding.chipGroupAmount.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (checkedIds.isEmpty()) return;
+            int checkedId = checkedIds.get(0);
             if(checkedId == R.id.chipFullBalance){
-                dialogBinding.etPaymentAmount.setText(formatCurrency(outstandingBalance));
+                dialogBinding.etPaymentAmount.setText(String.format(Locale.US, "%.2f", outstandingBalance));
+                dialogBinding.etPaymentAmount.setEnabled(false);
             } else if(checkedId == R.id.chipInstallment){
-                dialogBinding.etPaymentAmount.setText(formatCurrency(installmentAmount));
+                dialogBinding.etPaymentAmount.setText(String.format(Locale.US, "%.2f", installmentAmount));
+                dialogBinding.etPaymentAmount.setEnabled(false);
+            } else if(checkedId == R.id.chipCustom){
+                dialogBinding.etPaymentAmount.setEnabled(true);
+                dialogBinding.etPaymentAmount.requestFocus();
             }
         });
 
         dialogBinding.btnPayMpesa.setOnClickListener(v -> {
-            String amountStr = dialogBinding.etPaymentAmount.getText().toString().replaceAll("[^\\d.]", "");
+            String amountStr = dialogBinding.etPaymentAmount.getText().toString().trim();
             String phone = dialogBinding.etMpesaPhone.getText().toString().replaceAll("\\s", "");
 
             if(amountStr.isEmpty()){
@@ -97,7 +105,10 @@ public class PaymentDialogActivity extends AppCompatActivity {
             dialogBinding.btnPayMpesa.setEnabled(false);
             dialogBinding.btnPayMpesa.setText("Processing...");
 
-            InitiatePaymentRequest req = new InitiatePaymentRequest(loanId, scheduleId, phone);
+            int checkedChipId = dialogBinding.chipGroupAmount.getCheckedChipId();
+            long targetScheduleId = (checkedChipId == R.id.chipInstallment) ? scheduleId : 0;
+
+            InitiatePaymentRequest req = new InitiatePaymentRequest(loanId, targetScheduleId, amount, phone);
 
             viewModel.initiatePayment(req).observe(this, result -> {
                 switch (result.getStatus()){

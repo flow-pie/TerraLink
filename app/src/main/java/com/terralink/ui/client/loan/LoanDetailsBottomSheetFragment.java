@@ -181,26 +181,44 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
             
             row.tvDueDate.setText(item.getDueDate());
             row.tvInstallmentLabel.setText("Installment #" + item.getInstallmentNumber());
-            row.tvAmount.setText(ksh.format(item.getTotalDue()));
-            row.tvStatus.setText(item.getStatus());
+            
+            double balanceDue = item.getTotalDue() - item.getPaidAmount();
+            row.tvAmount.setText(ksh.format(balanceDue > 0 ? balanceDue : item.getTotalDue()));
             
             int color;
             int icon;
+            String statusText = item.getStatus();
+
             if ("PAID".equalsIgnoreCase(item.getStatus())) {
                 color = R.color.status_green;
                 icon = R.drawable.ic_check_circle;
             } else if ("OVERDUE".equalsIgnoreCase(item.getStatus())) {
                 color = R.color.status_red;
                 icon = R.drawable.ic_warning;
+                if (item.getPaidAmount() > 0) {
+                    statusText = String.format(Locale.getDefault(), "OVERDUE (Paid %s)", ksh.format(item.getPaidAmount()));
+                }
             } else {
                 color = R.color.status_amber;
                 icon = R.drawable.ic_help_circle;
+                if (item.getPaidAmount() > 0) {
+                    statusText = String.format(Locale.getDefault(), "PARTIAL (Paid %s)", ksh.format(item.getPaidAmount()));
+                }
             }
             
+            row.tvStatus.setText(statusText);
             row.tvStatus.setTextColor(ContextCompat.getColor(requireContext(), color));
             row.ivStatusIcon.setImageResource(icon);
             row.ivStatusIcon.setColorFilter(ContextCompat.getColor(requireContext(), color));
             
+            if (item.getPaidAmount() > 0 && !"PAID".equalsIgnoreCase(item.getStatus())) {
+                row.installmentProgress.setVisibility(View.VISIBLE);
+                int progress = (int) ((item.getPaidAmount() / item.getTotalDue()) * 100);
+                row.installmentProgress.setProgress(progress);
+            } else {
+                row.installmentProgress.setVisibility(View.GONE);
+            }
+
             binding.repaymentScheduleContainer.addView(row.getRoot());
         }
     }
