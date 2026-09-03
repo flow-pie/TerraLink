@@ -1,50 +1,89 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!--  Base Material 3 Application Theme  -->
+
+    <!-- Base Material 3 Application Theme -->
     <style name="Theme.TerraLink" parent="Theme.Material3.Light.NoActionBar">
         <item name="colorPrimary">@color/terracotta_primary</item>
         <item name="colorOnPrimary">@color/on_terracotta</item>
         <item name="colorPrimaryContainer">@color/terracotta_container</item>
+        <item name="colorOnPrimaryContainer">@color/terracotta_dark</item>
+
         <item name="colorSecondary">@color/olive_secondary</item>
+        <item name="colorOnSecondary">@color/on_terracotta</item>
+        <item name="colorSecondaryContainer">@color/olive_container</item>
+        <item name="colorOnSecondaryContainer">@color/olive_secondary</item>
+
         <item name="android:colorBackground">@color/bg_cream</item>
+        <item name="colorOnBackground">@color/navy_text_primary</item>
+
         <item name="colorSurface">@color/surface_card</item>
         <item name="colorOnSurface">@color/navy_text_primary</item>
+        <item name="colorSurfaceVariant">@color/surface_card_subtle</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/surface_stroke</item>
+        <item name="colorOutlineVariant">@color/stepper_track</item>
+
         <item name="colorError">@color/status_red</item>
-        <!--  Status bar styling  -->
+        <item name="colorErrorContainer">@color/status_red_bg</item>
+
+        <!-- Status bar styling -->
         <item name="android:statusBarColor">@color/bg_cream</item>
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:navigationBarColor">@color/surface_card</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
-    <!--  Primary Action Button (Terracotta)  -->
+
+    <!-- ============ BUTTONS ============ -->
+
+    <!-- Primary Action Button (Terracotta) -->
     <style name="Widget.TerraLink.Button.Primary" parent="Widget.Material3.Button">
-        <item name="backgroundTint">@color/terralink_button_primary</item>
+        <item name="backgroundTint">@color/terracotta_primary</item>
         <item name="android:textColor">@color/on_terracotta</item>
+        <item name="rippleColor">@color/terracotta_dark</item>
         <item name="cornerRadius">14dp</item>
         <item name="android:minHeight">54dp</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">0.02</item>
     </style>
-    <!--  Secondary Outline Button  -->
+
+    <!-- Payment / Confirm Button (Green status) -->
+    <style name="Widget.TerraLink.Button.Pay" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/status_green</item>
+        <item name="android:textColor">@color/on_terracotta</item>
+        <item name="rippleColor">@color/on_terracotta</item>
+        <item name="cornerRadius">14dp</item>
+        <item name="android:minHeight">54dp</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:letterSpacing">0.02</item>
+    </style>
+
+    <!-- Secondary Outline Button -->
     <style name="Widget.TerraLink.Button.Outlined" parent="Widget.Material3.Button.OutlinedButton">
         <item name="strokeColor">@color/terracotta_primary</item>
         <item name="strokeWidth">1.5dp</item>
         <item name="android:textColor">@color/terracotta_primary</item>
+        <item name="rippleColor">@color/terracotta_container</item>
         <item name="cornerRadius">14dp</item>
         <item name="android:minHeight">54dp</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
     </style>
-    <!--  Dark Charcoal Button  -->
+
+    <!-- Dark Charcoal Button -->
     <style name="Widget.TerraLink.Button.Dark" parent="Widget.Material3.Button">
         <item name="backgroundTint">@color/navy_dark</item>
         <item name="android:textColor">@color/on_terracotta</item>
+        <item name="rippleColor">@color/text_muted</item>
         <item name="cornerRadius">14dp</item>
         <item name="android:minHeight">54dp</item>
         <item name="android:textSize">15sp</item>
         <item name="android:textStyle">bold</item>
     </style>
-    <!--  Outline Text Input  -->
+
+    <!-- ============ INPUTS ============ -->
+
+    <!-- Outline Text Input -->
     <style name="Widget.TerraLink.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/terracotta_primary</item>
         <item name="boxCornerRadiusTopStart">12dp</item>
@@ -55,22 +94,39 @@
         <item name="boxStrokeWidthFocused">2dp</item>
         <item name="boxBackgroundColor">@color/surface_card</item>
         <item name="hintTextColor">@color/text_secondary</item>
+        <item name="errorTextColor">@color/status_red</item>
+        <item name="boxStrokeErrorColor">@color/status_red</item>
     </style>
-    <!--  Material 3 Rounded Card Container  -->
+
+    <!-- ============ CARDS ============ -->
+
+    <!-- Material 3 Rounded Card Container -->
     <style name="Widget.TerraLink.Card" parent="Widget.Material3.CardView.Elevated">
-        <item name="cardBackgroundColor">@color/terralink_card_view</item>
+        <item name="cardBackgroundColor">@color/surface_card</item>
         <item name="cardCornerRadius">16dp</item>
         <item name="strokeColor">@color/surface_stroke</item>
         <item name="strokeWidth">1dp</item>
+        <item name="rippleColor">@color/terracotta_container</item>
     </style>
-    <style name="TerraLink.Table" parent=""/>
+
+    <!-- Subtle variant for nested/secondary cards (e.g. list rows inside a card) -->
+    <style name="Widget.TerraLink.Card.Subtle" parent="Widget.TerraLink.Card">
+        <item name="cardBackgroundColor">@color/surface_card_subtle</item>
+        <item name="cardElevation">0dp</item>
+    </style>
+
+    <!-- ============ TABLE / KEY-VALUE ROWS ============ -->
+
+    <style name="TerraLink.Table" parent="" />
+
     <style name="TerraLink.Table.Label">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">#7A6A63</item>
+        <item name="android:textColor">@color/text_secondary</item>
         <item name="android:textSize">12sp</item>
         <item name="android:fontFamily">monospace</item>
     </style>
+
     <style name="TerraLink.Table.Value">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
@@ -79,14 +135,19 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textStyle">bold</item>
     </style>
+
     <style name="TerraLink.Table.Header">
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textColor">#53433D</item>
+        <item name="android:textColor">@color/navy_text_primary</item>
         <item name="android:textSize">11sp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:fontFamily">monospace</item>
     </style>
-    <style name="ShapeAppearanceOverlay.Circle" parent="ShapeAppearance.Material3.Corner.Full"/>
+
+    <!-- ============ MISC ============ -->
+
+    <style name="ShapeAppearanceOverlay.Circle" parent="ShapeAppearance.Material3.Corner.Full" />
+
     <style name="Theme.TerraLink.Dialog" parent="Theme.TerraLink">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsTranslucent">true</item>
@@ -94,4 +155,5 @@
         <item name="android:windowNoTitle">true</item>
         <item name="android:backgroundDimEnabled">false</item>
     </style>
+
 </resources>

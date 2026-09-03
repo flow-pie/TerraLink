@@ -66,23 +66,23 @@ public class LoanSelectorAdapter extends RecyclerView.Adapter<LoanSelectorAdapte
 
         void bind(ClientLoansResponse loan, boolean isSelected) {
             binding.tvLoanNo.setText("#" + loan.getReferenceNo());
-            
+
             if ("Application".equals(loan.getType())) {
                 binding.tvLoanAmount.setText(String.format(Locale.getDefault(), "KES %,.0f", loan.getApprovedAmount()));
                 binding.tvStatus.setText("SUBMITTED");
                 binding.tvStatus.setBackgroundResource(R.drawable.bg_status_badge_amber);
                 binding.tvStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), R.color.status_amber));
-                
+
                 binding.progressRepayment.setVisibility(View.GONE);
                 binding.tvProgressPercent.setText("0%");
                 binding.progressRepayment.setProgress(0);
             } else {
                 binding.tvLoanAmount.setText(String.format(Locale.getDefault(), "KES %,.0f", loan.getRepaymentAmount()));
                 binding.tvStatus.setText(loan.getStatus().replace("_", " "));
-                
+
                 int color = R.color.status_green;
                 int bg = R.drawable.bg_status_badge_green;
-                
+
                 String status = loan.getStatus();
                 if ("PENDING_DISBURSEMENT".equals(status)) {
                     color = R.color.status_amber;
@@ -94,31 +94,33 @@ public class LoanSelectorAdapter extends RecyclerView.Adapter<LoanSelectorAdapte
                     color = R.color.status_blue;
                     bg = R.drawable.bg_status_badge_blue;
                 }
-                
+
+                binding.tvLoanNo.setTextColor(ContextCompat.getColor(itemView.getContext(), color));
                 binding.tvStatus.setTextColor(ContextCompat.getColor(itemView.getContext(), color));
                 binding.tvStatus.setBackgroundResource(bg);
-                
+
                 binding.progressRepayment.setVisibility(View.VISIBLE);
-                
-                // Calculate Progress
-                double total = loan.getRepaymentAmount();
-                double balance = loan.getBalance();
+
+                // Calculate Progress based on Principal Repayment (Accurate for Reducing Balance)
+                double approved = loan.getApprovedAmount();
+                double currentPrincipal = loan.getBalance();
                 int progress = 0;
-                if (total > 0) {
-                    progress = (int) (((total - balance) / total) * 100);
+                if (approved > 0) {
+                    progress = (int) (((approved - currentPrincipal) / approved) * 100);
                 }
                 progress = Math.max(0, Math.min(100, progress));
-                
+
                 binding.tvProgressPercent.setText(progress + "%");
+                binding.progressRepayment.setIndicatorColor(ContextCompat.getColor(itemView.getContext(), color));
                 binding.progressRepayment.setProgress(progress);
             }
 
-            int strokeColor = isSelected 
-                ? ContextCompat.getColor(itemView.getContext(), R.color.terracotta_primary)
+            int strokeColor = isSelected
+                ? ContextCompat.getColor(itemView.getContext(), R.color.terracotta_light)
                 : ContextCompat.getColor(itemView.getContext(), R.color.surface_stroke);
-            
+
             binding.loanCard.setStrokeColor(strokeColor);
-            binding.loanCard.setStrokeWidth(isSelected ? 6 : 2);
+            binding.loanCard.setStrokeWidth(isSelected ? 3 : 2);
         }
     }
 }

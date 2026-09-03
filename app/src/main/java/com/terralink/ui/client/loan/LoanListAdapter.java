@@ -93,11 +93,11 @@ public class LoanListAdapter extends RecyclerView.Adapter<LoanListAdapter.ViewHo
                     binding.tvProgressPercent.setText("Fully Repaid");
                     binding.progressRepayment.setProgress(100);
                 } else {
-                    double totalDue = loan.getRepaymentAmount();
-                    double balance = loan.getBalance();
+                    double approved = loan.getApprovedAmount();
+                    double currentPrincipal = loan.getBalance();
                     int progress = 0;
-                    if (totalDue > 0) {
-                        progress = (int) (((totalDue - balance) / totalDue) * 100);
+                    if (approved > 0) {
+                        progress = (int) (((approved - currentPrincipal) / approved) * 100);
                     }
                     progress = Math.max(0, Math.min(100, progress));
                     
