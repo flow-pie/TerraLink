@@ -90,6 +90,13 @@ public class OfficerLoansActivity extends AppCompatActivity {
     }
 
     private void confirmLoanClosure(LoanListItemResponse loan) {
+        if ("CLOSED".equalsIgnoreCase(loan.getStatus())) {
+            // If already closed, just view the certificate
+            CloseLoanResponse closure = new CloseLoanResponse(Long.parseLong(loan.getId()), loan.getLoanNo());
+            downloadAndOpenCertificate(closure);
+            return;
+        }
+
         new AlertDialog.Builder(this)
                 .setTitle("Close Loan")
                 .setMessage("Are you sure you want to close loan #" + loan.getLoanNo() + "? This will generate a closure certificate.")

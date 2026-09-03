@@ -7,6 +7,13 @@ public class CloseLoanResponse {
     private String certificateNumber;
     private long closedBy;
 
+    public CloseLoanResponse() {}
+
+    public CloseLoanResponse(long id, String certificateNumber) {
+        this.id = id;
+        this.certificateNumber = certificateNumber;
+    }
+
     public long getId() {
         return id;
     }

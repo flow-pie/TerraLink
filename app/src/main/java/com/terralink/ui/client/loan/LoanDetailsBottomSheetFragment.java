@@ -111,12 +111,12 @@ public class LoanDetailsBottomSheetFragment extends BottomSheetDialogFragment {
         binding.layoutActiveLoanDetails.setVisibility(View.VISIBLE);
         binding.layoutApplicationTimeline.setVisibility(View.GONE);
         
-        if ("CLOSED".equalsIgnoreCase(status) || "COMPLETED".equalsIgnoreCase(status)) {
+        if ("CLOSED".equalsIgnoreCase(status)) {
             binding.btnMainAction.setVisibility(View.GONE);
             binding.btnDownloadCertificate.setVisibility(View.VISIBLE);
             binding.btnDownloadCertificate.setOnClickListener(v -> downloadCertificate());
         } else {
-            binding.btnMainAction.setVisibility(View.VISIBLE);
+            binding.btnMainAction.setVisibility("COMPLETED".equalsIgnoreCase(status) ? View.GONE : View.VISIBLE);
             binding.btnMainAction.setText("Make Payment");
             binding.btnDownloadCertificate.setVisibility(View.GONE);
         }

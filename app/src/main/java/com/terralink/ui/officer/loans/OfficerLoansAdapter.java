@@ -113,8 +113,13 @@ public class OfficerLoansAdapter extends ListAdapter<LoanListItemResponse, Offic
             }
 
             // Logic for "Close Loan" button
-            if ("ACTIVE".equalsIgnoreCase(status) && item.getBalance() <= 0) {
+            if (("ACTIVE".equalsIgnoreCase(status) || "COMPLETED".equalsIgnoreCase(status)) && item.getBalance() <= 0) {
                 binding.btnCloseLoan.setVisibility(View.VISIBLE);
+                binding.btnCloseLoan.setText("CLOSE LOAN");
+                binding.btnCloseLoan.setOnClickListener(v -> onClose.accept(item));
+            } else if ("CLOSED".equalsIgnoreCase(status)) {
+                binding.btnCloseLoan.setVisibility(View.VISIBLE);
+                binding.btnCloseLoan.setText("VIEW CERTIFICATE");
                 binding.btnCloseLoan.setOnClickListener(v -> onClose.accept(item));
             } else {
                 binding.btnCloseLoan.setVisibility(View.GONE);
