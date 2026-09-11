@@ -78,7 +78,7 @@ public class NetworkModule {
             Gson gson
     ){
         return new Retrofit.Builder()
-                .baseUrl("http://192.168.0.104:5031/")
+                .baseUrl("https://terralink-api-aha6c8f9d8a5hzfa.uaenorth-01.azurewebsites.net/")
                 .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
@@ -93,7 +93,7 @@ public class NetworkModule {
     ) {
 
         return new Retrofit.Builder()
-                .baseUrl("http://192.168.0.104:5031/")
+                .baseUrl("https://terralink-api-aha6c8f9d8a5hzfa.uaenorth-01.azurewebsites.net/")
                 .addConverterFactory(
                         GsonConverterFactory.create(gson)
                 )

@@ -158,6 +158,39 @@ public class ClientHomepageActivity extends AppCompatActivity {
         viewModel.getClientLoansStream().observe(this, this::handleLoansResult);
         viewModel.getLoanDetailsStream().observe(this, this::handleLoanDetailsResult);
         viewModel.getRepaymentInstallmentsStream().observe(this, this::handleRepaymentsResult);
+        viewModel.getClientAssetsStream().observe(this, result -> checkMissingInfo());
+        viewModel.getClientIncomeAssessmentsStream().observe(this, result -> checkMissingInfo());
+    }
+
+    private void checkMissingInfo() {
+        Resource<List<com.terralink.data.model.AssetResponse>> assetsRes = viewModel.getClientAssetsStream().getValue();
+        Resource<List<com.terralink.data.model.IncomeAssessmentResponse>> incomeRes = viewModel.getClientIncomeAssessmentsStream().getValue();
+
+        if (assetsRes != null && assetsRes.getStatus() == LoginStatus.SUCCESS &&
+            incomeRes != null && incomeRes.getStatus() == LoginStatus.SUCCESS) {
+            
+            boolean hasAssets = assetsRes.getData() != null && !assetsRes.getData().isEmpty();
+            boolean hasIncome = incomeRes.getData() != null && !incomeRes.getData().isEmpty();
+
+            if (!hasAssets || !hasIncome) {
+                binding.cardMissingInfo.setVisibility(View.VISIBLE);
+                if (!hasAssets && !hasIncome) {
+                    binding.tvMissingInfoMsg.setText("Please upload your assets and income assessment to improve your loan eligibility.");
+                    binding.btnCompleteProfile.setOnClickListener(v -> 
+                        startActivity(new Intent(this, com.terralink.ui.client.scoring.AssetListActivity.class)));
+                } else if (!hasAssets) {
+                    binding.tvMissingInfoMsg.setText("Please upload your assets to improve your loan eligibility.");
+                    binding.btnCompleteProfile.setOnClickListener(v -> 
+                        startActivity(new Intent(this, com.terralink.ui.client.scoring.AssetListActivity.class)));
+                } else {
+                    binding.tvMissingInfoMsg.setText("Please complete your income assessment to improve your loan eligibility.");
+                    binding.btnCompleteProfile.setOnClickListener(v -> 
+                        startActivity(new Intent(this, com.terralink.ui.client.scoring.IncomeAssessmentListActivity.class)));
+                }
+            } else {
+                binding.cardMissingInfo.setVisibility(View.GONE);
+            }
+        }
     }
 
     private void handleUserResult(Resource<UserProfileResponse> result) {

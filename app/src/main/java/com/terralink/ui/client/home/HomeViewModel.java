@@ -29,6 +29,8 @@ public class HomeViewModel extends ViewModel {
     private final MediatorLiveData<Resource<List<ClientLoansResponse>>> clientLoans = new MediatorLiveData<>();
     private final MediatorLiveData<Resource<LoanDetailsResponse>> loanDetails = new MediatorLiveData<>();
     private final MediatorLiveData<Resource<List<RepaymentInstallments>>> repaymentInstallments = new MediatorLiveData<>();
+    private final MediatorLiveData<Resource<List<com.terralink.data.model.AssetResponse>>> clientAssets = new MediatorLiveData<>();
+    private final MediatorLiveData<Resource<List<com.terralink.data.model.IncomeAssessmentResponse>>> clientIncomeAssessments = new MediatorLiveData<>();
 
     private final LoanRepository loanRepository;
     private final UserRepository userRepository;
@@ -46,6 +48,8 @@ public class HomeViewModel extends ViewModel {
 
     public void refreshLoans(String clientId) {
         fetchSource(loanRepository.getClientLoans(clientId), clientLoans);
+        fetchSource(loanRepository.getClientAssets(clientId), clientAssets);
+        fetchSource(loanRepository.getIncomeAssessments(clientId), clientIncomeAssessments);
     }
 
     public void refreshLoanDetails(String loanId) {
@@ -80,6 +84,14 @@ public class HomeViewModel extends ViewModel {
 
     public LiveData<Resource<List<RepaymentInstallments>>> getRepaymentInstallmentsStream(){
         return repaymentInstallments;
+    }
+
+    public LiveData<Resource<List<com.terralink.data.model.AssetResponse>>> getClientAssetsStream(){
+        return clientAssets;
+    }
+
+    public LiveData<Resource<List<com.terralink.data.model.IncomeAssessmentResponse>>> getClientIncomeAssessmentsStream(){
+        return clientIncomeAssessments;
     }
     
     // Legacy methods for compatibility if needed, but better to use streams
